@@ -16,22 +16,6 @@
     "timestamp": "2026-03-18T18:38:39.649Z"
   },
   {
-    "id": "1773859124468",
-    "type": "file",
-    "files": [
-      {
-        "name": "IMG_20260317_153630.jpg",
-        "path": "other/IMG_20260317_153630.jpg",
-        "size": 2708403,
-        "mime": "image/jpeg",
-        "sha": "e2694f332f0d5c21eb36ae176a2d5d780b56008f",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/other/IMG_20260317_153630.jpg"
-      }
-    ],
-    "category": "other",
-    "timestamp": "2026-03-18T18:38:44.503Z"
-  },
-  {
     "id": "1773859128909",
     "type": "file",
     "files": [
