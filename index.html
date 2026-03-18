@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 极速传 V2.0 - 管理版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // 启用 class 模式的深色模式
+        }
+    </script>
+    <style>
+        /* 拖拽态样式 */
+        #drop-zone.dragover { @apply bg-blue-50 border-blue-400 dark:bg-slate-700 dark:border-blue-500; }
+        /* 隐藏加载状态 */
+        .loading { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen py-6 px-4 md:py-10 transition-colors duration-300">
+
+    <header class="max-w-7xl mx-auto flex items-center justify-between mb-8 pb-4 border-b border-gray-200 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl">🚀</span>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">GitHub 闪传 <span class="text-sm font-normal text-gray-500">V2.0</span></h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleDarkMode()" class="p-2.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700">
+                <span id="dark-icon-sun" class="loading">☀️</span>
+                <span id="dark-icon-moon">🌙</span>
+            </button>
+            <details class="relative">
+                <summary class="list-none cursor-pointer p-2.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300">⚙️</summary>
+                <div class="absolute right-0 top-12 p-5 w-72 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-800 z-50">
+                    <h3 class="font-bold mb-3 dark:text-white">配置仓库信息</h3>
+                    <div class="space-y-3">
+                        <input id="token" type="password" placeholder="GitHub Token" class="w-full p-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 dark:text-white">
+                        <input id="repo" type="text" placeholder="用户名/仓库名 (e.g., yourname/my-box)" class="w-full p-2 border rounded-md dark:bg-slate-800 dark:border-slate-700 dark:text-white">
+                        <button onclick="saveAndReloadConfig()" class="w-full bg-slate-900 dark:bg-blue-600 text-white py-2 rounded-md font-medium text-sm">保存并同步</button>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[380px,1fr] gap-8">
+        
+        <aside class="space-y-6">
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-800">
+                <h2 class="text-xl font-bold mb-4 dark:text-white flex items-center gap-2"><span>📤</span> 快速上传</h2>
+                
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">存入分类文件夹：</label>
+                    <select id="category" class="w-full p-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white text-sm">
+                        <option value="inbox">📥 临时收件箱 (inbox)</option>
+                        <option value="work">💼 工作文档 (work)</option>
+                        <option value="images">🖼️ 图片素材 (images)</option>
+                        <option value="ideas">💡 灵感碎片 (ideas)</option>
+                    </select>
+                </div>
+
+                <div id="drop-zone" class="border-3 border-dashed border-gray-300 dark:border-slate-700 rounded-xl p-8 text-center transition-all cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 mb-5">
+                    <input type="file" id="file-input" class="hidden">
+                    <div class="space-y-2">
+                        <div class="text-4xl">📎</div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm" id="file-name-display">点击或拖拽文件到这里</p>
+                    </div>
+                </div>
+
+                <button id="upload-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transform active:scale-95 transition disabled:bg-gray-400">
+                    确认上传到 GitHub
+                </button>
+            </div>
+            
+            <p id="status" class="text-center text-sm min-h-[1.5rem] font-medium p-3 rounded-lg"></p>
+        </aside>
+
+        <section class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-800">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-100 dark:border-slate-800">
+                <h2 class="text-2xl font-bold dark:text-white flex items-center gap-2"><span>📂</span> 资料管理</h2>
+                
+                <div class="flex items-center gap-2 flex-wrap">
+                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">筛选：</label>
+                    <div class="flex border rounded-lg overflow-hidden dark:border-slate-700 text-sm" id="filter-group">
+                        <button onclick="setFilter('all')" class="filter-btn px-4 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200 font-medium">全部</button>
+                        <button onclick="setFilter('docs')" class="filter-btn px-4 py-1.5 bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 border-l dark:border-slate-700">文档</button>
+                        <button onclick="setFilter('images')" class="filter-btn px-4 py-1.5 bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 border-l dark:border-slate-700">图片</button>
+                        <button onclick="setFilter('media')" class="filter-btn px-4 py-1.5 bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 border-l dark:border-slate-700">多媒体</button>
+                    </div>
+                    <button onclick="fetchAllFiles()" class="text-sm p-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-800">🔄 刷新</button>
+                </div>
+            </div>
+
+            <div id="file-list-container" class="space-y-4">
+                <div class="text-center py-10 text-gray-500 dark:text-gray-400">⏳ 请先配置仓库并点击“保存并同步”，或点击刷新加载列表</div>
+            </div>
+            
+            <template id="list-status-template">
+                <div class="flex flex-col items-center justify-center py-16 text-center text-gray-500 dark:text-gray-400">
+                    <div class="text-5xl mb-4">status_icon</div>
+                    <p class="font-medium text-lg">status_title</p>
+                    <p class="text-sm">status_desc</p>
+                </div>
+            </template>
+
+            <template id="file-item-template">
+                <div class="file-item flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-4 truncate">
+                        <div class="file-icon text-3xl flex-shrink-0">📄</div>
+                        <div class="truncate">
+                            <p class="file-name font-semibold text-gray-900 dark:text-white truncate" title="">文件名.ext</p>
+                            <p class="file-meta text-xs text-gray-500 dark:text-gray-400">inbox | date | size</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0 ml-4">
+                        <a href="#" target="_blank" class="download-link text-xs px-3 py-1 rounded bg-slate-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-slate-700">下载</a>
+                        <button class="delete-btn text-xs px-3 py-1 rounded bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50">删除</button>
+                    </div>
+                </div>
+            </template>
+        </section>
+    </main>
+
+    <script>
+        // --- 状态管理 ---
+        let state = {
+            config: { token: '', repo: '' },
+            allFiles: [], // 缓存从 GitHub 获取的所有文件，供筛选使用
+            currentFilter: 'all'
+        };
+
+        const CATEGORIES = ['inbox', 'work', 'images', 'ideas'];
+        
+        // 文件类型筛选规则
+        const FILTER_RULES = {
+            all: () => true,
+            docs: (ext) => ['doc', 'docx', 'pdf', 'txt', 'md', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext),
+            images: (ext) => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(ext),
+            media: (ext) => ['mp4', 'mov', 'avi', 'wmv', 'mp3', 'wav'].includes(ext)
+        };
+
+        // --- 初始化与深色模式 ---
+        window.onload = () => {
+            loadConfig();
+            initDarkMode();
+            if(state.config.token && state.config.repo) fetchAllFiles(); // 自动加载列表
+        };
+
+        function initDarkMode() {
+            const isDark = localStorage.getItem('gh_dark_mode') === 'true' || window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('dark-icon-sun').classList.remove('loading');
+                document.getElementById('dark-icon-moon').classList.add('loading');
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('gh_dark_mode', isDark);
+            document.getElementById('dark-icon-sun').classList.toggle('loading');
+            document.getElementById('dark-icon-moon').classList.toggle('loading');
+        }
+
+        // --- 配置管理 ---
+        function loadConfig() {
+            state.config.token = localStorage.getItem('gh_token') || '';
+            state.config.repo = localStorage.getItem('gh_repo') || '';
+            document.getElementById('token').value = state.config.token;
+            document.getElementById('repo').value = state.config.repo;
+        }
+
+        function saveAndReloadConfig() {
+            localStorage.setItem('gh_token', document.getElementById('token').value);
+            localStorage.setItem('gh_repo', document.getElementById('repo').value);
+            loadConfig();
+            fetchAllFiles(); // 配置改变，重新加载文件列表
+            alert('配置已保存并开始同步列表。');
+        }
+
+        // --- 核心逻辑：获取文件列表 ---
+        async function fetchAllFiles() {
+            if (!state.config.token || !state.config.repo) return;
+            showListStatus('⏳', '正在同步资料库...', '连接 GitHub API 中，请稍候');
+            state.allFiles = []; // 清空缓存
+
+            try {
+                // 由于 GitHub 不支持递归获取所有文件夹内容（无服务器方案），我们需要并行获取预定义的分类
+                const requests = CATEGORIES.map(cat => fetchCategoryFiles(cat));
+                const results = await Promise.all(requests);
+                
+                // 将所有文件合并到一个扁平列表中
+                state.allFiles = results.flat();
+                renderFileList();
+            } catch (error) {
+                showListStatus('❌', '无法加载资料列表', '请检查 Token 权限、仓库名是否正确，以及网络连接');
+            }
+        }
+
+        async function fetchCategoryFiles(category) {
+            const { token, repo } = state.config;
+            const url = `https://api.github.com/repos/${repo}/contents/${category}`;
+            
+            try {
+                const res = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
+                if (res.status === 404) return []; // 文件夹不存在
+                if (!res.ok) throw new Error('API Error');
+                
+                const data = await res.json();
+                if(!Array.isArray(data)) return [];
+                
+                // 筛选出文件，并整理格式
+                return data.filter(item => item.type === 'file').map(item => ({
+                    ...item,
+                    category: category,
+                    ext: item.name.split('.').pop().toLowerCase(),
+                    // 从 V1 版本的格式（时间戳-文件名）尝试解析时间
+                    uploadDate: item.name.includes('-') ? new Date(parseInt(item.name.split('-')[0])) : null
+                }));
+            } catch (e) { return []; } // 个别文件夹报错不影响全局
+        }
+
+        // --- 渲染与筛选 ---
+        function setFilter(filterName) {
+            state.currentFilter = filterName;
+            // 更新 UI 样式
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-4 py-1.5 bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 border-l dark:border-slate-700';
+            });
+            event.target.className = 'filter-btn px-4 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200 font-medium';
+            renderFileList();
+        }
+
+        function renderFileList() {
+            const container = document.getElementById('file-list-container');
+            container.innerHTML = ''; // 清空
+            
+            // 应用筛选规则
+            const filteredFiles = state.allFiles.filter(file => FILTER_RULES[state.currentFilter](file.ext));
+            
+            // 按日期倒序 (新上传在顶部)
+            filteredFiles.sort((a, b) => b.uploadDate - a.uploadDate);
+
+            if (state.allFiles.length === 0) {
+                showListStatus('📁', '仓库内无文件', `没有在默认的分类文件夹 (${CATEGORIES.join(', ')}) 中找到文件`);
+                return;
+            }
+            if (filteredFiles.length === 0) {
+                showListStatus('🔍', '未找到匹配文件', `在当前筛选下没有找到文件`);
+                return;
+            }
+
+            const template = document.getElementById('file-item-template');
+            
+            filteredFiles.forEach(file => {
+                const clone = template.content.cloneNode(true);
+                
+                // 文件图标
+                clone.querySelector('.file-icon').innerText = getFileIcon(file.ext);
+                // 文件名
+                clone.querySelector('.file-name').innerText = file.name;
+                clone.querySelector('.file-name').title = file.name;
+                // 元数据 (分类 | 时间 | 大小)
+                const dateStr = file.uploadDate ? file.uploadDate.toLocaleDateString('zh-CN') : '未知时间';
+                const sizeStr = formatFileSize(file.size);
+                clone.querySelector('.file-meta').innerText = `${file.category} | ${dateStr} | ${sizeStr}`;
+                
+                // 下载链接
+                clone.querySelector('.download-link').href = file.download_url;
+                
+                // 删除按钮逻辑
+                clone.querySelector('.delete-btn').onclick = () => deleteFile(file);
+
+                container.appendChild(clone);
+            });
+        }
+
+        // --- 核心逻辑：删除文件 ---
+        async function deleteFile(file) {
+            const { token, repo } = state.config;
+            const confirmMsg = `⚠️ 确定要删除该文件吗？此操作无法撤销！\n\n文件名: ${file.name}\n位置: ${file.category}/`;
+            if(!confirm(confirmMsg)) return;
+
+            showStatus('⏳ 正在执行删除...', 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/50 dark:text-yellow-300');
+
+            try {
+                // 删除需要提供文件 path 和当前文件的 sha 校验值
+                const url = `https://api.github.com/repos/${repo}/contents/${file.path}`;
+                const res = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Delete via Web: ${file.name}`,
+                        sha: file.sha
+                    })
+                });
+
+                if (res.ok) {
+                    showStatus("✅ 文件已从 GitHub 删除！", "bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300");
+                    fetchAllFiles(); // 重新加载列表
+                } else {
+                    showStatus("❌ 删除失败: " + res.statusText, "bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300");
+                }
+            } catch (e) { showStatus("❌ 网络错误，删除失败", "bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300"); }
+        }
+
+        // --- 辅助工具函数 ---
+        function showListStatus(icon, title, desc) {
+            const container = document.getElementById('file-list-container');
+            const template = document.getElementById('list-status-template');
+            const clone = template.content.cloneNode(true);
+            clone.querySelector('.text-5xl').innerText = icon;
+            clone.querySelector('.font-medium').innerText = title;
+            clone.querySelector('.text-sm').innerText = desc;
+            container.innerHTML = '';
+            container.appendChild(clone);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getFileIcon(ext) {
+            if (FILTER_RULES.images(ext)) return '🖼️';
+            if (FILTER_RULES.media(ext)) return '📹';
+            if (ext === 'pdf') return '📕';
+            if (['doc','docx'].includes(ext)) return '📄';
+            if (['xls','xlsx'].includes(ext)) return '📊';
+            return '📄'; // 默认
+        }
+
+        // --- V1 的上传逻辑 (保持不变，仅适配新界面 UI) ---
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadBtn = document.getElementById('upload-btn');
+
+        dropZone.onclick = () => fileInput.click();
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if(e.dataTransfer.files.length > 0) handleFileSelect(e.dataTransfer.files[0]);
+        };
+        fileInput.onchange = () => { if (fileInput.files.length > 0) handleFileSelect(fileInput.files[0]); };
+
+        function handleFileSelect(file) {
+            document.getElementById('file-name-display').innerText = `已选择: ${file.name}`;
+            document.getElementById('file-name-display').className = "file-name font-semibold text-gray-900 dark:text-white truncate";
+        }
+
+        uploadBtn.onclick = async () => {
+            const { token, repo } = state.config;
+            const category = document.getElementById('category').value;
+            const file = fileInput.files[0];
+
+            if (!token || !repo || !file) { alert("请确保配置已保存，并选择了文件"); return; }
+            showStatus("⏳ 正在上传到 GitHub...", "bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300");
+            uploadBtn.disabled = true;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Content = reader.result.split(',')[1];
+                const timestamp = Date.now();
+                const path = `${category}/${timestamp}-${file.name}`;
+                const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+                try {
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Web Upload: ${file.name}`, content: base64Content })
+                    });
+                    if (res.ok) {
+                        showStatus("✅ 上传成功！即刻刷新资料库", "bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300");
+                        fileInput.value = ''; // 清空选择
+                        document.getElementById('file-name-display').innerText = "点击或拖拽文件到这里";
+                        document.getElementById('file-name-display').className = "text-gray-600 dark:text-gray-400 text-sm";
+                        setTimeout(fetchAllFiles, 1000); // 1秒后自动刷新列表
+                    } else { throw new Error('API Fail'); }
+                } catch (e) { showStatus("❌ 上传失败，请检查配置或文件大小(V2暂不支持大文件)", "bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300"); }
+                finally { uploadBtn.disabled = false; }
+            };
+        };
+
+        function showStatus(text, bgClass) {
+            const el = document.getElementById('status');
+            el.innerText = text;
+            el.className = `text-center text-sm font-medium p-3 rounded-lg ${bgClass}`;
+        }
+    </script>
+</body>
+</html>
