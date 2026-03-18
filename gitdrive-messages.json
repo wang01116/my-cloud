@@ -1,21 +1,5 @@
 [
   {
-    "id": "1773859115731",
-    "type": "file",
-    "files": [
-      {
-        "name": "Screenshot_20260318_233037_com.tencent.mm.jpg",
-        "path": "other/Screenshot_20260318_233037_com.tencent.mm.jpg",
-        "size": 551107,
-        "mime": "image/jpeg",
-        "sha": "4ce7660b95a4d2d3dff7d5b55beba4fbea14727d",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/other/Screenshot_20260318_233037_com.tencent.mm.jpg"
-      }
-    ],
-    "category": "other",
-    "timestamp": "2026-03-18T18:38:35.768Z"
-  },
-  {
     "id": "1773859119627",
     "type": "file",
     "files": [
