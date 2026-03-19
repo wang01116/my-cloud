@@ -1,16 +1,18 @@
 {
   "name": "GitDrive",
   "short_name": "GitDrive",
-  "description": "GitHub 仓库云盘",
+  "description": "以聊天方式使用 GitHub 仓库作为私人云盘",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f1117",
-  "theme_color": "#0f1117",
+  "orientation": "any",
+  "background_color": "#111318",
+  "theme_color": "#111318",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233b82f6'/><text y='.9em' font-size='72' x='14'>☁️</text></svg>",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
