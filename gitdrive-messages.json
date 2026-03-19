@@ -56,22 +56,6 @@
     "timestamp": "2026-03-19T04:03:54.933Z"
   },
   {
-    "id": "1773921507615",
-    "type": "file",
-    "files": [
-      {
-        "name": "28542.mov",
-        "path": "other/28542.mov",
-        "size": 2970166,
-        "mime": "video/quicktime",
-        "sha": "dddd99b0e89a045c01b2e1400ce0fbd87d680853",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/other/28542.mov"
-      }
-    ],
-    "category": "other",
-    "timestamp": "2026-03-19T11:58:27.616Z"
-  },
-  {
     "id": "1773923066196",
     "type": "text",
     "content": "111",
