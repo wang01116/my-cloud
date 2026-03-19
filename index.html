@@ -1143,13 +1143,35 @@ async function doLogin() {
   const btn=document.querySelector('.btn-login');
   btn.innerHTML='<span class="spin">⟳</span> 连接中…'; btn.disabled=true;
   try {
-    const res=await gh(`/repos/${u}/${r}`);
-    if (!res.ok) throw new Error('仓库访问失败，请检查凭据');
+    // 注意：登录时 S.token 尚未赋值，必须将 token 显式传入 gh()
+    // Fine-grained token 与 Classic token 均使用 Bearer 认证方式
+    const res = await ghWithToken(`/repos/${u}/${r}`, {}, t);
+    if (res.status === 401) throw new Error('Token 无效或已过期，请检查 Token 是否正确');
+    if (res.status === 403) throw new Error('Token 权限不足，Fine-grained token 需要开启 Contents 读写权限');
+    if (res.status === 404) throw new Error('仓库不存在，请检查用户名和仓库名（注意大小写）');
+    if (!res.ok) throw new Error(`连接失败（HTTP ${res.status}），请检查填写信息`);
     S.user=u; S.repo=r; S.token=t;
     localStorage.setItem('gd-creds',JSON.stringify({user:u,repo:r,token:t}));
     launchApp();
-  } catch(e) { err.textContent=e.message; err.style.display='block'; }
+  } catch(e) {
+    err.textContent=e.message; err.style.display='block';
+  }
   btn.innerHTML='连接仓库'; btn.disabled=false;
+}
+
+// 专用于登录阶段（S.token 还未赋值），token 从参数传入
+async function ghWithToken(path, opts={}, token) {
+  const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
+  return fetch(url, {
+    ...opts,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'GitDrive-App',
+      ...(opts.headers || {}),
+    }
+  });
 }
 
 function doLogout() {
@@ -2027,10 +2049,21 @@ function toggleTheme(){
 /* ============================================================
    HELPERS
 ============================================================ */
-async function gh(path,opts={},token=null){
-  const t=token||S.token;
-  const url=path.startsWith('http')?path:`https://api.github.com${path}`;
-  return fetch(url,{...opts,headers:{'Authorization':`token ${t}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json',...(opts.headers||{})}});
+async function gh(path, opts={}, token=null) {
+  const t = token || S.token;
+  const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
+  // Bearer auth + new API version header: compatible with both Classic and Fine-grained tokens
+  return fetch(url, {
+    ...opts,
+    headers: {
+      'Authorization': `Bearer ${t}`,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'GitDrive-App',
+      'Content-Type': 'application/json',
+      ...(opts.headers || {}),
+    }
+  });
 }
 
 function rawUrl(path){return `https://raw.githubusercontent.com/${S.user}/${S.repo}/main/${path}`;}
