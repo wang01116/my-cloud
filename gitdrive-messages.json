@@ -80,40 +80,6 @@
     "timestamp": "2026-03-19T12:27:14.364Z"
   },
   {
-    "id": "1773924094646",
-    "type": "file",
-    "files": [
-      {
-        "name": "IMG_6630.jpeg",
-        "path": "other/IMG_6630.jpeg",
-        "size": 1854029,
-        "mime": "image/jpeg",
-        "sha": "0e011853bbd00c1119ea78ce1ff790316798f859",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/other/IMG_6630.jpeg"
-      },
-      {
-        "name": "IMG_6622.jpeg",
-        "path": "other/IMG_6622.jpeg",
-        "size": 15544,
-        "mime": "image/jpeg",
-        "sha": "b7a6f92b9055a0c742ad51a0cded0298cfc77987",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/other/IMG_6622.jpeg"
-      },
-      {
-        "name": "17b147fb6c8b4a6883f29f7d2e3ba720.jpeg",
-        "path": "other/17b147fb6c8b4a6883f29f7d2e3ba720.jpeg",
-        "size": 307620,
-        "mime": "image/jpeg",
-        "sha": "8266a6b939a1beb284daac4b7cb4865aca158941",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/other/17b147fb6c8b4a6883f29f7d2e3ba720.jpeg"
-      }
-    ],
-    "caption": "",
-    "category": "other",
-    "timestamp": "2026-03-19T12:41:34.646Z",
-    "pinned": true
-  },
-  {
     "id": "1773924347591",
     "type": "file",
     "files": [
