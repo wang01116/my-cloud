@@ -3,1478 +3,2076 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0f1117">
+<meta name="theme-color" content="#111318">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GitDrive">
-<title>GitDrive — 你的私人云盘</title>
+<title>GitDrive</title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-  /* ===== CSS VARIABLES ===== */
-  :root {
-    --bg: #0f1117;
-    --bg2: #161b22;
-    --bg3: #1c2333;
-    --bg4: #21262d;
-    --surface: #1e2433;
-    --surface2: #252d3d;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #e6edf3;
-    --text2: #8b949e;
-    --text3: #6e7681;
-    --accent: #3b82f6;
-    --accent2: #60a5fa;
-    --accent-glow: rgba(59,130,246,0.25);
-    --bubble-out: #1d4ed8;
-    --bubble-out2: #2563eb;
-    --bubble-in: #1e2433;
-    --green: #3fb950;
-    --orange: #f97316;
-    --red: #f85149;
-    --purple: #a78bfa;
-    --yellow: #f59e0b;
-    --radius: 20px;
-    --radius-sm: 10px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
-    --transition: 0.18s cubic-bezier(0.4,0,0.2,1);
-  }
-  [data-theme="light"] {
-    --bg: #f0f2f5;
-    --bg2: #ffffff;
-    --bg3: #f8f9fa;
-    --bg4: #eef0f3;
-    --surface: #ffffff;
-    --surface2: #f4f6f8;
-    --border: rgba(0,0,0,0.08);
-    --border2: rgba(0,0,0,0.14);
-    --text: #0d1117;
-    --text2: #57606a;
-    --text3: #8c959f;
-    --accent: #2563eb;
-    --accent2: #3b82f6;
-    --accent-glow: rgba(37,99,235,0.2);
-    --bubble-out: #2563eb;
-    --bubble-out2: #3b82f6;
-    --bubble-in: #ffffff;
-    --shadow: 0 4px 20px rgba(0,0,0,0.1);
-  }
+/* ========================================================
+   CSS VARIABLES & THEMES
+======================================================== */
+:root {
+  --bg:        #111318;
+  --bg2:       #18191f;
+  --bg3:       #1e2028;
+  --bg4:       #252830;
+  --bg5:       #2c3040;
+  --surface:   rgba(255,255,255,0.04);
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.11);
+  --border3:   rgba(255,255,255,0.18);
+  --text:      #eef0f4;
+  --text2:     #9098aa;
+  --text3:     #5a6172;
+  --accent:    #4f8ef7;
+  --accent2:   #6fa3ff;
+  --accent3:   #3870e0;
+  --glow:      rgba(79,142,247,0.18);
+  --glow2:     rgba(79,142,247,0.08);
+  --out-bg:    #1a4dd4;
+  --out-bg2:   #1e58e8;
+  --in-bg:     #1e2028;
+  --green:     #34d058;
+  --red:       #f85149;
+  --orange:    #fb923c;
+  --yellow:    #fbbf24;
+  --purple:    #a78bfa;
+  --pink:      #f472b6;
+  --teal:      #2dd4bf;
+  --r:         22px;
+  --r-sm:      12px;
+  --r-xs:      8px;
+  --sh:        0 8px 40px rgba(0,0,0,0.5);
+  --sh2:       0 2px 12px rgba(0,0,0,0.3);
+  --dur:       0.18s;
+  --ease:      cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"] {
+  --bg:        #f2f3f7;
+  --bg2:       #ffffff;
+  --bg3:       #f8f9fb;
+  --bg4:       #eef0f5;
+  --bg5:       #e4e7ef;
+  --surface:   rgba(0,0,0,0.03);
+  --border:    rgba(0,0,0,0.07);
+  --border2:   rgba(0,0,0,0.11);
+  --border3:   rgba(0,0,0,0.18);
+  --text:      #0d1117;
+  --text2:     #5a6478;
+  --text3:     #9098aa;
+  --accent:    #2563eb;
+  --accent2:   #3b7ef0;
+  --accent3:   #1d56d4;
+  --glow:      rgba(37,99,235,0.14);
+  --glow2:     rgba(37,99,235,0.06);
+  --out-bg:    #2563eb;
+  --out-bg2:   #3b7ef0;
+  --in-bg:     #ffffff;
+  --sh:        0 4px 24px rgba(0,0,0,0.1);
+  --sh2:       0 2px 8px rgba(0,0,0,0.08);
+}
 
-  /* ===== RESET ===== */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
-  body {
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
+/* ========================================================
+   RESET & BASE
+======================================================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Outfit',-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button{font-family:inherit}
+input,textarea{font-family:inherit}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-  /* ===== LAYOUT ===== */
-  #app { display: flex; height: 100dvh; position: relative; overflow: hidden; }
+/* ========================================================
+   LAYOUT
+======================================================== */
+#app{display:flex;height:100dvh;position:relative}
 
-  /* ===== LOGIN SCREEN ===== */
-  #login-screen {
-    position: fixed; inset: 0; z-index: 100;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .login-card {
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: 24px;
-    padding: 40px;
-    width: 100%; max-width: 400px;
-    box-shadow: var(--shadow), 0 0 60px rgba(59,130,246,0.08);
-  }
-  .login-logo {
-    width: 56px; height: 56px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px; margin-bottom: 24px;
-    box-shadow: 0 0 30px rgba(59,130,246,0.3);
-  }
-  .login-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-  .login-sub { color: var(--text2); font-size: 13px; margin-bottom: 28px; }
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
-  .field input {
-    width: 100%; padding: 12px 14px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 12px; color: var(--text);
-    font-family: inherit; font-size: 14px;
-    transition: border-color var(--transition), box-shadow var(--transition);
-    outline: none;
-  }
-  .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-  .btn-primary {
-    width: 100%; padding: 13px;
-    background: linear-gradient(135deg, #3b82f6, #6366f1);
-    border: none; border-radius: 12px;
-    color: white; font-family: inherit; font-size: 14px; font-weight: 600;
-    cursor: pointer; transition: opacity var(--transition), transform var(--transition);
-    margin-top: 8px;
-  }
-  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-  #login-error { color: var(--red); font-size: 12px; margin-top: 10px; text-align: center; display: none; }
+/* ========================================================
+   LOGIN SCREEN
+======================================================== */
+#login-screen{
+  position:fixed;inset:0;z-index:200;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-wrap{
+  width:100%;max-width:400px;
+  animation:fadeSlideUp .4s var(--ease) both;
+}
+.login-logo-ring{
+  width:72px;height:72px;margin:0 auto 24px;
+  background:linear-gradient(135deg,#4f8ef7,#a78bfa);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;
+  box-shadow:0 0 0 8px rgba(79,142,247,.12),0 0 40px rgba(79,142,247,.3);
+}
+.login-h{font-size:26px;font-weight:800;text-align:center;margin-bottom:4px}
+.login-sub{color:var(--text2);font-size:13px;text-align:center;margin-bottom:32px}
+.login-card{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:24px;padding:32px;
+  box-shadow:var(--sh);
+}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+.field input{
+  width:100%;padding:12px 14px;
+  background:var(--bg3);border:1.5px solid var(--border2);
+  border-radius:var(--r-sm);color:var(--text);
+  font-size:14px;outline:none;
+  transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
+}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.btn-login{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,#4f8ef7,#a78bfa);
+  border:none;border-radius:var(--r-sm);color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:opacity var(--dur),transform var(--dur);
+  margin-top:8px;letter-spacing:.02em;
+}
+.btn-login:hover{opacity:.9;transform:translateY(-1px)}
+.btn-login:active{transform:translateY(0)}
+.login-hint{
+  margin-top:16px;font-size:11px;color:var(--text3);
+  text-align:center;line-height:1.7;
+}
+#login-err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;font-weight:500}
 
-  /* ===== SIDEBAR ===== */
-  #sidebar {
-    width: 280px; min-width: 280px;
-    background: var(--bg2);
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    position: relative; z-index: 20;
-  }
-  .sidebar-header {
-    padding: 16px 18px;
-    display: flex; align-items: center; gap: 12px;
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(20px);
-  }
-  .sidebar-logo {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
-  .sidebar-title { font-weight: 700; font-size: 16px; flex: 1; }
-  .sidebar-actions { display: flex; gap: 6px; }
-  .icon-btn {
-    width: 32px; height: 32px;
-    background: transparent; border: none;
-    color: var(--text2); border-radius: 8px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; transition: background var(--transition), color var(--transition);
-  }
-  .icon-btn:hover { background: var(--bg3); color: var(--text); }
+/* ========================================================
+   SIDEBAR
+======================================================== */
+#sidebar{
+  width:260px;min-width:260px;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:relative;z-index:20;
+  transition:transform .28s var(--ease);
+}
+.sb-top{
+  padding:14px 14px 10px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sb-logo{
+  width:38px;height:38px;flex-shrink:0;
+  background:linear-gradient(135deg,#4f8ef7,#a78bfa);
+  border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:19px;
+}
+.sb-title{font-weight:800;font-size:15px;flex:1}
+.sb-acts{display:flex;gap:4px}
+.ib{
+  width:30px;height:30px;border:none;background:transparent;
+  color:var(--text2);border-radius:var(--r-xs);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  transition:background var(--dur),color var(--dur);
+}
+.ib:hover{background:var(--bg3);color:var(--text)}
 
-  .sidebar-nav { padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 12px; border-radius: 12px;
-    cursor: pointer; transition: background var(--transition), color var(--transition);
-    color: var(--text2); font-weight: 500; font-size: 14px;
-    border: none; background: transparent; width: 100%; text-align: left;
-  }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--accent-glow); color: var(--accent2); }
-  .nav-item .nav-icon { font-size: 18px; width: 24px; text-align: center; }
-  .nav-badge {
-    margin-left: auto; background: var(--accent); color: white;
-    font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px;
-  }
+.sb-search{padding:10px 12px;border-bottom:1px solid var(--border)}
+.sb-search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:10px;padding:7px 10px;
+  transition:border-color var(--dur);cursor:pointer;
+}
+.sb-search-box:hover,.sb-search-box:focus-within{border-color:var(--accent)}
+.sb-search-box input{
+  background:none;border:none;outline:none;color:var(--text);
+  font-size:13px;flex:1;
+}
+.sb-search-box input::placeholder{color:var(--text3)}
 
-  .sidebar-section-title {
-    padding: 16px 22px 6px;
-    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text3);
-  }
+.sb-nav{padding:8px 8px 0;display:flex;flex-direction:column;gap:1px}
+.nav-it{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:11px;cursor:pointer;
+  color:var(--text2);font-weight:600;font-size:13.5px;
+  border:none;background:transparent;width:100%;text-align:left;
+  transition:background var(--dur),color var(--dur);
+  position:relative;
+}
+.nav-it:hover{background:var(--bg3);color:var(--text)}
+.nav-it.active{background:var(--glow);color:var(--accent2)}
+.nav-it .ni{font-size:17px;width:22px;text-align:center;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;background:var(--accent);color:#fff;
+  font-size:10px;font-weight:700;padding:2px 6px;border-radius:99px;min-width:18px;text-align:center;
+}
 
-  /* ===== MAIN AREA ===== */
-  #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.sb-sec{
+  padding:16px 18px 5px;
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text3);
+}
 
-  /* ===== CHAT HEADER ===== */
-  .chat-header {
-    padding: 12px 20px;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-    backdrop-filter: blur(20px);
-    z-index: 10; flex-shrink: 0;
-  }
-  .chat-header-info { flex: 1; }
-  .chat-header-title { font-weight: 700; font-size: 16px; }
-  .chat-header-sub { font-size: 12px; color: var(--text2); }
-  .menu-btn { display: none; }
+.sb-foot{
+  margin-top:auto;padding:12px 16px;
+  border-top:1px solid var(--border);
+  font-size:11px;color:var(--text3);
+  display:flex;flex-direction:column;gap:3px;
+}
+.sb-foot-author{
+  font-size:12px;font-weight:600;color:var(--text2);
+  display:flex;align-items:center;gap:6px;
+}
+.sb-foot-author .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 6px var(--green);
+  flex-shrink:0;
+}
 
-  /* ===== CHAT MESSAGES ===== */
-  #chat-messages {
-    flex: 1; overflow-y: auto; overflow-x: hidden;
-    padding: 20px 16px;
-    display: flex; flex-direction: column; gap: 2px;
-    scroll-behavior: smooth;
-  }
-  #chat-messages::-webkit-scrollbar { width: 4px; }
-  #chat-messages::-webkit-scrollbar-track { background: transparent; }
-  #chat-messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+/* ========================================================
+   MAIN
+======================================================== */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
 
-  .msg-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
-  .msg-row { display: flex; align-items: flex-end; gap: 8px; }
-  .msg-row.out { flex-direction: row-reverse; }
-  .msg-avatar {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; flex-shrink: 0; align-self: flex-end;
-  }
-  .msg-row.out .msg-avatar { display: none; }
+/* ========================================================
+   TOP BAR (shared)
+======================================================== */
+.topbar{
+  padding:11px 18px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;z-index:10;
+  backdrop-filter:blur(20px);
+}
+.topbar-info{flex:1;overflow:hidden}
+.topbar-title{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.menu-btn{display:none}
 
-  .bubble-wrap { display: flex; flex-direction: column; max-width: min(72%, 480px); }
-  .msg-row.out .bubble-wrap { align-items: flex-end; }
+/* ========================================================
+   CHAT SCREEN
+======================================================== */
+#chat-screen{display:flex;flex-direction:column;height:100%;flex-shrink:0}
 
-  .bubble {
-    padding: 10px 14px;
-    border-radius: 18px;
-    position: relative; word-break: break-word;
-    animation: bubbleIn 0.2s cubic-bezier(0.4,0,0.2,1);
-    line-height: 1.55;
-  }
-  @keyframes bubbleIn {
-    from { opacity: 0; transform: scale(0.9) translateY(6px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  .bubble.in { background: var(--bubble-in); border: 1px solid var(--border2); border-bottom-left-radius: 6px; }
-  .bubble.out { background: var(--bubble-out); color: #fff; border-bottom-right-radius: 6px; }
-  .bubble.out .msg-time { color: rgba(255,255,255,0.6); }
+/* Messages */
+#msg-list{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:16px 14px 8px;
+  display:flex;flex-direction:column;gap:1px;
+  scroll-behavior:smooth;
+}
+.date-sep{
+  display:flex;align-items:center;gap:10px;
+  margin:14px 0 10px;color:var(--text3);font-size:11px;font-weight:600;
+}
+.date-sep::before,.date-sep::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  .msg-sender { font-size: 11px; font-weight: 600; color: var(--accent2); margin-bottom: 3px; margin-left: 2px; }
-  .msg-time { font-size: 10px; color: var(--text3); margin-top: 4px; margin-right: 2px; text-align: right; }
-  .msg-row.out .msg-time { text-align: right; }
+/* Message rows */
+.mg{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}
+.mr{display:flex;align-items:flex-end;gap:7px;position:relative}
+.mr.out{flex-direction:row-reverse}
+.mr.out .av{display:none}
+.av{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#4f8ef7,#a78bfa);
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  align-self:flex-end;
+}
 
-  /* Markdown in bubble */
-  .bubble p { margin-bottom: 6px; }
-  .bubble p:last-child { margin-bottom: 0; }
-  .bubble code { background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-  .bubble pre { background: rgba(0,0,0,0.3); padding: 10px 12px; border-radius: 8px; overflow-x: auto; margin: 6px 0; }
-  .bubble pre code { background: none; padding: 0; }
-  .bubble h1,.bubble h2,.bubble h3 { margin: 8px 0 4px; font-weight: 700; }
-  .bubble ul,.bubble ol { padding-left: 18px; margin: 4px 0; }
-  .bubble a { color: var(--accent2); }
-  .bubble.in code { background: rgba(0,0,0,0.1); }
-  .bubble.in pre { background: rgba(0,0,0,0.06); }
+/* Bubble wrap */
+.bw{
+  display:flex;flex-direction:column;
+  max-width:min(74%,500px);position:relative;
+}
+.mr.out .bw{align-items:flex-end}
 
-  /* ===== FILE BUBBLE ===== */
-  .file-stack { display: flex; flex-direction: column; gap: 6px; }
-  .file-card {
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 14px; padding: 12px 14px;
-    display: flex; align-items: center; gap: 12px;
-    min-width: 200px; max-width: 300px;
-    transition: background var(--transition);
-    cursor: pointer; position: relative; overflow: hidden;
-  }
-  .file-card:hover { background: var(--bg4); }
-  .bubble.out .file-card { background: rgba(0,0,0,0.25); border-color: rgba(255,255,255,0.15); }
-  .bubble.out .file-card:hover { background: rgba(0,0,0,0.35); }
-  .file-icon-wrap {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
-  }
-  .file-info { flex: 1; overflow: hidden; }
-  .file-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-meta { font-size: 11px; color: var(--text2); margin-top: 2px; }
-  .bubble.out .file-meta { color: rgba(255,255,255,0.65); }
+/* Selection checkbox */
+.msg-check{
+  display:none;width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--border2);background:var(--bg3);
+  cursor:pointer;flex-shrink:0;align-self:center;
+  transition:all var(--dur);margin-right:2px;
+  align-items:center;justify-content:center;font-size:11px;
+}
+.select-mode .msg-check{display:flex}
+.msg-check.checked{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* ===== IMAGE STACK ===== */
-  .img-stack { display: flex; flex-direction: column; gap: 4px; }
-  .img-thumb-wrap {
-    border-radius: 14px; overflow: hidden;
-    max-width: 260px; cursor: pointer; position: relative;
-  }
-  .img-thumb { width: 100%; display: block; border-radius: 14px; object-fit: cover; max-height: 220px; }
-  .img-overlay {
-    position: absolute; inset: 0; background: rgba(0,0,0,0);
-    display: flex; align-items: center; justify-content: center;
-    transition: background var(--transition); border-radius: 14px;
-  }
-  .img-thumb-wrap:hover .img-overlay { background: rgba(0,0,0,0.35); }
+/* Bubble */
+.bl{
+  padding:9px 13px;border-radius:18px;
+  position:relative;word-break:break-word;
+  animation:bIn .22s var(--ease) both;
+  line-height:1.58;font-size:14px;
+}
+@keyframes bIn{from{opacity:0;transform:scale(.92) translateY(5px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.bl.in{
+  background:var(--in-bg);border:1px solid var(--border2);
+  border-bottom-left-radius:5px;color:var(--text);
+}
+.bl.out{
+  background:var(--out-bg);color:#fff;
+  border-bottom-right-radius:5px;
+  box-shadow:0 2px 12px rgba(79,142,247,.3);
+}
+.bl.out .mtime{color:rgba(255,255,255,.55)}
 
-  /* ===== MSG ACTIONS ===== */
-  .msg-actions {
-    display: none; gap: 2px; align-items: center;
-    position: absolute; top: -6px;
-    background: var(--bg2); border: 1px solid var(--border2);
-    border-radius: 20px; padding: 3px 5px;
-    box-shadow: var(--shadow); z-index: 5;
-  }
-  .msg-row.out .msg-actions { left: -100px; right: auto; }
-  .msg-row .msg-actions { right: -8px; }
-  .bubble-wrap:hover .msg-actions { display: flex; }
-  .action-btn {
-    background: none; border: none; color: var(--text2);
-    cursor: pointer; padding: 4px 7px; border-radius: 8px;
-    font-size: 13px; transition: background var(--transition), color var(--transition);
-  }
-  .action-btn:hover { background: var(--bg3); color: var(--text); }
+/* Markdown */
+.bl p{margin-bottom:5px}.bl p:last-child{margin-bottom:0}
+.bl code{background:rgba(0,0,0,.25);padding:1px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.bl pre{background:rgba(0,0,0,.35);padding:10px 12px;border-radius:8px;overflow-x:auto;margin:6px 0}
+.bl pre code{background:none;padding:0}
+.bl h1,.bl h2,.bl h3{margin:8px 0 4px;font-weight:700}
+.bl ul,.bl ol{padding-left:18px;margin:4px 0}
+.bl a{color:var(--accent2);text-decoration:none}
+.bl.in code{background:rgba(0,0,0,.07)}
+.bl.in pre{background:rgba(0,0,0,.05)}
+.mtime{font-size:10px;color:var(--text3);margin-top:3px;text-align:right;display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.mtime-pinned{color:var(--yellow);font-size:9px}
 
-  /* ===== INPUT AREA ===== */
-  .input-area {
-    background: var(--bg2);
-    border-top: 1px solid var(--border);
-    padding: 12px 16px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-    flex-shrink: 0; z-index: 10;
-  }
-  /* Category picker row */
-  .cat-row {
-    display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px;
-    scrollbar-width: none;
-  }
-  .cat-row::-webkit-scrollbar { display: none; }
-  .cat-chip {
-    display: flex; align-items: center; gap: 5px;
-    padding: 5px 11px; border-radius: 20px; border: 1.5px solid var(--border2);
-    background: var(--bg3); cursor: pointer; white-space: nowrap;
-    font-size: 12px; font-weight: 600; transition: all var(--transition);
-    color: var(--text2);
-  }
-  .cat-chip:hover { border-color: var(--accent); color: var(--accent2); }
-  .cat-chip.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent2); }
-  .cat-chip .cat-icon { font-size: 14px; }
+/* File bubble */
+.fstack{display:flex;flex-direction:column;gap:5px}
+.fc{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:13px;padding:11px 13px;
+  display:flex;align-items:center;gap:11px;
+  min-width:210px;max-width:300px;cursor:pointer;
+  transition:background var(--dur),transform var(--dur);
+}
+.fc:hover{background:var(--bg4);transform:scale(1.01)}
+.bl.out .fc{background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.13)}
+.bl.out .fc:hover{background:rgba(0,0,0,.32)}
+.fi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.fi-info{flex:1;overflow:hidden}
+.fi-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.bl.out .fi-meta{color:rgba(255,255,255,.6)}
 
-  .input-row { display: flex; align-items: flex-end; gap: 10px; }
-  .input-box-wrap {
-    flex: 1; background: var(--bg3);
-    border: 1.5px solid var(--border2); border-radius: 22px;
-    display: flex; align-items: flex-end; gap: 8px; padding: 8px 12px;
-    transition: border-color var(--transition), box-shadow var(--transition);
-  }
-  .input-box-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-  #text-input {
-    flex: 1; background: none; border: none; outline: none;
-    color: var(--text); font-family: inherit; font-size: 14px;
-    resize: none; max-height: 120px; min-height: 22px;
-    line-height: 1.5; padding: 0;
-  }
-  #text-input::placeholder { color: var(--text3); }
-  .attach-btn, .send-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
-    transition: all var(--transition);
-  }
-  .attach-btn { background: var(--bg4); color: var(--text2); }
-  .attach-btn:hover { background: var(--accent-glow); color: var(--accent2); }
-  .send-btn { background: var(--accent); color: white; }
-  .send-btn:hover { background: var(--accent2); transform: scale(1.05); }
-  .send-btn:active { transform: scale(0.97); }
-  #file-input { display: none; }
+/* iMessage-style image stacking */
+.img-stack{display:flex;flex-direction:column;gap:3px;border-radius:16px;overflow:hidden;max-width:260px}
+.img-stack.multi{position:relative}
+.img-item{position:relative;cursor:pointer;overflow:hidden;background:var(--bg3)}
+.img-item img{width:100%;display:block;object-fit:cover;transition:transform .2s var(--ease)}
+.img-item:hover img{transform:scale(1.03)}
+.img-item .img-ov{
+  position:absolute;inset:0;background:rgba(0,0,0,0);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;font-size:22px;
+}
+.img-item:hover .img-ov{background:rgba(0,0,0,.28)}
+/* Multi-image grid: 2 side by side */
+.img-grid2{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.img-grid2 .img-item{aspect-ratio:1}
+.img-grid2 .img-item img{height:100%}
+/* 3+ images: big + small */
+.img-grid3{display:grid;grid-template-columns:2fr 1fr;gap:3px}
+.img-grid3 .img-item:first-child{grid-row:1/3}
+.img-grid3 .img-item{aspect-ratio:1}
+/* single */
+.img-single .img-item{max-height:240px}
+.img-single .img-item img{max-height:240px}
 
-  /* ===== FILE VIEWER (all files page) ===== */
-  #files-screen {
-    display: none; flex-direction: column; height: 100%;
-  }
-  .files-header {
-    padding: 16px 20px;
-    background: var(--bg2); border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
-    flex-shrink: 0;
-  }
-  .files-title { font-size: 18px; font-weight: 700; flex: 1; min-width: 120px; }
-  .files-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .filter-btn {
-    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-    border: 1.5px solid var(--border2); background: var(--bg3);
-    color: var(--text2); cursor: pointer; transition: all var(--transition);
-  }
-  .filter-btn.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent2); }
-  .view-toggle { display: flex; border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; }
-  .view-btn {
-    padding: 6px 10px; background: var(--bg3); border: none;
-    color: var(--text2); cursor: pointer; font-size: 14px;
-    transition: all var(--transition);
-  }
-  .view-btn.active { background: var(--accent-glow); color: var(--accent2); }
+/* More count overlay */
+.img-more-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:800;color:#fff;letter-spacing:-.02em;
+}
 
-  .cat-filter-row {
-    padding: 10px 16px; background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    display: flex; gap: 6px; overflow-x: auto; flex-shrink: 0;
-    scrollbar-width: none;
-  }
-  .cat-filter-row::-webkit-scrollbar { display: none; }
+/* Message actions hover */
+.m-acts{
+  display:none;gap:1px;
+  position:absolute;top:-8px;z-index:5;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:16px;padding:3px 4px;
+  box-shadow:var(--sh2);
+}
+.mr.out .m-acts{left:-4px;transform:translateX(-100%)}
+.mr:not(.out) .m-acts{right:-4px;transform:translateX(100%)}
+.bw:hover .m-acts{display:flex}
+.ma{
+  width:28px;height:28px;border:none;background:transparent;
+  color:var(--text2);border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  transition:background var(--dur),color var(--dur);
+}
+.ma:hover{background:var(--bg3);color:var(--text)}
 
-  #files-grid {
-    flex: 1; overflow-y: auto; padding: 16px;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px; align-content: start;
-  }
-  #files-grid.list-view {
-    grid-template-columns: 1fr;
-  }
-  #files-grid::-webkit-scrollbar { width: 4px; }
-  #files-grid::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+/* Pinned badge */
+.pin-badge{
+  position:absolute;top:-3px;right:-3px;
+  background:var(--yellow);color:#000;
+  font-size:9px;font-weight:800;padding:2px 5px;border-radius:99px;
+}
 
-  .file-grid-item {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden; cursor: pointer;
-    transition: all var(--transition);
-    animation: fadeUp 0.25s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .file-grid-item:hover { border-color: var(--accent); box-shadow: 0 4px 20px var(--accent-glow); transform: translateY(-2px); }
-  .file-grid-thumb {
-    width: 100%; aspect-ratio: 4/3; object-fit: cover;
-    background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 32px;
-  }
-  .file-grid-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .file-grid-info { padding: 10px 12px; }
-  .file-grid-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-grid-meta { font-size: 11px; color: var(--text2); margin-top: 3px; }
-  .file-grid-cat { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; margin-top: 5px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+/* ========================================================
+   UPLOAD PROGRESS AREA
+======================================================== */
+#upload-area{padding:0 14px;max-height:120px;overflow-y:auto}
+.up-prog{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:12px;padding:11px 14px;margin-bottom:6px;
+  animation:fadeUp .2s var(--ease);
+}
+.up-name{font-size:12px;font-weight:600;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar{background:var(--bg5);border-radius:3px;height:3px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .25s var(--ease);width:0%}
 
-  /* list view item */
-  .file-grid-item.list-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 16px; border-radius: 12px;
-  }
-  .file-grid-item.list-item .file-grid-thumb {
-    width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
-    aspect-ratio: unset; font-size: 22px;
-  }
-  .file-grid-item.list-item .file-grid-info { padding: 0; flex: 1; overflow: hidden; }
-  .file-grid-item.list-item .file-grid-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-grid-item.list-item .list-actions { display: flex; gap: 4px; flex-shrink: 0; }
+/* ========================================================
+   INPUT AREA
+======================================================== */
+.input-wrap{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:10px 14px;
+  padding-bottom:max(10px,env(safe-area-inset-bottom));
+  flex-shrink:0;z-index:10;
+}
+/* Select-mode bar */
+.select-bar{
+  display:none;align-items:center;gap:10px;
+  padding:8px 14px;background:var(--glow);
+  border-bottom:1px solid var(--border);
+  font-size:13px;font-weight:600;color:var(--accent2);
+}
+.select-bar.show{display:flex}
+.sel-count{flex:1}
+.sel-del{
+  padding:6px 14px;background:var(--red);color:#fff;
+  border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;
+  cursor:pointer;transition:opacity var(--dur);
+}
+.sel-del:hover{opacity:.85}
+.sel-cancel{
+  padding:6px 12px;background:var(--bg3);color:var(--text2);
+  border:1px solid var(--border2);border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background var(--dur);
+}
+.sel-cancel:hover{background:var(--bg4)}
 
-  /* ===== MODAL ===== */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    animation: fadeIn 0.15s ease;
-  }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal {
-    background: var(--bg2); border: 1px solid var(--border2);
-    border-radius: 20px; padding: 28px;
-    width: 100%; max-width: 440px;
-    box-shadow: var(--shadow);
-    animation: slideUp 0.2s cubic-bezier(0.4,0,0.2,1);
-  }
-  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
-  .modal-input {
-    width: 100%; padding: 11px 14px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 10px; color: var(--text);
-    font-family: inherit; font-size: 14px; outline: none; margin-bottom: 16px;
-    transition: border-color var(--transition), box-shadow var(--transition);
-  }
-  .modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-  .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
-  .btn-ghost {
-    padding: 10px 20px; border-radius: 10px;
-    background: var(--bg3); border: 1px solid var(--border2);
-    color: var(--text); cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
-    transition: all var(--transition);
-  }
-  .btn-ghost:hover { background: var(--bg4); }
-  .btn-danger {
-    padding: 10px 20px; border-radius: 10px;
-    background: var(--red); border: none; color: white;
-    cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
-    transition: opacity var(--transition);
-  }
-  .btn-danger:hover { opacity: 0.85; }
-  .btn-accent {
-    padding: 10px 20px; border-radius: 10px;
-    background: var(--accent); border: none; color: white;
-    cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600;
-    transition: all var(--transition);
-  }
-  .btn-accent:hover { background: var(--accent2); }
+/* Cat chips */
+.cat-row{display:flex;gap:5px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.cat-row::-webkit-scrollbar{display:none}
+.cat-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:20px;
+  border:1.5px solid var(--border2);background:var(--bg3);
+  cursor:pointer;white-space:nowrap;font-size:12px;font-weight:700;
+  color:var(--text2);transition:all var(--dur);flex-shrink:0;
+}
+.cat-chip:hover{border-color:var(--accent2);color:var(--accent2)}
+.cat-chip.active{border-color:var(--accent);background:var(--glow);color:var(--accent2)}
+.cat-chip .ci{font-size:14px}
 
-  /* ===== LIGHTBOX ===== */
-  #lightbox {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,0.92); backdrop-filter: blur(12px);
-    display: flex; align-items: center; justify-content: center;
-    animation: fadeIn 0.15s ease;
-  }
-  #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
-  #lightbox-close {
-    position: absolute; top: 20px; right: 20px;
-    background: rgba(255,255,255,0.12); border: none; color: white;
-    width: 40px; height: 40px; border-radius: 50%;
-    font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background var(--transition);
-  }
-  #lightbox-close:hover { background: rgba(255,255,255,0.22); }
+/* Input row */
+.inp-row{display:flex;align-items:flex-end;gap:8px}
+.inp-box{
+  flex:1;background:var(--bg3);border:1.5px solid var(--border2);
+  border-radius:22px;display:flex;align-items:flex-end;
+  padding:8px 12px;gap:8px;
+  transition:border-color var(--dur),box-shadow var(--dur);
+}
+.inp-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+#ti{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-size:14px;resize:none;
+  max-height:130px;min-height:22px;line-height:1.52;padding:0;
+}
+#ti::placeholder{color:var(--text3)}
+.att-btn,.snd-btn{
+  width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;transition:all var(--dur);
+}
+.att-btn{background:var(--bg4);color:var(--text2)}
+.att-btn:hover{background:var(--glow);color:var(--accent2)}
+.snd-btn{background:var(--accent);color:#fff;box-shadow:0 2px 10px var(--glow)}
+.snd-btn:hover{background:var(--accent2);transform:scale(1.06)}
+.snd-btn:active{transform:scale(.97)}
+#fi{display:none}
 
-  /* ===== TOAST ===== */
-  #toast-container {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    z-index: 999; display: flex; flex-direction: column; gap: 6px; pointer-events: none;
-  }
-  .toast {
-    background: var(--bg2); border: 1px solid var(--border2);
-    color: var(--text); padding: 10px 18px;
-    border-radius: 20px; font-size: 13px; font-weight: 600;
-    box-shadow: var(--shadow); white-space: nowrap;
-    animation: toastIn 0.2s ease;
-  }
-  .toast.success { border-color: var(--green); color: var(--green); }
-  .toast.error { border-color: var(--red); color: var(--red); }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateY(10px) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
+/* Drag overlay */
+.drag-ov{
+  display:none;position:fixed;inset:0;z-index:99;
+  background:rgba(79,142,247,.08);border:3px dashed var(--accent);
+  align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:var(--accent2);
+  letter-spacing:.02em;backdrop-filter:blur(4px);
+  animation:fadeIn .15s var(--ease);
+}
+.drag-ov.show{display:flex}
 
-  /* ===== LOADING ===== */
-  .loading-dots { display: inline-flex; gap: 4px; align-items: center; }
-  .loading-dots span {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--text2); animation: dot 1.2s infinite;
-  }
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes dot { 0%,80%,100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+/* ========================================================
+   FILES SCREEN
+======================================================== */
+#files-screen{display:none;flex-direction:column;height:100%}
 
-  /* ===== UPLOAD PROGRESS ===== */
-  .upload-progress {
-    background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 14px; padding: 14px 16px;
-    margin-bottom: 8px; animation: fadeUp 0.2s ease;
-  }
-  .upload-progress-name { font-size: 13px; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .progress-bar { background: var(--bg4); border-radius: 4px; height: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #8b5cf6); border-radius: 4px; transition: width 0.3s ease; width: 0%; }
+.files-top{
+  padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0;
+}
+.files-title{font-size:17px;font-weight:800;flex:1;min-width:100px}
+.files-tb{display:flex;gap:6px;align-items:center}
 
-  /* ===== EMPTY STATE ===== */
-  .empty-state {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 12px;
-    padding: 40px; text-align: center; color: var(--text2);
-  }
-  .empty-icon { font-size: 48px; opacity: 0.4; }
-  .empty-title { font-size: 18px; font-weight: 700; color: var(--text); }
-  .empty-sub { font-size: 14px; max-width: 280px; line-height: 1.6; }
+.tb-btn{
+  padding:6px 13px;border-radius:20px;font-size:12px;font-weight:700;
+  border:1.5px solid var(--border2);background:var(--bg3);
+  color:var(--text2);cursor:pointer;transition:all var(--dur);white-space:nowrap;
+}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.tb-btn.active{border-color:var(--accent);background:var(--glow);color:var(--accent2)}
 
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 640px) {
-    #sidebar {
-      position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
-      transform: translateX(-100%);
-      box-shadow: 4px 0 30px rgba(0,0,0,0.4);
-    }
-    #sidebar.open { transform: translateX(0); }
-    .menu-btn { display: flex !important; }
-    #sidebar-overlay {
-      position: fixed; inset: 0; z-index: 40;
-      background: rgba(0,0,0,0.5); display: none;
-    }
-    #sidebar-overlay.show { display: block; }
-    .bubble-wrap { max-width: 85%; }
-  }
+.view-tog{display:flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.vb{
+  padding:6px 9px;background:var(--bg3);border:none;
+  color:var(--text2);cursor:pointer;font-size:14px;transition:all var(--dur);
+}
+.vb.active{background:var(--glow);color:var(--accent2)}
 
-  /* ===== DATE DIVIDER ===== */
-  .date-divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 16px 0 8px; color: var(--text3); font-size: 11px; font-weight: 600;
-  }
-  .date-divider::before,.date-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
+/* Filter rows */
+.filter-row{
+  padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;gap:6px;overflow-x:auto;flex-shrink:0;scrollbar-width:none;
+  align-items:center;
+}
+.filter-row::-webkit-scrollbar{display:none}
+.fr-chip{
+  padding:5px 12px;border-radius:16px;font-size:12px;font-weight:700;
+  border:1.5px solid var(--border2);background:var(--bg3);
+  color:var(--text2);cursor:pointer;transition:all var(--dur);white-space:nowrap;flex-shrink:0;
+}
+.fr-chip:hover{border-color:var(--accent);color:var(--accent2)}
+.fr-chip.active{border-color:var(--accent);background:var(--glow);color:var(--accent2)}
+.fr-sep{width:1px;height:16px;background:var(--border2);flex-shrink:0;margin:0 2px}
 
-  /* ===== SYSTEM MSG ===== */
-  .system-msg {
-    text-align: center; font-size: 12px; color: var(--text3);
-    margin: 8px 0; padding: 4px 12px;
-    background: var(--bg3); border-radius: 20px;
-    display: inline-flex; margin: 8px auto;
+/* Files search bar */
+.files-search{
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.fs-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:10px;padding:7px 12px;
+  transition:border-color var(--dur);
+}
+.fs-box:focus-within{border-color:var(--accent)}
+.fs-box input{
+  background:none;border:none;outline:none;color:var(--text);
+  font-size:13px;flex:1;
+}
+.fs-box input::placeholder{color:var(--text3)}
+
+/* Files grid */
+#fg{
+  flex:1;overflow-y:auto;padding:14px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:10px;align-content:start;
+}
+#fg.list-view{grid-template-columns:1fr;gap:5px}
+#fg::-webkit-scrollbar{width:3px}
+
+/* Grid card */
+.fgi{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;cursor:pointer;
+  transition:border-color var(--dur),transform var(--dur),box-shadow var(--dur);
+  animation:fadeUp .22s var(--ease) both;
+  position:relative;
+}
+.fgi:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 24px var(--glow)}
+.fgi.selected{border-color:var(--accent);background:var(--glow2)}
+
+.fgi-check{
+  position:absolute;top:8px;left:8px;z-index:3;
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.6);background:rgba(0,0,0,.3);
+  display:none;align-items:center;justify-content:center;font-size:11px;
+  color:#fff;cursor:pointer;transition:all var(--dur);backdrop-filter:blur(4px);
+}
+.select-mode .fgi-check{display:flex}
+.fgi.selected .fgi-check{background:var(--accent);border-color:var(--accent)}
+
+/* Image thumb */
+.fgi-img-wrap{
+  width:100%;aspect-ratio:1/1;overflow:hidden;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+}
+.fgi-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s var(--ease)}
+.fgi:hover .fgi-img-wrap img{transform:scale(1.05)}
+.fgi-icon-wrap{
+  width:100%;height:100px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;font-size:36px;
+}
+.fgi-ext{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg4);padding:2px 6px;border-radius:4px}
+
+.fgi-info{padding:9px 11px}
+.fgi-name{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fgi-meta{font-size:10.5px;color:var(--text2);margin-top:2px}
+.fgi-cat{display:inline-flex;align-items:center;gap:3px;font-size:10px;margin-top:5px;padding:2px 7px;border-radius:8px;font-weight:700}
+
+/* List item */
+.fgi.list-item{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  border-radius:12px;
+}
+.fgi.list-item .fgi-img-wrap{width:42px;height:42px;flex-shrink:0;border-radius:9px;aspect-ratio:unset}
+.fgi.list-item .fgi-icon-wrap{width:42px;height:42px;font-size:20px;gap:2px}
+.fgi.list-item .fgi-ext{font-size:8px;padding:1px 4px}
+.fgi.list-item .fgi-info{padding:0;flex:1;overflow:hidden}
+.fgi.list-item .fgi-name{font-size:13px}
+.fgi.list-item .li-acts{display:flex;gap:3px;flex-shrink:0}
+.fgi.list-item .fgi-check{position:static;width:20px;height:20px;flex-shrink:0;display:none}
+.select-mode .fgi.list-item .fgi-check{display:flex}
+
+/* Fav star */
+.fav-star{
+  position:absolute;top:7px;right:7px;z-index:3;
+  font-size:14px;line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.5);
+}
+
+/* ========================================================
+   SEARCH OVERLAY
+======================================================== */
+#search-overlay{
+  position:fixed;inset:0;z-index:150;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:60px 20px 20px;
+  animation:fadeIn .15s var(--ease);
+}
+#search-overlay.show{display:flex}
+.search-modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;width:100%;max-width:540px;
+  overflow:hidden;box-shadow:var(--sh);
+  animation:slideUp .2s var(--ease);
+}
+.search-inp-row{
+  display:flex;align-items:center;gap:10px;padding:14px 16px;
+  border-bottom:1px solid var(--border);
+}
+.search-inp-row input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-size:16px;font-weight:500;
+}
+.search-inp-row input::placeholder{color:var(--text3)}
+.search-results{max-height:400px;overflow-y:auto}
+.sr-empty{padding:32px;text-align:center;color:var(--text3);font-size:13px}
+.sr-item{
+  display:flex;align-items:center;gap:12px;padding:11px 16px;
+  cursor:pointer;transition:background var(--dur);border-bottom:1px solid var(--border);
+}
+.sr-item:hover{background:var(--bg3)}
+.sr-item:last-child{border-bottom:none}
+.sr-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sr-info{flex:1;overflow:hidden}
+.sr-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.sr-highlight{color:var(--accent2)}
+
+/* ========================================================
+   MODAL
+======================================================== */
+.m-ov{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  animation:fadeIn .15s var(--ease);
+}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;padding:26px;
+  width:100%;max-width:420px;
+  box-shadow:var(--sh);
+  animation:slideUp .2s var(--ease);
+}
+.modal-t{font-size:17px;font-weight:800;margin-bottom:16px}
+.modal-p{color:var(--text2);font-size:13px;margin-bottom:18px;line-height:1.65}
+.modal-inp{
+  width:100%;padding:11px 13px;
+  background:var(--bg3);border:1.5px solid var(--border2);
+  border-radius:10px;color:var(--text);font-size:14px;outline:none;
+  margin-bottom:16px;resize:vertical;min-height:50px;
+  transition:border-color var(--dur),box-shadow var(--dur);
+}
+.modal-inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.btn-g{
+  padding:9px 18px;border-radius:9px;
+  background:var(--bg3);border:1px solid var(--border2);
+  color:var(--text);cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;
+  transition:all var(--dur);
+}
+.btn-g:hover{background:var(--bg4)}
+.btn-d{
+  padding:9px 18px;border-radius:9px;
+  background:var(--red);border:none;color:#fff;
+  cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;
+  transition:opacity var(--dur);
+}
+.btn-d:hover{opacity:.85}
+.btn-a{
+  padding:9px 18px;border-radius:9px;
+  background:var(--accent);border:none;color:#fff;
+  cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;
+  transition:all var(--dur);
+}
+.btn-a:hover{background:var(--accent2)}
+/* Move-to category modal */
+.cat-move-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.cat-move-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 8px;border-radius:12px;
+  border:1.5px solid var(--border2);background:var(--bg3);cursor:pointer;
+  font-size:12px;font-weight:700;color:var(--text2);transition:all var(--dur);
+}
+.cat-move-item:hover,.cat-move-item.selected{border-color:var(--accent);background:var(--glow);color:var(--accent2)}
+.cat-move-item span{font-size:24px}
+
+/* ========================================================
+   LIGHTBOX
+======================================================== */
+#lb{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.93);backdrop-filter:blur(16px);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  animation:fadeIn .15s var(--ease);
+}
+.lb-top{
+  position:absolute;top:0;left:0;right:0;
+  padding:16px 20px;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);
+}
+.lb-name{flex:1;font-size:13px;font-weight:600;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-act{
+  width:36px;height:36px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.12);color:#fff;
+  cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;
+  transition:background var(--dur);
+}
+.lb-act:hover{background:rgba(255,255,255,.22)}
+#lb img{max-width:90vw;max-height:80vh;border-radius:10px;object-fit:contain;box-shadow:0 0 80px rgba(0,0,0,.8)}
+.lb-arrow{
+  position:absolute;width:44px;height:44px;
+  border:none;border-radius:50%;
+  background:rgba(255,255,255,.12);color:#fff;
+  cursor:pointer;font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--dur);top:50%;transform:translateY(-50%);
+}
+.lb-arrow:hover{background:rgba(255,255,255,.22)}
+#lb-prev{left:16px}
+#lb-next{right:16px}
+
+/* ========================================================
+   TOAST
+======================================================== */
+#toasts{
+  position:fixed;bottom:76px;left:50%;transform:translateX(-50%);
+  z-index:999;display:flex;flex-direction:column;gap:5px;align-items:center;pointer-events:none;
+}
+.toast{
+  background:var(--bg2);border:1px solid var(--border2);
+  color:var(--text);padding:9px 18px;border-radius:20px;
+  font-size:13px;font-weight:600;box-shadow:var(--sh);white-space:nowrap;
+  animation:toastIn .2s var(--ease);
+}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+.toast.warn{border-color:var(--yellow);color:var(--yellow)}
+
+/* ========================================================
+   EMPTY STATE
+======================================================== */
+.empty-st{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;padding:40px;text-align:center;color:var(--text2);
+}
+.empty-ic{font-size:52px;opacity:.3}
+.empty-t{font-size:18px;font-weight:800;color:var(--text)}
+.empty-s{font-size:13px;max-width:260px;line-height:1.7}
+
+/* ========================================================
+   KEYFRAMES
+======================================================== */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:scale(.88) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes dot{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* ========================================================
+   RESPONSIVE
+======================================================== */
+@media(max-width:640px){
+  #sidebar{
+    position:fixed;left:0;top:0;bottom:0;z-index:50;
+    transform:translateX(-100%);
+    box-shadow:8px 0 40px rgba(0,0,0,.5);
   }
+  #sidebar.open{transform:translateX(0)}
+  .menu-btn{display:flex !important}
+  #sb-ov{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.45);display:none}
+  #sb-ov.show{display:block}
+  .bw{max-width:88%}
+  #lb img{max-width:96vw;max-height:72vh}
+  .lb-arrow{display:none}
+  .files-top{flex-wrap:wrap}
+}
 
-  /* ===== SCROLLBAR ===== */
-  * { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
-
-  /* ===== UPLOAD AREA DROP ===== */
-  #chat-messages.drag-over { border: 2px dashed var(--accent); background: var(--accent-glow); }
+/* ========================================================
+   MISC
+======================================================== */
+.sep-line{height:1px;background:var(--border);margin:4px 0}
+.spin{display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="sb-ov" onclick="closeSb()"></div>
+<div class="drag-ov" id="drag-ov">📂 拖放文件上传</div>
 
-<!-- ===== LOGIN ===== -->
+<!-- ========================================================
+     LOGIN
+======================================================== -->
 <div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo">☁️</div>
-    <div class="login-title">GitDrive</div>
-    <div class="login-sub">用 GitHub 仓库作为你的私人云盘</div>
-    <div class="field">
-      <label>GitHub 用户名</label>
-      <input type="text" id="login-user" placeholder="octocat" autocomplete="username">
+  <div class="login-wrap">
+    <div class="login-logo-ring">☁️</div>
+    <div class="login-h">GitDrive</div>
+    <div class="login-sub">以对话方式使用 GitHub 仓库作为私人云盘</div>
+    <div class="login-card">
+      <div class="field"><label>GitHub 用户名</label><input id="lu" placeholder="octocat" autocomplete="username"></div>
+      <div class="field"><label>仓库名称</label><input id="lr" placeholder="my-drive"></div>
+      <div class="field"><label>Personal Access Token</label><input id="lt" type="password" placeholder="ghp_xxxxxxxx" autocomplete="current-password"></div>
+      <button class="btn-login" onclick="doLogin()">连接仓库</button>
+      <div id="login-err"></div>
     </div>
-    <div class="field">
-      <label>仓库名称</label>
-      <input type="text" id="login-repo" placeholder="my-cloud-drive">
-    </div>
-    <div class="field">
-      <label>Personal Access Token</label>
-      <input type="password" id="login-token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="current-password">
-    </div>
-    <button class="btn-primary" onclick="doLogin()">连接仓库</button>
-    <div id="login-error"></div>
+    <div class="login-hint">凭据仅保存在本地浏览器中，不会上传到任何服务器</div>
   </div>
 </div>
 
-<!-- ===== MAIN APP ===== -->
+<!-- ========================================================
+     MAIN APP
+======================================================== -->
 <div id="app" style="display:none">
-  <!-- Sidebar -->
+
+  <!-- SIDEBAR -->
   <aside id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">☁️</div>
-      <div class="sidebar-title">GitDrive</div>
-      <div class="sidebar-actions">
-        <button class="icon-btn" onclick="toggleTheme()" title="切换主题">🌙</button>
-        <button class="icon-btn" onclick="doLogout()" title="退出">🚪</button>
+    <div class="sb-top">
+      <div class="sb-logo">☁️</div>
+      <div class="sb-title">GitDrive</div>
+      <div class="sb-acts">
+        <button class="ib" onclick="openSearch()" title="全局搜索">🔍</button>
+        <button class="ib" id="theme-btn" onclick="toggleTheme()" title="切换主题">🌙</button>
+        <button class="ib" onclick="doLogout()" title="退出">🚪</button>
       </div>
     </div>
 
-    <nav class="sidebar-nav">
-      <button class="nav-item active" onclick="showScreen('chat')" id="nav-chat">
-        <span class="nav-icon">💬</span> 聊天云盘
+    <div class="sb-search">
+      <div class="sb-search-box" onclick="openSearch()">
+        <span style="color:var(--text3);font-size:13px">🔍</span>
+        <input readonly placeholder="搜索文件…" onclick="openSearch()">
+        <span style="color:var(--text3);font-size:11px;font-weight:600">⌘K</span>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="nav-it active" onclick="showScreen('chat')" id="n-chat">
+        <span class="ni">💬</span> 对话云盘
       </button>
-      <button class="nav-item" onclick="showScreen('files')" id="nav-files">
-        <span class="nav-icon">📁</span> 所有文件
+      <button class="nav-it" onclick="showScreen('files')" id="n-files">
+        <span class="ni">📁</span> 所有文件
+        <span class="nav-badge" id="files-cnt">0</span>
+      </button>
+      <button class="nav-it" onclick="showFilesFiltered('fav')" id="n-fav">
+        <span class="ni">⭐</span> 收藏
+        <span class="nav-badge" id="fav-cnt">0</span>
+      </button>
+      <button class="nav-it" onclick="showFilesFiltered('archive')" id="n-arc">
+        <span class="ni">📦</span> 归档
       </button>
     </nav>
 
-    <div class="sidebar-section-title">文件分类</div>
-    <!-- ===== CATEGORIES — 修改此处调整分类 ===== -->
-    <nav class="sidebar-nav" id="cat-nav"></nav>
-    <!-- ===== END CATEGORIES ===== -->
+    <div class="sb-sec">文件分类</div>
+    <!-- ===== CATEGORIES NAV — 修改 CATEGORIES 数组即可同步更新 ===== -->
+    <nav class="sb-nav" id="cat-nav"></nav>
 
-    <div style="flex:1"></div>
-    <div style="padding:12px 18px; font-size:11px; color:var(--text3); border-top:1px solid var(--border); display:flex; flex-direction:column; gap:3px;">
-      <span id="sb-repo">-</span>
-      <span id="sb-count">0 个文件</span>
+    <div class="sb-foot">
+      <div class="sb-foot-author"><span class="dot"></span>Wangcy</div>
+      <span id="sb-repo" style="font-family:'JetBrains Mono',monospace;font-size:10px">-</span>
+      <span id="sb-stat">就绪</span>
     </div>
   </aside>
 
-  <!-- Main content -->
+  <!-- MAIN -->
   <main id="main">
-    <!-- Chat screen -->
-    <div id="chat-screen" style="display:flex; flex-direction:column; height:100%">
-      <div class="chat-header">
-        <button class="icon-btn menu-btn" onclick="openSidebar()" style="display:flex">☰</button>
-        <div class="chat-header-info">
-          <div class="chat-header-title" id="header-title">GitDrive</div>
-          <div class="chat-header-sub" id="header-sub">连接中...</div>
+
+    <!-- ====== CHAT SCREEN ====== -->
+    <div id="chat-screen">
+      <div class="topbar">
+        <button class="ib menu-btn" onclick="openSb()">☰</button>
+        <div class="topbar-info">
+          <div class="topbar-title" id="hd-title">GitDrive</div>
+          <div class="topbar-sub" id="hd-sub">连接中…</div>
         </div>
-        <button class="icon-btn" onclick="refreshMessages()">🔄</button>
+        <button class="ib" onclick="openSearch()" title="搜索">🔍</button>
+        <button class="ib" onclick="toggleSelectMode()" title="多选">☑️</button>
+        <button class="ib" onclick="refreshAll()" title="刷新">🔄</button>
       </div>
 
-      <div id="chat-messages">
-        <div class="empty-state" id="empty-chat">
-          <div class="empty-icon">💬</div>
-          <div class="empty-title">开始使用 GitDrive</div>
-          <div class="empty-sub">发送文字或上传文件，它们将保存到你的 GitHub 仓库中</div>
+      <!-- Select bar -->
+      <div class="select-bar" id="sel-bar">
+        <span class="sel-count" id="sel-cnt">已选 0 条</span>
+        <button class="sel-cancel" onclick="exitSelectMode()">取消</button>
+        <button class="sel-del" onclick="deleteSelected()">删除所选</button>
+      </div>
+
+      <div id="msg-list">
+        <div class="empty-st" id="empty-chat">
+          <div class="empty-ic">💬</div>
+          <div class="empty-t">开始使用 GitDrive</div>
+          <div class="empty-s">发送文字或上传文件，以聊天方式存储到 GitHub 仓库</div>
         </div>
       </div>
 
-      <!-- Upload progresses area -->
-      <div id="upload-area" style="padding:0 16px; max-height:140px; overflow-y:auto;"></div>
+      <div id="upload-area"></div>
 
-      <div class="input-area">
-        <!-- Category row -->
+      <div class="input-wrap">
         <div class="cat-row" id="cat-chips"></div>
-        <!-- Input row -->
-        <div class="input-row">
-          <button class="attach-btn" onclick="document.getElementById('file-input').click()">📎</button>
-          <div class="input-box-wrap">
-            <textarea id="text-input" placeholder="发送消息或拖入文件…" rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+        <div class="inp-row">
+          <button class="att-btn" onclick="document.getElementById('fi').click()">📎</button>
+          <div class="inp-box">
+            <textarea id="ti" placeholder="发送消息…支持 Markdown" rows="1" oninput="ar(this)" onkeydown="hk(event)"></textarea>
           </div>
-          <button class="send-btn" onclick="sendText()">➤</button>
+          <button class="snd-btn" onclick="sendText()">➤</button>
         </div>
-        <input type="file" id="file-input" multiple onchange="handleFiles(this.files)">
+        <input type="file" id="fi" multiple onchange="handleFiles(this.files)">
       </div>
     </div>
 
-    <!-- Files screen -->
+    <!-- ====== FILES SCREEN ====== -->
     <div id="files-screen">
-      <div class="files-header">
-        <button class="icon-btn menu-btn" onclick="openSidebar()" style="display:flex">☰</button>
-        <div class="files-title">所有文件</div>
-        <div class="files-toolbar">
-          <select id="sort-select" onchange="renderFilesGrid()" style="padding:6px 10px; border-radius:8px; background:var(--bg3); border:1px solid var(--border2); color:var(--text); font-family:inherit; font-size:12px; cursor:pointer; outline:none;">
+      <div class="files-top">
+        <button class="ib menu-btn" onclick="openSb()">☰</button>
+        <div class="files-title" id="files-screen-title">所有文件</div>
+        <div class="files-tb">
+          <select id="sort-sel" onchange="renderFG()" style="padding:6px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:inherit;font-size:12px;cursor:pointer;outline:none">
             <option value="time-desc">最新优先</option>
             <option value="time-asc">最早优先</option>
             <option value="name">文件名</option>
+            <option value="size">大小</option>
           </select>
-          <div class="view-toggle">
-            <button class="view-btn active" id="grid-btn" onclick="setView('grid')">⊞</button>
-            <button class="view-btn" id="list-btn" onclick="setView('list')">☰</button>
+          <button class="tb-btn" id="sel-all-btn" onclick="toggleFGSelect()">多选</button>
+          <button class="tb-btn active" onclick="syncFiles()">🔄 同步</button>
+          <div class="view-tog">
+            <button class="vb active" id="vb-g" onclick="setView('grid')">⊞</button>
+            <button class="vb" id="vb-l" onclick="setView('list')">☰</button>
           </div>
         </div>
       </div>
-      <div class="cat-filter-row" id="files-cat-filter"></div>
-      <div id="files-grid"></div>
+
+      <!-- Category filter -->
+      <div class="filter-row" id="fg-cat-row"></div>
+
+      <!-- Type filter -->
+      <div class="filter-row" id="fg-type-row"></div>
+
+      <!-- Search -->
+      <div class="files-search">
+        <div class="fs-box">
+          <span style="color:var(--text3)">🔍</span>
+          <input id="fg-search" placeholder="在此页搜索文件名…" oninput="renderFG()">
+          <button class="ib" onclick="document.getElementById('fg-search').value='';renderFG()" style="font-size:12px">✕</button>
+        </div>
+      </div>
+
+      <!-- Files select bar -->
+      <div class="select-bar" id="fg-sel-bar" style="display:none">
+        <span class="sel-count" id="fg-sel-cnt">已选 0 个</span>
+        <button class="sel-cancel" onclick="exitFGSelect()">取消</button>
+        <button class="btn-g" onclick="moveSelectedFiles()" style="font-size:12px;padding:6px 12px">移动分类</button>
+        <button class="sel-del" onclick="deleteSelectedFiles()">删除所选</button>
+      </div>
+
+      <div id="fg"></div>
     </div>
+
   </main>
 </div>
 
-<!-- Lightbox -->
-<div id="lightbox" style="display:none" onclick="closeLightbox()">
-  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="lightbox-img" src="" alt="">
+<!-- ====== SEARCH OVERLAY ====== -->
+<div id="search-overlay" onclick="closeSearch()">
+  <div class="search-modal" onclick="event.stopPropagation()">
+    <div class="search-inp-row">
+      <span style="font-size:18px">🔍</span>
+      <input id="g-search" placeholder="搜索文件名、内容…" oninput="doGlobalSearch()" autofocus>
+      <button class="ib" onclick="closeSearch()">✕</button>
+    </div>
+    <div class="search-results" id="g-results">
+      <div class="sr-empty">输入关键词开始搜索</div>
+    </div>
+  </div>
 </div>
 
-<!-- Toast container -->
-<div id="toast-container"></div>
+<!-- ====== LIGHTBOX ====== -->
+<div id="lb" onclick="closeLB()">
+  <div class="lb-top" onclick="event.stopPropagation()">
+    <span id="lb-name" class="lb-name"></span>
+    <button class="lb-act" id="lb-dl" title="下载">⬇</button>
+    <button class="lb-act" onclick="closeLB()">✕</button>
+  </div>
+  <button class="lb-arrow" id="lb-prev" onclick="event.stopPropagation();lbNav(-1)">‹</button>
+  <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+  <button class="lb-arrow" id="lb-next" onclick="event.stopPropagation();lbNav(1)">›</button>
+</div>
 
-<!-- Modal placeholder -->
-<div id="modal-container"></div>
+<!-- ====== MODAL CONTAINER ====== -->
+<div id="mc"></div>
+<!-- ====== TOAST CONTAINER ====== -->
+<div id="toasts"></div>
 
 <script>
-// ===== STATE =====
-let state = {
-  user: '', repo: '', token: '',
-  messages: [],      // {id, type, content, files, category, timestamp, sha}
-  allFiles: [],      // from GitHub API
-  currentCat: 'all',
-  filesCat: 'all',
-  filesView: 'grid',
-  darkMode: true,
-  loaded: false,
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+const S = {
+  user:'', repo:'', token:'',
+  messages:[],        // {id, type, content, files, category, timestamp, pinned, sha}
+  msgSha:null,
+  allFiles:[],        // from GitHub API — only inside category folders
+  favorites:new Set(),// Set of file paths
+  archived:new Set(), // Set of file paths
+  metaSha:null,       // SHA of gitdrive-meta.json
+  currentCat:'other',
+  filesCat:'all',
+  filesType:'all',
+  filesView:'grid',
+  filesMode:'all',    // 'all' | 'fav' | 'archive' | catId
+  selectMode:false,
+  selectedMsgs:new Set(),
+  fgSelectMode:false,
+  fgSelected:new Set(),
+  darkMode:true,
+  lbImages:[],        // current lightbox image list
+  lbIdx:0,
 };
 
-// ===== CATEGORIES — 修改此处可自定义分类 =====
+/* ============================================================
+   ===== CATEGORIES — 修改此数组以自定义分类 =====
+   id:    folder name in GitHub repo (must be URL-safe)
+   label: display name
+   icon:  emoji icon
+   color: accent color
+   bg:    background tint
+============================================================ */
 const CATEGORIES = [
-  { id: 'law',       label: '法学',   icon: '⚖️',  color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  { id: 'envlaw',    label: '环境法', icon: '🌿',  color: '#22c55e', bg: 'rgba(34,197,94,0.15)'  },
-  { id: 'entertain', label: '娱乐',   icon: '🎬',  color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
-  { id: 'work',      label: '办公',   icon: '💼',  color: '#a78bfa', bg: 'rgba(167,139,250,0.15)'},
-  { id: 'other',     label: '其他',   icon: '📦',  color: '#8b949e', bg: 'rgba(139,148,158,0.15)'},
-  { id: 'text',      label: '文字',   icon: '📝',  color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  { id:'law',       label:'法学',   icon:'⚖️',  color:'#4f8ef7', bg:'rgba(79,142,247,.15)'   },
+  { id:'envlaw',    label:'环境法', icon:'🌿',  color:'#34d058', bg:'rgba(52,208,88,.15)'    },
+  { id:'entertain', label:'娱乐',   icon:'🎬',  color:'#fb923c', bg:'rgba(251,146,60,.15)'   },
+  { id:'work',      label:'办公',   icon:'💼',  color:'#a78bfa', bg:'rgba(167,139,250,.15)'  },
+  { id:'other',     label:'其他',   icon:'📦',  color:'#9098aa', bg:'rgba(144,152,170,.15)'  },
+  { id:'text',      label:'文字',   icon:'📝',  color:'#fbbf24', bg:'rgba(251,191,36,.15)'   },
 ];
-// ===== END CATEGORIES =====
+/* ===== END CATEGORIES ===== */
 
-const catById = {};
-CATEGORIES.forEach(c => catById[c.id] = c);
+const catMap = Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
 
-// ===== INIT =====
+// FILE TYPE GROUPS for filter
+const TYPE_GROUPS = [
+  { id:'all',   label:'全部',   exts:[] },
+  { id:'img',   label:'图片',   exts:['jpg','jpeg','png','gif','webp','svg','bmp','avif'] },
+  { id:'doc',   label:'文档',   exts:['pdf','doc','docx','txt','md','rtf','odt'] },
+  { id:'sheet', label:'表格',   exts:['xls','xlsx','csv','ods'] },
+  { id:'slide', label:'演示',   exts:['ppt','pptx','key','odp'] },
+  { id:'video', label:'视频',   exts:['mp4','mov','avi','mkv','webm','m4v'] },
+  { id:'audio', label:'音频',   exts:['mp3','wav','flac','aac','ogg','m4a'] },
+  { id:'code',  label:'代码',   exts:['js','ts','py','java','c','cpp','html','css','json','xml','yaml','go','rs','php'] },
+  { id:'arch',  label:'压缩包', exts:['zip','rar','7z','tar','gz','bz2'] },
+];
+
+/* ============================================================
+   INIT
+============================================================ */
 window.onload = () => {
-  const saved = localStorage.getItem('gitdrive-creds');
-  if (saved) {
-    const d = JSON.parse(saved);
-    state.user = d.user; state.repo = d.repo; state.token = d.token;
-    launchApp();
-  }
-  // Dark mode from storage
-  const theme = localStorage.getItem('gitdrive-theme') || 'dark';
-  if (theme === 'light') {
-    document.documentElement.setAttribute('data-theme','light');
-    state.darkMode = false;
-  }
-  // Drag-drop on chat
-  document.getElementById('chat-messages').addEventListener('dragover', e => {
+  const saved = localStorage.getItem('gd-creds');
+  if (saved) { const d=JSON.parse(saved); S.user=d.user; S.repo=d.repo; S.token=d.token; launchApp(); }
+  const th = localStorage.getItem('gd-theme')||'dark';
+  if (th==='light') { document.documentElement.setAttribute('data-theme','light'); S.darkMode=false; document.getElementById('theme-btn').textContent='☀️'; }
+
+  // Global drag-drop
+  document.addEventListener('dragover', e=>{ e.preventDefault(); document.getElementById('drag-ov').classList.add('show'); });
+  document.addEventListener('dragleave', e=>{ if (!e.relatedTarget) document.getElementById('drag-ov').classList.remove('show'); });
+  document.addEventListener('drop', e=>{
     e.preventDefault();
-    document.getElementById('chat-messages').classList.add('drag-over');
-  });
-  document.getElementById('chat-messages').addEventListener('dragleave', () => {
-    document.getElementById('chat-messages').classList.remove('drag-over');
-  });
-  document.getElementById('chat-messages').addEventListener('drop', e => {
-    e.preventDefault();
-    document.getElementById('chat-messages').classList.remove('drag-over');
+    document.getElementById('drag-ov').classList.remove('show');
     if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
   });
+
+  // Keyboard shortcut
+  document.addEventListener('keydown', e=>{
+    if ((e.metaKey||e.ctrlKey) && e.key==='k') { e.preventDefault(); openSearch(); }
+    if (e.key==='Escape') { closeSearch(); closeLB(); closeModal(); }
+  });
 };
 
-// ===== LOGIN / LOGOUT =====
+/* ============================================================
+   LOGIN / LOGOUT
+============================================================ */
 async function doLogin() {
-  const user = document.getElementById('login-user').value.trim();
-  const repo = document.getElementById('login-repo').value.trim();
-  const token = document.getElementById('login-token').value.trim();
-  const errEl = document.getElementById('login-error');
-  if (!user || !repo || !token) { errEl.textContent = '请填写所有字段'; errEl.style.display='block'; return; }
-  errEl.style.display = 'none';
-  const btn = document.querySelector('.btn-primary');
-  btn.textContent = '连接中...'; btn.disabled = true;
-  // Test API
+  const u=document.getElementById('lu').value.trim();
+  const r=document.getElementById('lr').value.trim();
+  const t=document.getElementById('lt').value.trim();
+  const err=document.getElementById('login-err');
+  if (!u||!r||!t) { err.textContent='请填写所有字段'; err.style.display='block'; return; }
+  err.style.display='none';
+  const btn=document.querySelector('.btn-login');
+  btn.innerHTML='<span class="spin">⟳</span> 连接中…'; btn.disabled=true;
   try {
-    const r = await ghFetch(`/repos/${user}/${repo}`, {}, token);
-    if (!r.ok) throw new Error('仓库访问失败，请检查用户名、仓库名和 Token');
-    state.user = user; state.repo = repo; state.token = token;
-    localStorage.setItem('gitdrive-creds', JSON.stringify({user, repo, token}));
+    const res=await gh(`/repos/${u}/${r}`);
+    if (!res.ok) throw new Error('仓库访问失败，请检查凭据');
+    S.user=u; S.repo=r; S.token=t;
+    localStorage.setItem('gd-creds',JSON.stringify({user:u,repo:r,token:t}));
     launchApp();
-  } catch(e) {
-    errEl.textContent = e.message; errEl.style.display = 'block';
-  }
-  btn.textContent = '连接仓库'; btn.disabled = false;
+  } catch(e) { err.textContent=e.message; err.style.display='block'; }
+  btn.innerHTML='连接仓库'; btn.disabled=false;
 }
 
 function doLogout() {
-  if (!confirm('确定退出？')) return;
-  localStorage.removeItem('gitdrive-creds');
-  location.reload();
+  if (!confirm('确定退出？凭据将从本地清除。')) return;
+  localStorage.removeItem('gd-creds'); location.reload();
 }
 
 async function launchApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('sb-repo').textContent = `${state.user}/${state.repo}`;
-  document.getElementById('header-title').textContent = state.repo;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('sb-repo').textContent=`${S.user}/${S.repo}`;
+  document.getElementById('hd-title').textContent=S.repo;
   buildCatUI();
-  await loadAllData();
+  await loadAll();
 }
 
-// ===== BUILD CATEGORY UI =====
+/* ============================================================
+   CATEGORY UI
+============================================================ */
 function buildCatUI() {
   // Sidebar nav
-  const nav = document.getElementById('cat-nav');
-  nav.innerHTML = CATEGORIES.map(c => `
-    <button class="nav-item" onclick="filterCat('${c.id}')" id="cat-nav-${c.id}">
-      <span class="nav-icon">${c.icon}</span> ${c.label}
+  document.getElementById('cat-nav').innerHTML = CATEGORIES.map(c=>`
+    <button class="nav-it" onclick="showFilesFiltered('${c.id}')" id="cn-${c.id}">
+      <span class="ni">${c.icon}</span>${c.label}
     </button>`).join('');
 
   // Chat chips
-  const chips = document.getElementById('cat-chips');
-  chips.innerHTML = CATEGORIES.map(c => `
-    <button class="cat-chip ${state.currentCat===c.id?'active':''}" onclick="selectCat('${c.id}')" id="chip-${c.id}">
-      <span class="cat-icon">${c.icon}</span>${c.label}
+  document.getElementById('cat-chips').innerHTML = CATEGORIES.map(c=>`
+    <button class="cat-chip ${S.currentCat===c.id?'active':''}" onclick="selCat('${c.id}')" id="cc-${c.id}">
+      <span class="ci">${c.icon}</span>${c.label}
     </button>`).join('');
-  // Default select first
-  if (state.currentCat === 'all') selectCat('other');
 
-  // Files category filter
-  const fcf = document.getElementById('files-cat-filter');
-  fcf.innerHTML = `<button class="filter-btn active" onclick="setFilesCat('all')" id="fc-all">全部</button>` +
-    CATEGORIES.map(c => `<button class="filter-btn" onclick="setFilesCat('${c.id}')" id="fc-${c.id}">${c.icon} ${c.label}</button>`).join('');
+  if (S.currentCat==='all') selCat('other');
+
+  // Files cat filter
+  document.getElementById('fg-cat-row').innerHTML =
+    `<button class="fr-chip active" onclick="setFCat('all')" id="fc-all">全部</button>
+     <button class="fr-chip" onclick="setFCat('fav')" id="fc-fav">⭐ 收藏</button>
+     <button class="fr-chip" onclick="setFCat('archive')" id="fc-archive">📦 归档</button>
+     <span class="fr-sep"></span>` +
+    CATEGORIES.map(c=>`<button class="fr-chip" onclick="setFCat('${c.id}')" id="fc-${c.id}">${c.icon} ${c.label}</button>`).join('');
+
+  // Type filter
+  document.getElementById('fg-type-row').innerHTML =
+    TYPE_GROUPS.map((g,i)=>`<button class="fr-chip ${i===0?'active':''}" onclick="setFType('${g.id}')" id="ft-${g.id}">${g.label}</button>`).join('');
 }
 
-function selectCat(id) {
-  state.currentCat = id;
-  document.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('active'));
-  const chip = document.getElementById('chip-'+id);
-  if (chip) chip.classList.add('active');
+function selCat(id) {
+  S.currentCat=id;
+  document.querySelectorAll('.cat-chip').forEach(el=>el.classList.remove('active'));
+  const c=document.getElementById('cc-'+id); if(c) c.classList.add('active');
 }
 
-function filterCat(id) {
-  showScreen('files');
-  setFilesCat(id);
-}
-
-// ===== DATA LOADING =====
-async function loadAllData() {
-  document.getElementById('header-sub').textContent = '加载中...';
+/* ============================================================
+   DATA LOADING
+============================================================ */
+async function loadAll() {
+  document.getElementById('hd-sub').textContent='加载中…';
+  document.getElementById('sb-stat').textContent='同步中…';
   try {
-    // Load messages index
-    await loadMessages();
-    // Load all files from repo
-    await loadRepoFiles();
-    document.getElementById('header-sub').textContent = `${state.allFiles.length} 个文件`;
-    document.getElementById('sb-count').textContent = `${state.allFiles.length} 个文件`;
+    await Promise.all([loadMessages(), loadMeta(), loadRepoFiles()]);
+    updateStats();
   } catch(e) {
-    document.getElementById('header-sub').textContent = '连接失败';
-    toast('加载失败: ' + e.message, 'error');
+    document.getElementById('hd-sub').textContent='加载失败';
+    toast('加载失败: '+e.message,'err');
   }
 }
 
 async function loadMessages() {
-  const r = await ghFetch(`/repos/${state.user}/${state.repo}/contents/gitdrive-messages.json`);
+  const r=await gh(`/repos/${S.user}/${S.repo}/contents/gitdrive-messages.json`);
   if (r.ok) {
-    const d = await r.json();
-    const content = atob(d.content.replace(/\n/g,''));
-    state.messages = JSON.parse(content);
-    state.messagesSha = d.sha;
-  } else {
-    state.messages = [];
-    state.messagesSha = null;
-  }
-  renderMessages();
+    const d=await r.json();
+    S.messages=JSON.parse(atob(d.content.replace(/\n/g,'')));
+    S.msgSha=d.sha;
+  } else { S.messages=[]; S.msgSha=null; }
+  renderMsgs();
+}
+
+async function loadMeta() {
+  const r=await gh(`/repos/${S.user}/${S.repo}/contents/gitdrive-meta.json`);
+  if (r.ok) {
+    const d=await r.json();
+    const meta=JSON.parse(atob(d.content.replace(/\n/g,'')));
+    S.favorites=new Set(meta.favorites||[]);
+    S.archived=new Set(meta.archived||[]);
+    S.metaSha=d.sha;
+  } else { S.favorites=new Set(); S.archived=new Set(); S.metaSha=null; }
+  updateFavCount();
 }
 
 async function loadRepoFiles() {
-  // Recursively get all files
-  const files = [];
-  await fetchTree('', files);
-  state.allFiles = files.filter(f => !f.path.startsWith('gitdrive-'));
-  renderFilesGrid();
-}
-
-async function fetchTree(path, files) {
-  const url = `/repos/${state.user}/${state.repo}/contents/${path}`;
-  const r = await ghFetch(url);
-  if (!r.ok) return;
-  const items = await r.json();
-  for (const item of items) {
-    if (item.type === 'file') {
-      if (!item.name.startsWith('gitdrive-')) files.push(item);
-    } else if (item.type === 'dir') {
-      await fetchTree(item.path, files);
+  /* Only load files that are inside a known category folder */
+  const files=[];
+  for (const cat of CATEGORIES) {
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${cat.id}`);
+    if (r.ok) {
+      const items=await r.json();
+      if (Array.isArray(items)) {
+        items.forEach(item=>{ if(item.type==='file') files.push({...item, category:cat.id}); });
+      }
     }
   }
+  S.allFiles=files;
 }
 
-async function refreshMessages() {
+async function syncFiles() {
+  toast('同步中…');
+  await loadAll();
+  toast('同步完成','ok');
+}
+
+async function refreshAll() {
   toast('刷新中…');
-  await loadAllData();
-  toast('已刷新', 'success');
+  await loadAll();
+  toast('已刷新','ok');
 }
 
-// ===== SAVE MESSAGES =====
-async function saveMessages() {
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(state.messages, null, 2))));
-  const body = {
-    message: `Update messages [GitDrive]`,
-    content,
-  };
-  if (state.messagesSha) body.sha = state.messagesSha;
-  const r = await ghFetch(`/repos/${state.user}/${state.repo}/contents/gitdrive-messages.json`, {
-    method: 'PUT', body: JSON.stringify(body)
-  });
-  if (r.ok) {
-    const d = await r.json();
-    state.messagesSha = d.content.sha;
-  }
+function updateStats() {
+  const cnt=S.allFiles.length;
+  document.getElementById('files-cnt').textContent=cnt;
+  document.getElementById('hd-sub').textContent=`${cnt} 个文件`;
+  document.getElementById('sb-stat').textContent=`${cnt} 个文件 · 就绪`;
+  updateFavCount();
+  renderFG();
 }
 
-// ===== SEND TEXT =====
+function updateFavCount() {
+  document.getElementById('fav-cnt').textContent=S.favorites.size||'';
+}
+
+/* ============================================================
+   SAVE
+============================================================ */
+async function saveMsgs() {
+  const body={message:'Update messages [GitDrive]',content:btoa(unescape(encodeURIComponent(JSON.stringify(S.messages,null,2))))};
+  if(S.msgSha) body.sha=S.msgSha;
+  const r=await gh(`/repos/${S.user}/${S.repo}/contents/gitdrive-messages.json`,{method:'PUT',body:JSON.stringify(body)});
+  if(r.ok){const d=await r.json(); S.msgSha=d.content.sha;}
+}
+
+async function saveMeta() {
+  const meta={favorites:[...S.favorites],archived:[...S.archived]};
+  const body={message:'Update meta [GitDrive]',content:btoa(unescape(encodeURIComponent(JSON.stringify(meta))))};
+  if(S.metaSha) body.sha=S.metaSha;
+  const r=await gh(`/repos/${S.user}/${S.repo}/contents/gitdrive-meta.json`,{method:'PUT',body:JSON.stringify(body)});
+  if(r.ok){const d=await r.json(); S.metaSha=d.content.sha;}
+}
+
+/* ============================================================
+   SEND TEXT
+============================================================ */
 async function sendText() {
-  const el = document.getElementById('text-input');
-  const text = el.value.trim();
-  if (!text) return;
-  el.value = ''; autoResize(el);
-
-  const msg = {
-    id: Date.now().toString(),
-    type: 'text',
-    content: text,
-    category: state.currentCat,
-    timestamp: new Date().toISOString(),
-  };
-  state.messages.push(msg);
-  renderMessages();
-  scrollToBottom();
-  await saveMessages();
+  const el=document.getElementById('ti');
+  const txt=el.value.trim(); if(!txt) return;
+  el.value=''; ar(el);
+  const msg={id:Date.now().toString(),type:'text',content:txt,category:S.currentCat,timestamp:new Date().toISOString()};
+  S.messages.push(msg);
+  renderMsgs(); scrollBot();
+  await saveMsgs();
 }
 
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendText();
-  }
-}
+function hk(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendText();} }
 
-// ===== UPLOAD FILES =====
+/* ============================================================
+   UPLOAD FILES
+============================================================ */
 async function handleFiles(files) {
-  const arr = Array.from(files);
-  for (const file of arr) {
-    await uploadFile(file);
-  }
-  // Reload files list
-  await loadRepoFiles();
+  for (const f of Array.from(files)) await uploadFile(f);
+  await loadRepoFiles(); updateStats();
+  // Refresh file list in message objects (downloadUrl)
+  renderMsgs();
 }
 
 async function uploadFile(file) {
-  const cat = catById[state.currentCat] || catById['other'];
-  const folder = cat.id;
-  const path = `${folder}/${file.name}`;
+  const cat=catMap[S.currentCat]||catMap['other'];
+  const path=`${cat.id}/${file.name}`;
 
-  // Add progress
-  const progressId = 'prog-' + Date.now();
-  const progEl = document.createElement('div');
-  progEl.className = 'upload-progress'; progEl.id = progressId;
-  progEl.innerHTML = `<div class="upload-progress-name">${file.name}</div><div class="progress-bar"><div class="progress-fill" id="pf-${progressId}"></div></div>`;
-  document.getElementById('upload-area').appendChild(progEl);
+  const pid='p'+Date.now();
+  const pEl=document.createElement('div');
+  pEl.className='up-prog'; pEl.id=pid;
+  pEl.innerHTML=`<div class="up-name">${file.name}</div><div class="pbar"><div class="pfill" id="pf${pid}"></div></div>`;
+  document.getElementById('upload-area').appendChild(pEl);
 
   try {
-    const content = await readFileAsBase64(file, pct => {
-      const el = document.getElementById('pf-'+progressId);
-      if (el) el.style.width = Math.round(pct/2) + '%';
-    });
-
-    // Check if file exists (to get sha for update)
+    const b64=await toB64(file, pct=>{ const el=document.getElementById('pf'+pid); if(el) el.style.width=Math.round(pct/2)+'%'; });
     let sha;
-    const check = await ghFetch(`/repos/${state.user}/${state.repo}/contents/${path}`);
-    if (check.ok) {
-      const d = await check.json();
-      sha = d.sha;
-    }
+    const chk=await gh(`/repos/${S.user}/${S.repo}/contents/${path}`);
+    if(chk.ok){const d=await chk.json(); sha=d.sha;}
+    const body={message:`Add ${file.name} [GitDrive]`,content:b64};
+    if(sha) body.sha=sha;
+    const pf=document.getElementById('pf'+pid); if(pf) pf.style.width='80%';
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${path}`,{method:'PUT',body:JSON.stringify(body)});
+    if(!r.ok) throw new Error('上传失败');
+    const rd=await r.json();
+    if(pf) pf.style.width='100%';
 
-    // Create directory if needed (GitHub creates it automatically with file)
-    const body = {
-      message: `Add ${file.name} [GitDrive]`,
-      content,
-    };
-    if (sha) body.sha = sha;
-
-    const fill = document.getElementById('pf-'+progressId);
-    if (fill) fill.style.width = '80%';
-
-    const r = await ghFetch(`/repos/${state.user}/${state.repo}/contents/${path}`, {
-      method: 'PUT', body: JSON.stringify(body)
-    });
-
-    if (!r.ok) throw new Error('上传失败');
-    const rd = await r.json();
-
-    if (fill) fill.style.width = '100%';
-
-    // Add message
-    const msg = {
-      id: Date.now().toString(),
-      type: 'file',
-      files: [{
-        name: file.name,
-        path,
-        size: file.size,
-        mime: file.type,
-        sha: rd.content.sha,
-        downloadUrl: rd.content.download_url,
-      }],
-      category: state.currentCat,
-      timestamp: new Date().toISOString(),
-    };
-    state.messages.push(msg);
-    renderMessages();
-    scrollToBottom();
-    await saveMessages();
-    toast(`${file.name} 已上传`, 'success');
-  } catch(e) {
-    toast(e.message, 'error');
-  } finally {
-    setTimeout(() => progEl.remove(), 800);
-  }
+    const msg={id:Date.now().toString(),type:'file',
+      files:[{name:file.name,path,size:file.size,mime:file.type,sha:rd.content.sha,downloadUrl:rd.content.download_url}],
+      category:cat.id,timestamp:new Date().toISOString()};
+    S.messages.push(msg);
+    renderMsgs(); scrollBot();
+    await saveMsgs();
+    toast(`${file.name} 已上传`,'ok');
+  } catch(e){ toast(e.message,'err'); }
+  finally{ setTimeout(()=>pEl.remove(),700); }
 }
 
-function readFileAsBase64(file, onProgress) {
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onprogress = e => { if (e.lengthComputable && onProgress) onProgress(e.loaded/e.total*100); };
-    fr.onload = () => {
-      const b64 = fr.result.split(',')[1];
-      res(b64);
-    };
-    fr.onerror = rej;
+function toB64(file,prog){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onprogress=e=>{if(e.lengthComputable&&prog) prog(e.loaded/e.total*100);};
+    fr.onload=()=>res(fr.result.split(',')[1]);
+    fr.onerror=rej;
     fr.readAsDataURL(file);
   });
 }
 
-// ===== RENDER MESSAGES =====
-function renderMessages() {
-  const container = document.getElementById('chat-messages');
-  const empty = document.getElementById('empty-chat');
-  if (state.messages.length === 0) {
-    empty.style.display = 'flex'; return;
-  }
-  empty.style.display = 'none';
+/* ============================================================
+   RENDER MESSAGES
+============================================================ */
+function renderMsgs() {
+  const el=document.getElementById('msg-list');
+  const empt=document.getElementById('empty-chat');
+  if(!S.messages.length){empt.style.display='flex'; return;}
+  empt.style.display='none';
 
   // Group by day
-  const groups = {};
-  state.messages.forEach(msg => {
-    const d = new Date(msg.timestamp);
-    const key = d.toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric'});
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(msg);
+  const days={};
+  S.messages.forEach(m=>{
+    const d=new Date(m.timestamp).toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'});
+    if(!days[d]) days[d]=[];
+    days[d].push(m);
   });
 
-  let html = '';
-  for (const [date, msgs] of Object.entries(groups)) {
-    html += `<div class="date-divider">${date}</div>`;
-    msgs.forEach(msg => { html += renderMessage(msg); });
+  let html='';
+  for(const[date,msgs] of Object.entries(days)){
+    html+=`<div class="date-sep">${date}</div>`;
+    msgs.forEach(m=>{html+=renderMsg(m);});
   }
-  container.innerHTML = html + `<div id="empty-chat" style="display:none" class="empty-state"></div>`;
+  html+=`<div id="empty-chat" style="display:none" class="empty-st"></div>`;
+  el.innerHTML=html;
+
+  // Attach checkboxes
+  if(S.selectMode){
+    document.getElementById('msg-list').classList.add('select-mode');
+    S.selectedMsgs.forEach(id=>{
+      const cb=document.querySelector(`.msg-check[data-id="${id}"]`);
+      if(cb) cb.classList.add('checked');
+    });
+  }
 }
 
-function renderMessage(msg) {
-  const time = new Date(msg.timestamp).toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
-  const cat = catById[msg.category] || catById['other'];
-  let bubbleContent = '';
+function renderMsg(m) {
+  const time=new Date(m.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+  const cat=catMap[m.category]||catMap['other'];
+  let bContent='';
 
-  if (msg.type === 'text') {
-    const rendered = marked.parse(msg.content || '');
-    bubbleContent = `<div class="bubble out" data-id="${msg.id}">${rendered}<div class="msg-time">${time}</div></div>`;
-  } else if (msg.type === 'file') {
-    const files = msg.files || [];
-    const isImages = files.every(f => f.mime && f.mime.startsWith('image/'));
-    if (isImages) {
-      const imgHtml = files.map(f => `
-        <div class="img-thumb-wrap" onclick="openLightbox('${f.downloadUrl||''}')">
-          <img class="img-thumb" src="${f.downloadUrl||''}" loading="lazy" alt="${f.name}">
-          <div class="img-overlay"></div>
-        </div>`).join('');
-      bubbleContent = `<div class="bubble out" data-id="${msg.id}" style="padding:4px">
-        <div class="img-stack">${imgHtml}</div>
-        <div class="msg-time" style="padding:4px 8px 0">${time}</div>
-      </div>`;
-    } else {
-      const cardsHtml = files.map(f => `
-        <div class="file-card" onclick="downloadFile('${f.downloadUrl||''}', '${f.name}')">
-          <div class="file-icon-wrap" style="background:${cat.bg}">${getFileIcon(f.name, f.mime)}</div>
-          <div class="file-info">
-            <div class="file-name">${f.name}</div>
-            <div class="file-meta">${formatSize(f.size)} · ${cat.icon} ${cat.label}</div>
+  if(m.type==='text') {
+    const md=marked.parse(m.content||'');
+    bContent=`<div class="bl out" data-id="${m.id}">${md}
+      <div class="mtime">${m.pinned?'<span class="mtime-pinned">📌</span>':''} ${time}</div>
+    </div>`;
+  } else if(m.type==='file') {
+    const files=m.files||[];
+    const imgs=files.filter(f=>isImg(f.name));
+    const docs=files.filter(f=>!isImg(f.name));
+
+    let imgHtml='', docHtml='';
+    if(imgs.length) {
+      const thumbs=imgs.map((f,i)=>{
+        const url=rawUrl(f.path);
+        const more=(i===2&&imgs.length>3)?`<div class="img-more-overlay">+${imgs.length-3}</div>`:'';
+        return `<div class="img-item" onclick="openLB('${url}','${f.name}',${JSON.stringify(imgs.map(x=>rawUrl(x.path)))},${i})">${more}
+          <img src="${url}" loading="lazy" alt="${f.name}">
+          <div class="img-ov">🔍</div>
+        </div>`;
+      }).slice(0,3);
+
+      let gridClass='img-single';
+      if(imgs.length===2) gridClass='img-grid2';
+      else if(imgs.length>=3) gridClass='img-grid3';
+
+      imgHtml=`<div class="img-stack ${gridClass}">${thumbs.join('')}</div>`;
+    }
+    if(docs.length) {
+      docHtml=docs.map(f=>`
+        <div class="fc" onclick="dlFile('${rawUrl(f.path)}','${f.name}')">
+          <div class="fi-icon" style="background:${cat.bg}">${fileIcon(f.name)}</div>
+          <div class="fi-info">
+            <div class="fi-name">${f.name}</div>
+            <div class="fi-meta">${fmtSize(f.size)} · ${cat.icon} ${cat.label}</div>
           </div>
         </div>`).join('');
-      bubbleContent = `<div class="bubble out" data-id="${msg.id}" style="padding:8px">
-        <div class="file-stack">${cardsHtml}</div>
-        <div class="msg-time" style="padding:2px 6px 0">${time}</div>
-      </div>`;
     }
+    bContent=`<div class="bl out" data-id="${m.id}" style="padding:6px">
+      ${imgHtml?`<div class="fstack">${imgHtml}</div>`:''}
+      ${docHtml?`<div class="fstack" style="margin-top:${imgHtml?'5px':'0'}">${docHtml}</div>`:''}
+      <div class="mtime" style="padding:2px 6px 0">${m.pinned?'<span class="mtime-pinned">📌</span>':''} ${time}</div>
+    </div>`;
   }
 
-  return `<div class="msg-group">
-    <div class="msg-row out" data-id="${msg.id}">
-      <div class="bubble-wrap">
-        ${bubbleContent}
-        <div class="msg-actions">
-          <button class="action-btn" onclick="downloadMsg('${msg.id}')" title="下载">⬇</button>
-          <button class="action-btn" onclick="renameMsg('${msg.id}')" title="重命名">✏️</button>
-          <button class="action-btn" onclick="deleteMsg('${msg.id}')" title="删除">🗑</button>
+  return `<div class="mg">
+    <div class="mr out" data-id="${m.id}">
+      <div class="msg-check ${S.selectedMsgs.has(m.id)?'checked':''}" data-id="${m.id}" onclick="toggleMsgSelect('${m.id}')">✓</div>
+      <div class="bw">
+        ${bContent}
+        ${m.pinned?`<div class="pin-badge">📌</div>`:''}
+        <div class="m-acts">
+          <button class="ma" onclick="pinMsg('${m.id}')" title="${m.pinned?'取消置顶':'置顶'}">${m.pinned?'📌':'📍'}</button>
+          <button class="ma" onclick="dlMsg('${m.id}')" title="下载">⬇</button>
+          <button class="ma" onclick="editMsg('${m.id}')" title="编辑/重命名">✏️</button>
+          <button class="ma" onclick="delMsg('${m.id}')" title="删除">🗑</button>
         </div>
       </div>
     </div>
   </div>`;
 }
 
-function scrollToBottom() {
-  const c = document.getElementById('chat-messages');
-  c.scrollTop = c.scrollHeight;
+function scrollBot(){const el=document.getElementById('msg-list');el.scrollTop=el.scrollHeight;}
+
+/* ============================================================
+   MESSAGE ACTIONS
+============================================================ */
+async function pinMsg(id) {
+  const m=S.messages.find(x=>x.id===id); if(!m) return;
+  m.pinned=!m.pinned;
+  renderMsgs();
+  await saveMsgs();
+  toast(m.pinned?'已置顶':'已取消置顶');
 }
 
-// ===== FILES GRID =====
-function renderFilesGrid() {
-  const grid = document.getElementById('files-grid');
-  let files = [...state.allFiles];
+function dlMsg(id) {
+  const m=S.messages.find(x=>x.id===id); if(!m) return;
+  if(m.type==='text'){
+    const blob=new Blob([m.content],{type:'text/plain'});
+    dlFile(URL.createObjectURL(blob),'msg-'+id+'.txt');
+  } else if(m.files){ m.files.forEach(f=>dlFile(rawUrl(f.path),f.name)); }
+}
 
-  // Filter by category
-  if (state.filesCat !== 'all') {
-    files = files.filter(f => f.path.startsWith(state.filesCat + '/'));
+async function editMsg(id) {
+  const m=S.messages.find(x=>x.id===id); if(!m) return;
+  if(m.type==='text'){
+    showInputModal('编辑内容','内容',m.content,async val=>{
+      m.content=val; renderMsgs(); await saveMsgs(); toast('已保存','ok');
+    });
+  } else if(m.files&&m.files.length) {
+    renameFileInMsg(m,m.files[0]);
+  }
+}
+
+async function renameFileInMsg(m, f) {
+  showInputModal('重命名文件','新文件名',f.name,async newName=>{
+    if(!newName||newName===f.name) return;
+    const folder=f.path.includes('/')?f.path.substring(0,f.path.lastIndexOf('/')):f.category;
+    const newPath=`${folder}/${newName}`;
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${f.path}`);
+    const d=await r.json();
+    await gh(`/repos/${S.user}/${S.repo}/contents/${newPath}`,{method:'PUT',body:JSON.stringify({message:`Rename to ${newName} [GitDrive]`,content:d.content.replace(/\n/g,'')})});
+    await gh(`/repos/${S.user}/${S.repo}/contents/${f.path}`,{method:'DELETE',body:JSON.stringify({message:`Delete old ${f.name} [GitDrive]`,sha:d.sha})});
+    f.path=newPath; f.name=newName;
+    await saveMsgs(); await loadRepoFiles(); updateStats(); renderMsgs();
+    toast(`已重命名为 ${newName}`,'ok');
+  });
+}
+
+async function delMsg(id) {
+  const m=S.messages.find(x=>x.id===id); if(!m) return;
+  showConfirm('删除消息','确认删除此消息？文件消息会同时从仓库删除文件。',async()=>{
+    if(m.files) for(const f of m.files){
+      const r=await gh(`/repos/${S.user}/${S.repo}/contents/${f.path}`);
+      if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${f.path}`,{method:'DELETE',body:JSON.stringify({message:`Delete ${f.name} [GitDrive]`,sha:d.sha})});}
+    }
+    S.messages=S.messages.filter(x=>x.id!==id);
+    renderMsgs(); await saveMsgs(); await loadRepoFiles(); updateStats();
+    toast('已删除','ok');
+  });
+}
+
+/* ============================================================
+   SELECT MODE (chat)
+============================================================ */
+function toggleSelectMode() {
+  S.selectMode=!S.selectMode;
+  S.selectedMsgs.clear();
+  document.getElementById('msg-list').classList.toggle('select-mode',S.selectMode);
+  document.getElementById('sel-bar').classList.toggle('show',S.selectMode);
+  if(!S.selectMode) renderMsgs();
+}
+function exitSelectMode(){S.selectMode=false;S.selectedMsgs.clear();document.getElementById('msg-list').classList.remove('select-mode');document.getElementById('sel-bar').classList.remove('show');renderMsgs();}
+function toggleMsgSelect(id){
+  if(S.selectedMsgs.has(id)) S.selectedMsgs.delete(id); else S.selectedMsgs.add(id);
+  const cb=document.querySelector(`.msg-check[data-id="${id}"]`);
+  if(cb) cb.classList.toggle('checked',S.selectedMsgs.has(id));
+  document.getElementById('sel-cnt').textContent=`已选 ${S.selectedMsgs.size} 条`;
+}
+async function deleteSelected(){
+  if(!S.selectedMsgs.size) return;
+  showConfirm('批量删除',`确认删除选中的 ${S.selectedMsgs.size} 条消息？`,async()=>{
+    for(const id of S.selectedMsgs){
+      const m=S.messages.find(x=>x.id===id); if(!m) continue;
+      if(m.files) for(const f of m.files){
+        const r=await gh(`/repos/${S.user}/${S.repo}/contents/${f.path}`);
+        if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${f.path}`,{method:'DELETE',body:JSON.stringify({message:`Delete ${f.name} [GitDrive]`,sha:d.sha})});}
+      }
+    }
+    S.messages=S.messages.filter(x=>!S.selectedMsgs.has(x.id));
+    exitSelectMode(); await saveMsgs(); await loadRepoFiles(); updateStats();
+    toast('批量删除完成','ok');
+  });
+}
+
+/* ============================================================
+   FILES GRID SCREEN
+============================================================ */
+function showScreen(name){
+  document.getElementById('chat-screen').style.display=name==='chat'?'flex':'none';
+  document.getElementById('files-screen').style.display=name==='files'?'flex':'none';
+  ['n-chat','n-files'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('n-'+name).classList.add('active');
+  if(name==='files'){S.filesMode='all';setFCat('all');renderFG();}
+  closeSb();
+}
+
+function showFilesFiltered(mode){
+  // mode: 'fav' | 'archive' | catId
+  S.filesMode=mode;
+  document.getElementById('n-files').classList.remove('active');
+  document.getElementById('files-screen').style.display='flex';
+  document.getElementById('chat-screen').style.display='none';
+
+  if(mode==='fav'){ document.getElementById('files-screen-title').textContent='⭐ 收藏'; setFCat('fav'); }
+  else if(mode==='archive'){ document.getElementById('files-screen-title').textContent='📦 归档'; setFCat('archive'); }
+  else { document.getElementById('files-screen-title').textContent='所有文件'; setFCat(mode); }
+  renderFG(); closeSb();
+}
+
+function setFCat(id){
+  S.filesCat=id;
+  document.querySelectorAll('#fg-cat-row .fr-chip').forEach(el=>el.classList.remove('active'));
+  const btn=document.getElementById('fc-'+id); if(btn) btn.classList.add('active');
+  renderFG();
+}
+function setFType(id){
+  S.filesType=id;
+  document.querySelectorAll('#fg-type-row .fr-chip').forEach(el=>el.classList.remove('active'));
+  const btn=document.getElementById('ft-'+id); if(btn) btn.classList.add('active');
+  renderFG();
+}
+function setView(v){
+  S.filesView=v;
+  document.getElementById('vb-g').classList.toggle('active',v==='grid');
+  document.getElementById('vb-l').classList.toggle('active',v==='list');
+  renderFG();
+}
+
+function renderFG(){
+  const grid=document.getElementById('fg');
+  let files=[...S.allFiles];
+
+  // Filter by mode / cat
+  if(S.filesCat==='fav') files=files.filter(f=>S.favorites.has(f.path));
+  else if(S.filesCat==='archive') files=files.filter(f=>S.archived.has(f.path));
+  else if(S.filesCat!=='all') files=files.filter(f=>f.category===S.filesCat);
+
+  // Type filter
+  if(S.filesType!=='all'){
+    const grp=TYPE_GROUPS.find(g=>g.id===S.filesType);
+    if(grp) files=files.filter(f=>grp.exts.includes(ext(f.name)));
   }
 
+  // Search
+  const q=(document.getElementById('fg-search')?.value||'').trim().toLowerCase();
+  if(q) files=files.filter(f=>f.name.toLowerCase().includes(q));
+
   // Sort
-  const sort = document.getElementById('sort-select')?.value || 'time-desc';
-  // GitHub doesn't provide timestamps in tree, use message data
-  const msgByPath = {};
-  state.messages.forEach(m => {
-    if (m.files) m.files.forEach(f => { msgByPath[f.path] = m.timestamp; });
-  });
+  const sort=document.getElementById('sort-sel')?.value||'time-desc';
+  const msgByPath={};
+  S.messages.forEach(m=>{if(m.files) m.files.forEach(f=>{msgByPath[f.path]=m.timestamp;});});
+  if(sort==='time-desc') files.sort((a,b)=>(msgByPath[b.path]||'')>(msgByPath[a.path]||'')?1:-1);
+  else if(sort==='time-asc') files.sort((a,b)=>(msgByPath[a.path]||'')>(msgByPath[b.path]||'')?1:-1);
+  else if(sort==='name') files.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(sort==='size') files.sort((a,b)=>(b.size||0)-(a.size||0));
 
-  if (sort === 'time-desc') files.sort((a,b) => (msgByPath[b.path]||'') > (msgByPath[a.path]||'') ? 1 : -1);
-  else if (sort === 'time-asc') files.sort((a,b) => (msgByPath[a.path]||'') > (msgByPath[b.path]||'') ? 1 : -1);
-  else files.sort((a,b) => a.name.localeCompare(b.name));
-
-  if (files.length === 0) {
-    grid.innerHTML = `<div style="grid-column:1/-1"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">没有文件</div><div class="empty-sub">上传一些文件试试</div></div></div>`;
+  if(!files.length){
+    grid.innerHTML=`<div style="grid-column:1/-1"><div class="empty-st"><div class="empty-ic">📭</div><div class="empty-t">没有文件</div><div class="empty-s">上传文件后将显示在这里</div></div></div>`;
+    grid.className=S.filesView==='list'?'list-view':'';
     return;
   }
 
-  const isList = state.filesView === 'list';
-  if (isList) grid.classList.add('list-view'); else grid.classList.remove('list-view');
+  const isList=S.filesView==='list';
+  if(isList) grid.classList.add('list-view'); else grid.classList.remove('list-view');
 
-  grid.innerHTML = files.map((f, i) => {
-    const cat = getCatFromPath(f.path);
-    const catInfo = catById[cat] || catById['other'];
-    const isImg = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f.name);
-    const downloadUrl = `https://raw.githubusercontent.com/${state.user}/${state.repo}/main/${f.path}`;
-    const msgTime = msgByPath[f.path] ? new Date(msgByPath[f.path]).toLocaleDateString('zh-CN') : '';
+  grid.innerHTML=files.map((f,i)=>{
+    const cat=catMap[f.category]||catMap['other'];
+    const isImage=isImg(f.name);
+    const url=rawUrl(f.path);
+    const msgT=msgByPath[f.path]?new Date(msgByPath[f.path]).toLocaleDateString('zh-CN'):'';
+    const isFav=S.favorites.has(f.path);
+    const isArc=S.archived.has(f.path);
+    const isSel=S.fgSelected.has(f.path);
+    const fileExt=ext(f.name).toUpperCase();
 
-    if (isList) {
-      return `<div class="file-grid-item list-item" style="animation-delay:${i*0.03}s">
-        <div class="file-grid-thumb" style="background:${catInfo.bg}">
-          ${isImg ? `<img src="${downloadUrl}" loading="lazy" alt="" style="width:44px;height:44px;border-radius:10px;object-fit:cover">` : getFileIcon(f.name, '')}
+    const thumb=isImage
+      ?`<div class="fgi-img-wrap"><img src="${url}" loading="lazy" alt="${f.name}"></div>`
+      :`<div class="fgi-icon-wrap" style="background:${cat.bg}">${fileIcon(f.name)}<span class="fgi-ext">${fileExt}</span></div>`;
+
+    const favStar=isFav?`<div class="fav-star">⭐</div>`:'';
+    const arcBadge=isArc?`<div class="fav-star" style="right:26px;font-size:11px">📦</div>`:'';
+    const selChk=`<div class="fgi-check ${isSel?'selected':''}" onclick="toggleFGItem('${f.path}',event)">✓</div>`;
+
+    if(isList){
+      return `<div class="fgi list-item ${isSel?'selected':''}" style="animation-delay:${i*.02}s" data-path="${f.path}">
+        ${selChk}
+        ${isImage?`<div class="fgi-img-wrap" onclick="openLB('${url}','${f.name}',[],0)">${thumb.match(/<div class="fgi-img-wrap">(.*?)<\/div>/s)?.[1]||''}</div>`
+          :`<div class="fgi-icon-wrap" style="background:${cat.bg};width:42px;height:42px;border-radius:9px;font-size:20px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px">${fileIcon(f.name)}<span class="fgi-ext" style="font-size:8px;padding:1px 3px">${fileExt}</span></div>`}
+        <div class="fgi-info">
+          <div class="fgi-name">${f.name}</div>
+          <div class="fgi-meta">${cat.icon} ${cat.label} · ${fmtSize(f.size)}${msgT?' · '+msgT:''}</div>
         </div>
-        <div class="file-grid-info">
-          <div class="file-grid-name">${f.name}</div>
-          <div class="file-grid-meta">${catInfo.icon} ${catInfo.label}${msgTime?' · '+msgTime:''} · ${formatSize(f.size)}</div>
-        </div>
-        <div class="list-actions">
-          <button class="icon-btn" onclick="downloadFile('${downloadUrl}','${f.name}')" title="下载">⬇</button>
-          <button class="icon-btn" onclick="renameFile('${f.path}','${f.name}')" title="重命名">✏️</button>
-          <button class="icon-btn" onclick="deleteFile('${f.path}','${f.sha}')" title="删除">🗑</button>
+        <div class="li-acts">
+          <button class="ib" onclick="toggleFav('${f.path}')" title="${isFav?'取消收藏':'收藏'}">${isFav?'⭐':'☆'}</button>
+          <button class="ib" onclick="toggleArc('${f.path}')" title="${isArc?'取消归档':'归档'}">${isArc?'📦':'🗄'}</button>
+          <button class="ib" onclick="moveFile('${f.path}','${f.name}')" title="移动分类">↗</button>
+          <button class="ib" onclick="renameGH('${f.path}','${f.name}')" title="重命名">✏️</button>
+          <button class="ib" onclick="dlFile('${url}','${f.name}')" title="下载">⬇</button>
+          <button class="ib" onclick="delFile('${f.path}','${f.sha}')" title="删除">🗑</button>
         </div>
       </div>`;
     } else {
-      return `<div class="file-grid-item" style="animation-delay:${i*0.03}s" onclick="${isImg?`openLightbox('${downloadUrl}')`:`downloadFile('${downloadUrl}','${f.name}')`}">
-        <div class="file-grid-thumb" style="background:${catInfo.bg}; display:flex; align-items:center; justify-content:center; font-size:32px; height:110px;">
-          ${isImg ? `<img src="${downloadUrl}" loading="lazy" alt="" style="width:100%;height:110px;object-fit:cover">` : getFileIcon(f.name, '')}
+      return `<div class="fgi ${isSel?'selected':''}" style="animation-delay:${i*.02}s" data-path="${f.path}">
+        ${selChk}${favStar}${arcBadge}
+        ${isImage?`<div class="fgi-img-wrap" style="cursor:pointer" onclick="openLB('${url}','${f.name}',${JSON.stringify(files.filter(x=>isImg(x.name)).map(x=>rawUrl(x.path)))},${files.filter(x=>isImg(x.name)).findIndex(x=>x.path===f.path)})">${thumb.match(/<div class="fgi-img-wrap">(.*?)<\/div>/s)?.[1]||''}</div>`:thumb}
+        <div class="fgi-info">
+          <div class="fgi-name">${f.name}</div>
+          <div class="fgi-meta">${fmtSize(f.size)}${msgT?' · '+msgT:''}</div>
+          <span class="fgi-cat" style="background:${cat.bg};color:${cat.color}">${cat.icon} ${cat.label}</span>
         </div>
-        <div class="file-grid-info">
-          <div class="file-grid-name">${f.name}</div>
-          <div class="file-grid-meta">${formatSize(f.size)}${msgTime?' · '+msgTime:''}</div>
-          <span class="file-grid-cat" style="background:${catInfo.bg}; color:${catInfo.color}">${catInfo.icon} ${catInfo.label}</span>
-        </div>
+      </div>`;
+    }
+  }).join('');
+
+  // Right-click context on grid items
+  grid.querySelectorAll('.fgi:not(.list-item)').forEach(el=>{
+    el.addEventListener('contextmenu',e=>{
+      e.preventDefault();
+      const path=el.dataset.path;
+      const f=S.allFiles.find(x=>x.path===path); if(!f) return;
+      showContextMenu(e,f);
+    });
+  });
+}
+
+function showContextMenu(e, f) {
+  closeModal();
+  const url=rawUrl(f.path);
+  const isFav=S.favorites.has(f.path);
+  const isArc=S.archived.has(f.path);
+  const mc=document.getElementById('mc');
+  mc.innerHTML=`<div class="m-ov" onclick="closeModal()" style="align-items:flex-start;justify-content:flex-start;padding:0">
+    <div class="modal" style="position:fixed;top:${Math.min(e.clientY,window.innerHeight-300)}px;left:${Math.min(e.clientX,window.innerWidth-200)}px;padding:6px;min-width:170px;max-width:200px;border-radius:14px" onclick="event.stopPropagation()">
+      ${ctxBtn('⭐ '+(isFav?'取消收藏':'收藏'),()=>toggleFav(f.path))}
+      ${ctxBtn('📦 '+(isArc?'取消归档':'归档'),()=>toggleArc(f.path))}
+      ${ctxBtn('↗ 移动分类',()=>moveFile(f.path,f.name))}
+      ${ctxBtn('✏️ 重命名',()=>renameGH(f.path,f.name))}
+      ${ctxBtn('⬇ 下载',()=>dlFile(url,f.name))}
+      <div style="height:1px;background:var(--border);margin:3px 0"></div>
+      ${ctxBtn('🗑 删除',()=>delFile(f.path,f.sha),true)}
+    </div>
+  </div>`;
+  mc._cbs={};
+}
+
+function ctxBtn(label, cb, danger=false){
+  const id='cb'+Math.random().toString(36).slice(2);
+  setTimeout(()=>{const el=document.getElementById(id);if(el)el.onclick=()=>{closeModal();cb();};},0);
+  return `<div id="${id}" style="padding:8px 12px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:${danger?'var(--red)':'var(--text)'};transition:background var(--dur)" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">${label}</div>`;
+}
+
+/* ============================================================
+   FAVORITES & ARCHIVE
+============================================================ */
+async function toggleFav(path) {
+  if(S.favorites.has(path)) S.favorites.delete(path); else S.favorites.add(path);
+  updateFavCount(); await saveMeta(); renderFG();
+  toast(S.favorites.has(path)?'已收藏':'已取消收藏');
+}
+
+async function toggleArc(path) {
+  if(S.archived.has(path)) S.archived.delete(path); else S.archived.add(path);
+  await saveMeta(); renderFG();
+  toast(S.archived.has(path)?'已归档':'已取消归档');
+}
+
+/* ============================================================
+   MOVE FILE (change category folder)
+============================================================ */
+async function moveFile(path, name) {
+  const curCat=path.split('/')[0];
+  let chosen=curCat;
+  const mc=document.getElementById('mc');
+  mc.innerHTML=`<div class="m-ov"><div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-t">移动到分类</div>
+    <div class="cat-move-grid" id="cmg">
+      ${CATEGORIES.map(c=>`<div class="cat-move-item ${c.id===curCat?'selected':''}" onclick="pickMoveCat('${c.id}')" id="cmi-${c.id}">
+        <span>${c.icon}</span>${c.label}
+      </div>`).join('')}
+    </div>
+    <div class="modal-btns">
+      <button class="btn-g" onclick="closeModal()">取消</button>
+      <button class="btn-a" onclick="doMoveFile('${path}','${name}')">确认移动</button>
+    </div>
+  </div></div>`;
+  window._moveCat=curCat;
+}
+
+function pickMoveCat(id){
+  window._moveCat=id;
+  document.querySelectorAll('.cat-move-item').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('cmi-'+id).classList.add('selected');
+}
+
+async function doMoveFile(oldPath, name){
+  const newCat=window._moveCat;
+  const newPath=`${newCat}/${name}`;
+  if(oldPath===newPath){closeModal();return;}
+  closeModal();
+  try{
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${oldPath}`);
+    const d=await r.json();
+    await gh(`/repos/${S.user}/${S.repo}/contents/${newPath}`,{method:'PUT',body:JSON.stringify({message:`Move ${name} to ${newCat} [GitDrive]`,content:d.content.replace(/\n/g,'')})});
+    await gh(`/repos/${S.user}/${S.repo}/contents/${oldPath}`,{method:'DELETE',body:JSON.stringify({message:`Remove old ${name} [GitDrive]`,sha:d.sha})});
+    // Update favorites/archived refs
+    if(S.favorites.has(oldPath)){S.favorites.delete(oldPath);S.favorites.add(newPath);}
+    if(S.archived.has(oldPath)){S.archived.delete(oldPath);S.archived.add(newPath);}
+    // Update message refs
+    S.messages.forEach(m=>{if(m.files) m.files.forEach(f=>{if(f.path===oldPath){f.path=newPath;f.category=newCat;}});});
+    await Promise.all([saveMsgs(),saveMeta()]);
+    await loadRepoFiles(); updateStats();
+    toast(`已移动到 ${catMap[newCat].label}`,'ok');
+  } catch(e){toast('移动失败: '+e.message,'err');}
+}
+
+/* ============================================================
+   FG SELECT MODE
+============================================================ */
+function toggleFGSelect(){
+  S.fgSelectMode=!S.fgSelectMode;
+  S.fgSelected.clear();
+  document.getElementById('fg-sel-bar').style.display=S.fgSelectMode?'flex':'none';
+  document.getElementById('sel-all-btn').textContent=S.fgSelectMode?'取消多选':'多选';
+  document.getElementById('fg').classList.toggle('select-mode',S.fgSelectMode);
+  renderFG();
+}
+function exitFGSelect(){S.fgSelectMode=false;S.fgSelected.clear();document.getElementById('fg-sel-bar').style.display='none';document.getElementById('sel-all-btn').textContent='多选';document.getElementById('fg').classList.remove('select-mode');renderFG();}
+function toggleFGItem(path,e){
+  e.stopPropagation();
+  if(!S.fgSelectMode) return;
+  if(S.fgSelected.has(path)) S.fgSelected.delete(path); else S.fgSelected.add(path);
+  document.getElementById('fg-sel-cnt').textContent=`已选 ${S.fgSelected.size} 个`;
+  renderFG();
+}
+async function deleteSelectedFiles(){
+  if(!S.fgSelected.size) return;
+  showConfirm('批量删除',`确认删除选中的 ${S.fgSelected.size} 个文件？`,async()=>{
+    for(const path of S.fgSelected){
+      const r=await gh(`/repos/${S.user}/${S.repo}/contents/${path}`);
+      if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${path}`,{method:'DELETE',body:JSON.stringify({message:`Delete ${path.split('/').pop()} [GitDrive]`,sha:d.sha})});}
+      S.favorites.delete(path); S.archived.delete(path);
+    }
+    S.messages=S.messages.map(m=>{if(m.files)m.files=m.files.filter(f=>!S.fgSelected.has(f.path));return m;}).filter(m=>m.type==='text'||(m.files&&m.files.length));
+    await Promise.all([saveMsgs(),saveMeta()]);
+    exitFGSelect(); await loadRepoFiles(); updateStats(); renderMsgs();
+    toast('批量删除完成','ok');
+  });
+}
+async function moveSelectedFiles(){
+  if(!S.fgSelected.size) return;
+  const paths=[...S.fgSelected];
+  let chosen=CATEGORIES[0].id;
+  const mc=document.getElementById('mc');
+  mc.innerHTML=`<div class="m-ov"><div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-t">批量移动到分类</div>
+    <div class="cat-move-grid" id="cmg">
+      ${CATEGORIES.map(c=>`<div class="cat-move-item ${c.id===chosen?'selected':''}" onclick="pickMoveCat('${c.id}')" id="cmi-${c.id}">
+        <span>${c.icon}</span>${c.label}
+      </div>`).join('')}
+    </div>
+    <div class="modal-btns">
+      <button class="btn-g" onclick="closeModal()">取消</button>
+      <button class="btn-a" onclick="doBatchMove(${JSON.stringify(paths)})">移动 ${paths.length} 个</button>
+    </div>
+  </div></div>`;
+  window._moveCat=chosen;
+}
+async function doBatchMove(paths){
+  const newCat=window._moveCat; closeModal();
+  for(const oldPath of paths){
+    const name=oldPath.split('/').pop();
+    const newPath=`${newCat}/${name}`;
+    if(oldPath===newPath) continue;
+    try{
+      const r=await gh(`/repos/${S.user}/${S.repo}/contents/${oldPath}`);
+      const d=await r.json();
+      await gh(`/repos/${S.user}/${S.repo}/contents/${newPath}`,{method:'PUT',body:JSON.stringify({message:`Move ${name} [GitDrive]`,content:d.content.replace(/\n/g,'')})});
+      await gh(`/repos/${S.user}/${S.repo}/contents/${oldPath}`,{method:'DELETE',body:JSON.stringify({message:`Remove old ${name} [GitDrive]`,sha:d.sha})});
+      if(S.favorites.has(oldPath)){S.favorites.delete(oldPath);S.favorites.add(newPath);}
+      if(S.archived.has(oldPath)){S.archived.delete(oldPath);S.archived.add(newPath);}
+      S.messages.forEach(m=>{if(m.files) m.files.forEach(f=>{if(f.path===oldPath){f.path=newPath;f.category=newCat;}});});
+    } catch(e){toast('移动失败: '+e.message,'err');}
+  }
+  await Promise.all([saveMsgs(),saveMeta()]);
+  exitFGSelect(); await loadRepoFiles(); updateStats();
+  toast(`已移动到 ${catMap[newCat].label}`,'ok');
+}
+
+/* ============================================================
+   RENAME / DELETE FILE (from files grid)
+============================================================ */
+async function renameGH(path,oldName){
+  showInputModal('重命名','新文件名',oldName,async newName=>{
+    if(!newName||newName===oldName) return;
+    const folder=path.includes('/')?path.substring(0,path.lastIndexOf('/')):'.';
+    const newPath=folder==='.'?newName:`${folder}/${newName}`;
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${path}`);
+    const d=await r.json();
+    await gh(`/repos/${S.user}/${S.repo}/contents/${newPath}`,{method:'PUT',body:JSON.stringify({message:`Rename to ${newName} [GitDrive]`,content:d.content.replace(/\n/g,'')})});
+    await gh(`/repos/${S.user}/${S.repo}/contents/${path}`,{method:'DELETE',body:JSON.stringify({message:`Delete old ${oldName} [GitDrive]`,sha:d.sha})});
+    if(S.favorites.has(path)){S.favorites.delete(path);S.favorites.add(newPath);}
+    if(S.archived.has(path)){S.archived.delete(path);S.archived.add(newPath);}
+    S.messages.forEach(m=>{if(m.files) m.files.forEach(f=>{if(f.path===path){f.path=newPath;f.name=newName;}});});
+    await Promise.all([saveMsgs(),saveMeta()]);
+    await loadRepoFiles(); updateStats(); renderMsgs();
+    toast(`已重命名为 ${newName}`,'ok');
+  });
+}
+
+async function delFile(path,sha){
+  showConfirm('删除文件',`确认删除 ${path.split('/').pop()}？`,async()=>{
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${path}`);
+    if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${path}`,{method:'DELETE',body:JSON.stringify({message:`Delete ${path.split('/').pop()} [GitDrive]`,sha:d.sha})});}
+    S.favorites.delete(path); S.archived.delete(path);
+    S.messages=S.messages.map(m=>{if(m.files)m.files=m.files.filter(f=>f.path!==path);return m;}).filter(m=>m.type==='text'||(m.files&&m.files.length));
+    await Promise.all([saveMsgs(),saveMeta()]);
+    await loadRepoFiles(); updateStats(); renderMsgs();
+    toast('已删除','ok');
+  });
+}
+
+/* ============================================================
+   GLOBAL SEARCH
+============================================================ */
+function openSearch(){
+  document.getElementById('search-overlay').classList.add('show');
+  setTimeout(()=>document.getElementById('g-search').focus(),100);
+}
+function closeSearch(){ document.getElementById('search-overlay').classList.remove('show'); }
+
+function doGlobalSearch(){
+  const q=document.getElementById('g-search').value.trim().toLowerCase();
+  const results=document.getElementById('g-results');
+  if(!q){results.innerHTML='<div class="sr-empty">输入关键词开始搜索</div>';return;}
+
+  const matches=[];
+  // Search files
+  S.allFiles.forEach(f=>{
+    if(f.name.toLowerCase().includes(q)) matches.push({type:'file',f});
+  });
+  // Search text messages
+  S.messages.filter(m=>m.type==='text').forEach(m=>{
+    if((m.content||'').toLowerCase().includes(q)) matches.push({type:'msg',m});
+  });
+
+  if(!matches.length){results.innerHTML='<div class="sr-empty">没有找到匹配的结果</div>';return;}
+
+  results.innerHTML=matches.slice(0,20).map(item=>{
+    if(item.type==='file'){
+      const f=item.f;
+      const cat=catMap[f.category]||catMap['other'];
+      const hi=f.name.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<span class="sr-highlight">${m}</span>`);
+      const url=rawUrl(f.path);
+      return `<div class="sr-item" onclick="closeSearch();dlFile('${url}','${f.name}')">
+        <div class="sr-icon" style="background:${cat.bg}">${fileIcon(f.name)}</div>
+        <div class="sr-info"><div class="sr-name">${hi}</div><div class="sr-meta">${cat.icon} ${cat.label} · ${fmtSize(f.size)}</div></div>
+      </div>`;
+    } else {
+      const m=item.m;
+      const snippet=(m.content||'').slice(0,80).replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),x=>`<span class="sr-highlight">${x}</span>`);
+      return `<div class="sr-item" onclick="closeSearch();scrollToMsg('${m.id}')">
+        <div class="sr-icon" style="background:var(--bg4)">💬</div>
+        <div class="sr-info"><div class="sr-name">${snippet}</div><div class="sr-meta">文字消息 · ${new Date(m.timestamp).toLocaleDateString('zh-CN')}</div></div>
       </div>`;
     }
   }).join('');
 }
 
-function getCatFromPath(path) {
-  const parts = path.split('/');
-  if (parts.length > 1) {
-    const folder = parts[0];
-    if (catById[folder]) return folder;
-  }
-  return 'other';
+function scrollToMsg(id){
+  showScreen('chat');
+  setTimeout(()=>{
+    const el=document.querySelector(`.mr[data-id="${id}"]`);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--accent)';setTimeout(()=>el.style.outline='',1800);}
+  },200);
 }
 
-function setFilesCat(id) {
-  state.filesCat = id;
-  document.querySelectorAll('#files-cat-filter .filter-btn').forEach(el => el.classList.remove('active'));
-  const btn = document.getElementById('fc-' + (id === 'all' ? 'all' : id));
-  if (btn) btn.classList.add('active');
-  renderFilesGrid();
+/* ============================================================
+   LIGHTBOX
+============================================================ */
+function openLB(url, name, images=[], idx=0){
+  S.lbImages= images.length ? images : [url];
+  S.lbIdx=images.length?idx:0;
+  _showLB();
 }
-
-function setView(v) {
-  state.filesView = v;
-  document.getElementById('grid-btn').classList.toggle('active', v==='grid');
-  document.getElementById('list-btn').classList.toggle('active', v==='list');
-  renderFilesGrid();
+function _showLB(){
+  const url=S.lbImages[S.lbIdx];
+  document.getElementById('lb-img').src=url;
+  document.getElementById('lb-name').textContent=(url.split('/').pop()||'');
+  document.getElementById('lb-dl').onclick=()=>dlFile(url,url.split('/').pop());
+  document.getElementById('lb-prev').style.display=S.lbImages.length>1?'flex':'none';
+  document.getElementById('lb-next').style.display=S.lbImages.length>1?'flex':'none';
+  document.getElementById('lb').style.display='flex';
 }
+function lbNav(dir){S.lbIdx=(S.lbIdx+dir+S.lbImages.length)%S.lbImages.length;_showLB();}
+function closeLB(){document.getElementById('lb').style.display='none';}
 
-// ===== SCREENS =====
-function showScreen(name) {
-  document.getElementById('chat-screen').style.display = name==='chat' ? 'flex' : 'none';
-  document.getElementById('files-screen').style.display = name==='files' ? 'flex' : 'none';
-  document.getElementById('nav-chat').classList.toggle('active', name==='chat');
-  document.getElementById('nav-files').classList.toggle('active', name==='files');
-  if (name === 'files') renderFilesGrid();
-  closeSidebar();
-}
-
-// ===== ACTIONS =====
-function downloadFile(url, name) {
-  if (!url) return;
-  const a = document.createElement('a');
-  a.href = url; a.download = name; a.target = '_blank';
-  a.click();
-}
-
-function downloadMsg(id) {
-  const msg = state.messages.find(m => m.id === id);
-  if (!msg) return;
-  if (msg.type === 'text') {
-    const blob = new Blob([msg.content], {type:'text/plain'});
-    const url = URL.createObjectURL(blob);
-    downloadFile(url, 'message-'+id+'.txt');
-  } else if (msg.files) {
-    msg.files.forEach(f => downloadFile(f.downloadUrl, f.name));
-  }
-}
-
-async function deleteMsg(id) {
-  const msg = state.messages.find(m => m.id === id);
-  if (!msg) return;
-  showConfirmModal('删除消息', '确认删除这条消息？如果是文件消息，文件也将从仓库中删除。', async () => {
-    // Delete files from repo
-    if (msg.files) {
-      for (const f of msg.files) {
-        if (f.sha) {
-          await ghFetch(`/repos/${state.user}/${state.repo}/contents/${f.path}`, {
-            method: 'DELETE',
-            body: JSON.stringify({ message: `Delete ${f.name} [GitDrive]`, sha: f.sha })
-          });
-        }
-      }
-    }
-    state.messages = state.messages.filter(m => m.id !== id);
-    renderMessages();
-    await saveMessages();
-    await loadRepoFiles();
-    toast('已删除', 'success');
-  });
-}
-
-async function deleteFile(path, sha) {
-  showConfirmModal('删除文件', `确认删除 ${path.split('/').pop()}？`, async () => {
-    // Get latest sha
-    const r = await ghFetch(`/repos/${state.user}/${state.repo}/contents/${path}`);
-    const d = await r.json();
-    await ghFetch(`/repos/${state.user}/${state.repo}/contents/${path}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ message: `Delete ${path} [GitDrive]`, sha: d.sha })
-    });
-    // Also remove from messages
-    state.messages = state.messages.map(m => {
-      if (m.files) m.files = m.files.filter(f => f.path !== path);
-      return m;
-    }).filter(m => m.type === 'text' || (m.files && m.files.length > 0));
-    await saveMessages();
-    await loadRepoFiles();
-    renderMessages();
-    toast('已删除', 'success');
-  });
-}
-
-async function renameMsg(id) {
-  const msg = state.messages.find(m => m.id === id);
-  if (!msg) return;
-  if (msg.type === 'text') {
-    showInputModal('编辑文本', '修改内容', msg.content, async (val) => {
-      msg.content = val;
-      renderMessages();
-      await saveMessages();
-      toast('已修改', 'success');
-    });
-  } else if (msg.files && msg.files.length > 0) {
-    renameFile(msg.files[0].path, msg.files[0].name, id);
-  }
-}
-
-async function renameFile(path, oldName, msgId) {
-  showInputModal('重命名文件', '新文件名', oldName, async (newName) => {
-    if (!newName || newName === oldName) return;
-    const folder = path.includes('/') ? path.substring(0, path.lastIndexOf('/')) : '';
-    const newPath = folder ? folder + '/' + newName : newName;
-    // Get file content
-    const r = await ghFetch(`/repos/${state.user}/${state.repo}/contents/${path}`);
-    const d = await r.json();
-    // Create new file
-    await ghFetch(`/repos/${state.user}/${state.repo}/contents/${newPath}`, {
-      method: 'PUT',
-      body: JSON.stringify({ message: `Rename to ${newName} [GitDrive]`, content: d.content.replace(/\n/g,'') })
-    });
-    // Delete old
-    await ghFetch(`/repos/${state.user}/${state.repo}/contents/${path}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ message: `Delete ${oldName} [GitDrive]`, sha: d.sha })
-    });
-    // Update messages
-    state.messages.forEach(m => {
-      if (m.files) m.files.forEach(f => {
-        if (f.path === path) { f.path = newPath; f.name = newName; }
-      });
-    });
-    await saveMessages();
-    await loadRepoFiles();
-    renderMessages();
-    toast(`已重命名为 ${newName}`, 'success');
-  });
-}
-
-// ===== MODALS =====
-function showConfirmModal(title, text, onConfirm) {
-  const c = document.getElementById('modal-container');
-  c.innerHTML = `<div class="modal-overlay" onclick="closeModal()">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">${title}</div>
-      <p style="color:var(--text2); margin-bottom:20px; line-height:1.6">${text}</p>
-      <div class="modal-btns">
-        <button class="btn-ghost" onclick="closeModal()">取消</button>
-        <button class="btn-danger" onclick="confirmAndClose()">确认删除</button>
-      </div>
+/* ============================================================
+   MODALS
+============================================================ */
+function showConfirm(title,text,onOk){
+  const mc=document.getElementById('mc');
+  mc.innerHTML=`<div class="m-ov" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-t">${title}</div>
+    <div class="modal-p">${text}</div>
+    <div class="modal-btns">
+      <button class="btn-g" onclick="closeModal()">取消</button>
+      <button class="btn-d" onclick="_confirmOk()">确认删除</button>
     </div>
-  </div>`;
-  window._confirmCb = onConfirm;
+  </div></div>`;
+  window._confirmCb=onOk;
 }
+async function _confirmOk(){closeModal();if(window._confirmCb)await window._confirmCb();}
 
-function showInputModal(title, label, defaultVal, onSave) {
-  const c = document.getElementById('modal-container');
-  c.innerHTML = `<div class="modal-overlay" onclick="closeModal()">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">${title}</div>
-      <label style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block">${label}</label>
-      <textarea class="modal-input" id="modal-input" style="resize:vertical;min-height:60px">${defaultVal}</textarea>
-      <div class="modal-btns">
-        <button class="btn-ghost" onclick="closeModal()">取消</button>
-        <button class="btn-accent" onclick="saveModalAndClose()">保存</button>
-      </div>
+function showInputModal(title,label,def,onSave){
+  const mc=document.getElementById('mc');
+  const isLong=(def||'').length>80||(def||'').includes('\n');
+  mc.innerHTML=`<div class="m-ov" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-t">${title}</div>
+    <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;display:block">${label}</label>
+    <textarea class="modal-inp" id="mi" style="min-height:${isLong?'120px':'48px'}">${def||''}</textarea>
+    <div class="modal-btns">
+      <button class="btn-g" onclick="closeModal()">取消</button>
+      <button class="btn-a" onclick="_saveOk()">保存</button>
     </div>
-  </div>`;
-  window._saveCb = onSave;
-  setTimeout(() => document.getElementById('modal-input')?.focus(), 50);
+  </div></div>`;
+  window._saveCb=onSave;
+  setTimeout(()=>document.getElementById('mi')?.focus(),50);
+}
+async function _saveOk(){const v=document.getElementById('mi')?.value;closeModal();if(window._saveCb&&v!==undefined)await window._saveCb(v);}
+function closeModal(){document.getElementById('mc').innerHTML='';}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+function openSb(){document.getElementById('sidebar').classList.add('open');document.getElementById('sb-ov').classList.add('show');}
+function closeSb(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-ov').classList.remove('show');}
+
+/* ============================================================
+   THEME
+============================================================ */
+function toggleTheme(){
+  S.darkMode=!S.darkMode;
+  document.documentElement.setAttribute('data-theme',S.darkMode?'dark':'light');
+  localStorage.setItem('gd-theme',S.darkMode?'dark':'light');
+  document.getElementById('theme-btn').textContent=S.darkMode?'🌙':'☀️';
 }
 
-function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
-async function confirmAndClose() { closeModal(); if (window._confirmCb) await window._confirmCb(); }
-async function saveModalAndClose() {
-  const val = document.getElementById('modal-input')?.value;
-  closeModal();
-  if (window._saveCb && val !== undefined) await window._saveCb(val);
+/* ============================================================
+   HELPERS
+============================================================ */
+async function gh(path,opts={},token=null){
+  const t=token||S.token;
+  const url=path.startsWith('http')?path:`https://api.github.com${path}`;
+  return fetch(url,{...opts,headers:{'Authorization':`token ${t}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json',...(opts.headers||{})}});
 }
 
-// ===== LIGHTBOX =====
-function openLightbox(url) {
-  if (!url) return;
-  document.getElementById('lightbox-img').src = url;
-  document.getElementById('lightbox').style.display = 'flex';
-}
-function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
+function rawUrl(path){return `https://raw.githubusercontent.com/${S.user}/${S.repo}/main/${path}`;}
 
-// ===== SIDEBAR (mobile) =====
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebar-overlay').classList.add('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('show');
+function dlFile(url,name){
+  const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.click();
 }
 
-// ===== THEME =====
-function toggleTheme() {
-  state.darkMode = !state.darkMode;
-  document.documentElement.setAttribute('data-theme', state.darkMode ? 'dark' : 'light');
-  localStorage.setItem('gitdrive-theme', state.darkMode ? 'dark' : 'light');
-  document.querySelector('[onclick="toggleTheme()"]').textContent = state.darkMode ? '🌙' : '☀️';
-}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';}
 
-// ===== HELPERS =====
-async function ghFetch(path, options={}, token=null) {
-  const t = token || state.token;
-  const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
-  return fetch(url, {
-    ...options,
-    headers: {
-      'Authorization': `token ${t}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    }
-  });
-}
+function isImg(name){return /\.(jpg|jpeg|png|gif|webp|svg|avif|bmp)$/i.test(name);}
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
+function ext(name){return (name.split('.').pop()||'').toLowerCase();}
 
-function getFileIcon(name, mime) {
-  const ext = name.split('.').pop().toLowerCase();
-  if (/^(jpg|jpeg|png|gif|webp|svg|bmp)$/.test(ext)) return '🖼️';
-  if (/^(mp4|mov|avi|mkv|webm)$/.test(ext)) return '🎬';
-  if (/^(mp3|wav|flac|aac|ogg)$/.test(ext)) return '🎵';
-  if (/^(pdf)$/.test(ext)) return '📄';
-  if (/^(doc|docx)$/.test(ext)) return '📝';
-  if (/^(xls|xlsx|csv)$/.test(ext)) return '📊';
-  if (/^(ppt|pptx)$/.test(ext)) return '📑';
-  if (/^(zip|rar|7z|tar|gz)$/.test(ext)) return '🗜️';
-  if (/^(js|ts|jsx|tsx|py|java|c|cpp|html|css|json|md)$/.test(ext)) return '💻';
-  if (/^(txt|log)$/.test(ext)) return '📃';
+function fileIcon(name){
+  const e=ext(name);
+  if(/^(jpg|jpeg|png|gif|webp|svg|avif|bmp)$/.test(e)) return '🖼️';
+  if(/^(mp4|mov|avi|mkv|webm|m4v)$/.test(e)) return '🎬';
+  if(/^(mp3|wav|flac|aac|ogg|m4a)$/.test(e)) return '🎵';
+  if(/^pdf$/.test(e)) return '📄';
+  if(/^(doc|docx)$/.test(e)) return '📝';
+  if(/^(xls|xlsx|csv|ods)$/.test(e)) return '📊';
+  if(/^(ppt|pptx|key)$/.test(e)) return '📑';
+  if(/^(zip|rar|7z|tar|gz|bz2)$/.test(e)) return '🗜️';
+  if(/^(js|ts|jsx|tsx|py|java|c|cpp|html|css|json|xml|yaml|go|rs|php)$/.test(e)) return '💻';
+  if(/^(txt|md|log|rtf)$/.test(e)) return '📃';
   return '📎';
 }
 
-function formatSize(bytes) {
-  if (!bytes) return '';
-  if (bytes < 1024) return bytes + 'B';
-  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + 'KB';
-  return (bytes/1024/1024).toFixed(1) + 'MB';
+function fmtSize(b){if(!b)return '';if(b<1024)return b+'B';if(b<1048576)return (b/1024).toFixed(1)+'KB';return (b/1048576).toFixed(1)+'MB';}
+
+function toast(msg,type=''){
+  const c=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast '+(type==='ok'?'ok':type==='err'?'err':type==='warn'?'warn':'');
+  el.textContent=msg;c.appendChild(el);
+  setTimeout(()=>el.remove(),2800);
 }
 
-function toast(msg, type='') {
-  const c = document.getElementById('toast-container');
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.textContent = msg;
-  c.appendChild(el);
-  setTimeout(() => el.remove(), 2800);
-}
-
-// PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
+// PWA service worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
