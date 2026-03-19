@@ -41,17 +41,19 @@
   --sh:0 4px 24px rgba(0,0,0,.1);--sh2:0 2px 8px rgba(0,0,0,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;height:-webkit-fill-available}
-body{
-  height:100%;height:-webkit-fill-available;
+html,body{
+  height:100%;
+  /* iOS PWA: use -webkit-fill-available as fallback */
+  height:-webkit-fill-available;
   overflow:hidden;
+  overscroll-behavior:none;
+}
+body{
   font-family:'Outfit',-apple-system,sans-serif;
   background:var(--bg);color:var(--text);
   font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
-  /* FIX #4(3): prevent iOS rubber-band scroll causing layout issues */
-  overscroll-behavior:none;
-  position:fixed;width:100%;
+  /* CRITICAL: do NOT use position:fixed on body — breaks all click events */
 }
 button{font-family:inherit;cursor:pointer}
 input,textarea{font-family:inherit}
@@ -61,15 +63,24 @@ input,textarea{font-family:inherit}
 /* ===== LAYOUT ===== */
 #app{
   display:flex;
-  height:100dvh;height:-webkit-fill-available;
+  /* dvh is best for PWA; fall back to 100% for older iOS */
+  height:100dvh;
+  min-height:-webkit-fill-available;
   position:relative;overflow:hidden;
+  /* iOS PWA: prevent rubberbanding from showing background */
+  background:var(--bg);
 }
 
 /* ===== LOGIN ===== */
 #login-screen{
   position:fixed;inset:0;z-index:200;
   background:var(--bg);
-  display:flex;align-items:center;justify-content:center;padding:20px;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  /* iOS safe areas for login screen */
+  padding-top:max(20px, calc(env(safe-area-inset-top,0px) + 20px));
+  padding-bottom:max(20px, calc(env(safe-area-inset-bottom,0px) + 20px));
+  overflow-y:auto;
 }
 .login-wrap{width:100%;max-width:400px;animation:fadeSlideUp .4s var(--ease) both}
 .login-logo-ring{
@@ -917,7 +928,6 @@ const CATEGORIES=[
   /* 通用分类 */
   {id:'text',     label:'文字',   icon:'📝', color:'#fbbf24',bg:'rgba(251,191,36,.15)'},
   {id:'other',    label:'其他',   icon:'📦', color:'#9098aa',bg:'rgba(144,152,170,.15)'},
-  {id:'muse',    label:'艺术',   icon:'🎵', color:'#FFD966',bg:'rgba(144,152,170,.15)'},
 ];
 /* ===== END CATEGORIES — 以上为全部分类配置 ===== */
 const catMap=Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
