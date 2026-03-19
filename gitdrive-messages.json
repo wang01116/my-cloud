@@ -77,38 +77,5 @@
     "content": "111",
     "category": "text",
     "timestamp": "2026-03-19T12:24:26.197Z"
-  },
-  {
-    "id": "1773923200163",
-    "type": "file",
-    "files": [
-      {
-        "name": "屏幕截图 2025-12-01 203030.png",
-        "path": "text/屏幕截图 2025-12-01 203030.png",
-        "size": 437526,
-        "mime": "image/png",
-        "sha": "ec06a72e0a9a3e9084124f2c842f9710761a0da4",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/text/屏幕截图 2025-12-01 203030.png"
-      },
-      {
-        "name": "屏幕截图 2025-12-30 181359.png",
-        "path": "text/屏幕截图 2025-12-30 181359.png",
-        "size": 43569,
-        "mime": "image/png",
-        "sha": "be9fc85a77692973838a03c589a6a91071e5d8a9",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/text/屏幕截图 2025-12-30 181359.png"
-      },
-      {
-        "name": "屏幕截图 2026-03-16 164937.png",
-        "path": "text/屏幕截图 2026-03-16 164937.png",
-        "size": 274541,
-        "mime": "image/png",
-        "sha": "7e3224e54a240fd2373ecb5f744662cd42f409e9",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/text/屏幕截图 2026-03-16 164937.png"
-      }
-    ],
-    "caption": "",
-    "category": "text",
-    "timestamp": "2026-03-19T12:26:40.163Z"
   }
 ]
