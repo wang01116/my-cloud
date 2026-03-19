@@ -41,12 +41,17 @@
   --sh:0 4px 24px rgba(0,0,0,.1);--sh2:0 2px 8px rgba(0,0,0,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
+html{height:100%;height:-webkit-fill-available}
 body{
+  height:100%;height:-webkit-fill-available;
+  overflow:hidden;
   font-family:'Outfit',-apple-system,sans-serif;
   background:var(--bg);color:var(--text);
   font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
+  /* FIX #4(3): prevent iOS rubber-band scroll causing layout issues */
+  overscroll-behavior:none;
+  position:fixed;width:100%;
 }
 button{font-family:inherit;cursor:pointer}
 input,textarea{font-family:inherit}
@@ -54,7 +59,11 @@ input,textarea{font-family:inherit}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ===== LAYOUT ===== */
-#app{display:flex;height:100dvh;position:relative}
+#app{
+  display:flex;
+  height:100dvh;height:-webkit-fill-available;
+  position:relative;overflow:hidden;
+}
 
 /* ===== LOGIN ===== */
 #login-screen{
@@ -167,7 +176,7 @@ input,textarea{font-family:inherit}
 .menu-btn{display:none}
 
 /* ===== CHAT SCREEN ===== */
-#chat-screen{display:flex;flex-direction:column;height:100%;min-height:0}
+#chat-screen{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
 #msg-list{
   flex:1;overflow-y:auto;overflow-x:hidden;
   padding:16px 14px 8px;
@@ -328,9 +337,11 @@ input,textarea{font-family:inherit}
 .input-wrap{
   background:var(--bg2);border-top:1px solid var(--border);
   padding:10px 14px;
-  /* FIX #7: safe area bottom */
-  padding-bottom:max(10px, var(--sab));
+  /* FIX #4(3): iOS PWA bottom safe area — also accounts for home indicator */
+  padding-bottom:max(12px, calc(var(--sab) + 4px));
   flex-shrink:0;z-index:10;
+  /* Prevent content from going under iOS home indicator */
+  margin-bottom:env(safe-area-inset-bottom,0px);
 }
 .select-bar{display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--glow);border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--accent2)}
 .select-bar.show{display:flex}
@@ -431,50 +442,93 @@ input,textarea{font-family:inherit}
 .fs-box input::placeholder{color:var(--text3)}
 
 /* FIX #8: files grid with select-mode */
-#fg{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;align-content:start}
+#fg{
+  flex:1;overflow-y:auto;padding:12px;
+  /* FIX #4(4): smaller min on mobile so cards fit in 2 columns */
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(140px,42vw),1fr));
+  gap:10px;align-content:start;
+}
 #fg.list-view{grid-template-columns:1fr;gap:5px}
-.fgi{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative;animation:fadeUp .22s var(--ease) both;transition:border-color var(--dur),transform var(--dur),box-shadow var(--dur)}
+@media(max-width:640px){
+  #fg{padding:10px;gap:8px}
+}
+.fgi{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;position:relative;
+  animation:fadeUp .22s var(--ease) both;
+  transition:border-color var(--dur),transform var(--dur),box-shadow var(--dur);
+  display:flex;flex-direction:column;
+}
 .fgi:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 24px var(--glow)}
 .fgi.selected{border-color:var(--accent);background:var(--glow2)}
-.fgi-check{position:absolute;top:8px;left:8px;z-index:3;width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.6);background:rgba(0,0,0,.3);display:none;align-items:center;justify-content:center;font-size:11px;color:#fff;transition:all var(--dur);backdrop-filter:blur(4px)}
+.fgi-check{
+  position:absolute;top:8px;left:8px;z-index:3;
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.65);background:rgba(0,0,0,.35);
+  display:none;align-items:center;justify-content:center;
+  font-size:11px;color:#fff;transition:all var(--dur);backdrop-filter:blur(6px);
+}
 .select-mode .fgi-check{display:flex}
 .fgi.selected .fgi-check{background:var(--accent);border-color:var(--accent)}
 
-/* FIX #5: square img in grid */
-.fgi-img-wrap{width:100%;aspect-ratio:1/1;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center}
-.fgi-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s var(--ease);border-radius:0}
+/* FIX #7: unified square thumbnail area for both images and docs */
+.fgi-thumb-area{
+  width:100%;aspect-ratio:1/1;overflow:hidden;flex-shrink:0;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.fgi-img-wrap{width:100%;height:100%}
+.fgi-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s var(--ease)}
 .fgi:hover .fgi-img-wrap img{transform:scale(1.05)}
-.fgi-icon-wrap{width:100%;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:36px}
-.fgi-ext{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg4);padding:2px 6px;border-radius:4px}
-.fgi-info{padding:7px 10px 0}
-/* FIX #5: filename wraps to 2 lines, always visible */
-.fgi-name{font-size:12px;font-weight:700;line-height:1.35;max-height:2.7em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal}
-.fgi-meta{font-size:10.5px;color:var(--text2);margin-top:2px}
+/* FIX #7: doc icon area same aspect-ratio as image, centered */
+.fgi-icon-wrap{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;font-size:36px;
+}
+.fgi-ext{
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text3);background:var(--bg4);padding:2px 7px;border-radius:5px;
+}
+.fgi-info{padding:8px 10px 4px}
+.fgi-name{font-size:12px;font-weight:700;line-height:1.4;max-height:2.8em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;word-break:break-word}
+.fgi-meta{font-size:10.5px;color:var(--text2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fgi-cat{display:inline-flex;align-items:center;gap:3px;font-size:10px;margin-top:5px;padding:2px 7px;border-radius:8px;font-weight:700}
-.fav-star{position:absolute;top:7px;right:7px;z-index:3;font-size:14px;line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.5)}
-/* FIX #5: grid card action buttons row */
+/* FIX #5,#8: grid card action bar — always visible, well-spaced */
 .fgi-card-acts{
   display:flex;align-items:center;justify-content:space-around;
-  padding:5px 4px 7px;border-top:1px solid var(--border);margin-top:6px;
+  padding:6px 4px 8px;border-top:1px solid var(--border);
+  margin-top:auto;gap:2px;
 }
 .fgi-card-acts button{
   background:none;border:none;color:var(--text2);
-  font-size:14px;font-weight:700;padding:4px 5px;border-radius:7px;
+  font-size:15px;font-weight:800;padding:5px 6px;border-radius:8px;
   cursor:pointer;transition:background var(--dur),color var(--dur);
   display:flex;align-items:center;justify-content:center;
-  min-width:28px;height:28px;
+  min-width:30px;height:30px;
 }
-.fgi-card-acts button:hover{background:var(--bg3);color:var(--text)}
+.fgi-card-acts button:hover{background:var(--bg4);color:var(--text)}
+@media(max-width:640px){
+  .fgi-card-acts button{min-width:26px;height:26px;font-size:14px;padding:4px 3px}
+}
 
 /* FIX #8: list item — more space for filename, minimal actions on mobile */
-.fgi.list-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px}
-.fgi.list-item .fgi-thumb-sm{width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center}
-.fgi.list-item .fgi-thumb-sm img{width:44px;height:44px;object-fit:cover}
-.fgi.list-item .fgi-icon-sm{font-size:22px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.fgi.list-item{
+  display:flex;align-items:center;gap:12px;
+  /* FIX #4(2): taller list items for comfortable touch */
+  padding:12px 14px;border-radius:12px;min-height:68px;
+}
+.fgi.list-item .fgi-thumb-sm{
+  width:48px;height:48px;border-radius:10px;overflow:hidden;
+  flex-shrink:0;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+}
+.fgi.list-item .fgi-thumb-sm img{width:48px;height:48px;object-fit:cover}
+.fgi.list-item .fgi-icon-sm{font-size:24px;display:flex;flex-direction:column;align-items:center;gap:2px}
 .fgi.list-item .fgi-icon-sm .fgi-ext{font-size:8px;padding:1px 3px}
 .fgi.list-item .fgi-info{padding:0;flex:1;overflow:hidden;min-width:0}
-/* FIX #8: filename gets more space */
-.fgi.list-item .fgi-name{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:none}
+.fgi.list-item .fgi-name{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* FIX #8: mobile list only shows fav + delete, rest in long-press menu */
 .li-acts{display:flex;gap:4px;flex-shrink:0;align-items:center}
@@ -669,6 +723,8 @@ input,textarea{font-family:inherit}
       <button class="nav-it active" onclick="showScreen('chat')" id="n-chat"><span class="ni">💬</span>对话云盘</button>
       <button class="nav-it" onclick="showScreen('files')" id="n-files"><span class="ni">📁</span>所有文件<span class="nav-badge" id="files-cnt">0</span></button>
       <button class="nav-it" onclick="showFilesFiltered('fav')" id="n-fav"><span class="ni">★</span>收藏<span class="nav-badge" id="fav-cnt"></span></button>
+      <button class="nav-it" onclick="showScreen('trash')" id="n-trash"><span class="ni">🗑</span>回收站<span class="nav-badge" id="trash-cnt"></span></button>
+      <button class="nav-it" onclick="showStatsPanel()" id="n-stats"><span class="ni">📊</span>统计</button>
     </nav>
     <div class="sb-sec">文件分类</div>
     <!-- ===== CATEGORIES NAV ===== -->
@@ -790,6 +846,30 @@ input,textarea{font-family:inherit}
   <button class="mp-arrow" id="mp-next" onclick="event.stopPropagation();mpNav(1)">›</button>
 </div>
 
+<!-- TRASH SCREEN -->
+<div id="trash-screen" style="display:none;flex-direction:column;height:100%">
+  <div class="files-top">
+    <button class="ib menu-btn" onclick="openSb()">☰</button>
+    <div class="files-title">🗑 回收站</div>
+    <div class="files-tb">
+      <button class="tb-btn" onclick="emptyTrash()" style="color:var(--red)">清空回收站</button>
+    </div>
+  </div>
+  <div style="padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;color:var(--text3)">
+    文件删除后保留 30 天，之后自动清除。回收站中的文件不占用统计空间。
+  </div>
+  <div id="trash-list" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px"></div>
+</div>
+
+<!-- STATS PANEL -->
+<div id="stats-screen" style="display:none;flex-direction:column;height:100%">
+  <div class="files-top">
+    <button class="ib menu-btn" onclick="openSb()">☰</button>
+    <div class="files-title">📊 存储统计</div>
+  </div>
+  <div id="stats-panel" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"></div>
+</div>
+
 <div id="mc"></div>
 <div id="toasts"></div>
 
@@ -809,7 +889,9 @@ const S={
   darkMode:true,
   chatClearTime:null,  // ISO timestamp: messages BEFORE this time are hidden in chat view
   mpItems:[],mpIdx:0,       // media preview
-  pendingFiles:[],           // FIX #11: multi-file pending
+  pendingFiles:[],           // multi-file pending
+  trashItems:[],            // {path, name, deletedAt, origPath, sha} 30-day recycle bin
+  trashSha:null,
 };
 
 /* ============================================================
@@ -835,7 +917,7 @@ const CATEGORIES=[
   /* 通用分类 */
   {id:'text',     label:'文字',   icon:'📝', color:'#fbbf24',bg:'rgba(251,191,36,.15)'},
   {id:'other',    label:'其他',   icon:'📦', color:'#9098aa',bg:'rgba(144,152,170,.15)'},
-  {id:'muse',     label:'艺术',   icon:'🎵', color:'#FFD966',bg:'rgba(255,217,102,.15)'},
+  {id:'muse',    label:'艺术',   icon:'🎵', color:'#FFD966',bg:'rgba(144,152,170,.15)'},
 ];
 /* ===== END CATEGORIES — 以上为全部分类配置 ===== */
 const catMap=Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
@@ -980,15 +1062,61 @@ async function loadRepoFiles(){
     }
   }
   S.allFiles=files;
+  // FIX #5: remove stale file refs from messages (file deleted from repo)
+  const existingPaths=new Set(files.map(f=>f.path));
+  let changed=false;
+  S.messages=S.messages.map(m=>{
+    if(m.type!=='file')return m;
+    const before=m.files.length;
+    m.files=m.files.filter(f=>existingPaths.has(f.path));
+    if(m.files.length<before)changed=true;
+    return m;
+  }).filter(m=>m.type==='text'||(m.files&&m.files.length>0));
+  if(changed)await saveMsgs();
+  // Load trash
+  await loadTrash();
+}
+
+async function loadTrash(){
+  const r=await gh(`/repos/${S.user}/${S.repo}/contents/gitdrive-trash.json`);
+  if(r.ok){
+    const d=await r.json();
+    const raw=d.content.replace(/\n/g,'');
+    const bytes=Uint8Array.from(atob(raw),c=>c.charCodeAt(0));
+    S.trashItems=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    S.trashSha=d.sha;
+    // Auto-purge items older than 30 days
+    const now=Date.now();
+    const before=S.trashItems.length;
+    S.trashItems=S.trashItems.filter(t=>(now-new Date(t.deletedAt).getTime())<30*24*3600*1000);
+    if(S.trashItems.length<before)await saveTrash();
+  }else{S.trashItems=[];S.trashSha=null;}
+  updateTrashCount();
+}
+
+async function saveTrash(){
+  const body={message:'Update trash [GitDrive]',content:toBase64UTF8(JSON.stringify(S.trashItems,null,2))};
+  if(S.trashSha)body.sha=S.trashSha;
+  const r=await gh(`/repos/${S.user}/${S.repo}/contents/gitdrive-trash.json`,{method:'PUT',body:JSON.stringify(body)});
+  if(r.ok){const d=await r.json();S.trashSha=d.content.sha;}
+}
+
+function updateTrashCount(){
+  const el=document.getElementById('trash-cnt');
+  if(el)el.textContent=S.trashItems.length||'';
 }
 async function syncFiles(){toast('同步中…');await loadAll();toast('同步完成','ok');}
 async function refreshAll(){toast('刷新中…');await loadAll();toast('已刷新','ok');}
 function updateStats(){
   const cnt=S.allFiles.length;
+  const totalSize=S.allFiles.reduce((a,f)=>a+(f.size||0),0);
   document.getElementById('files-cnt').textContent=cnt;
-  document.getElementById('hd-sub').textContent=`${cnt} 个文件`;
-  document.getElementById('sb-stat').textContent=`${cnt} 个文件 · 就绪`;
+  document.getElementById('hd-sub').textContent=`${cnt} 个文件 · ${fmtSize(totalSize)}`;
+  document.getElementById('sb-stat').textContent=`${cnt} 个文件 · ${fmtSize(totalSize)} · 就绪`;
   updateFavCount();renderFG();
+  // Update stats panel if visible
+  const sp=document.getElementById('stats-panel');
+  if(sp)renderStatsPanel();
 }
 function updateFavCount(){document.getElementById('fav-cnt').textContent=S.favorites.size||'';}
 
@@ -1488,18 +1616,27 @@ function restoreChat(){
    FILES GRID
 ============================================================ */
 function showScreen(name){
-  document.getElementById('chat-screen').style.display=name==='chat'?'flex':'none';
-  document.getElementById('files-screen').style.display=name==='files'?'flex':'none';
-  ['n-chat','n-files'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  document.getElementById('n-'+name).classList.add('active');
+  ['chat-screen','files-screen','trash-screen','stats-screen'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='none';
+  });
+  const target=document.getElementById(name+'-screen');
+  if(target)target.style.display='flex';
+  ['n-chat','n-files','n-trash','n-stats'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.remove('active');
+  });
+  const ni=document.getElementById('n-'+name);if(ni)ni.classList.add('active');
   if(name==='files'){S.filesMode='all';setFCat('all');renderFG();}
+  if(name==='trash')renderTrash();
+  if(name==='stats')renderStatsPanel();
   closeSb();
 }
+function showStatsPanel(){showScreen('stats');}
 function showFilesFiltered(mode){
   S.filesMode=mode;
-  document.getElementById('n-files').classList.remove('active');
+  ['chat-screen','files-screen','trash-screen','stats-screen'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   document.getElementById('files-screen').style.display='flex';
-  document.getElementById('chat-screen').style.display='none';
+  ['n-chat','n-files','n-trash','n-stats'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   if(mode==='fav'){document.getElementById('files-screen-title').textContent='⭐ 收藏';setFCat('fav');}
   else if(mode==='archive'){document.getElementById('files-screen-title').textContent='📦 归档';setFCat('archive');}
   else{document.getElementById('files-screen-title').textContent='所有文件';setFCat(mode);}
@@ -1563,9 +1700,11 @@ function renderFG(){
     const fileExt=ext(f.name).toUpperCase();
     const isMedia=isVideo(f.name)||isAudio(f.name);
 
-    const thumb=image
-      ?`<div class="fgi-img-wrap"><img src="${url}" loading="lazy" alt="${esc(f.name)}"></div>`
-      :`<div class="fgi-icon-wrap" style="background:${cat.bg}">${fileIcon(f.name)}<span class="fgi-ext">${fileExt}</span></div>`;
+    const thumb=`<div class="fgi-thumb-area" style="${!image?'background:'+cat.bg:''}">
+      ${image
+        ?`<div class="fgi-img-wrap"><img src="${url}" loading="lazy" alt="${esc(f.name)}"></div>`
+        :`<div class="fgi-icon-wrap">${fileIcon(f.name)}<span class="fgi-ext">${fileExt}</span></div>`}
+    </div>`;
 
     const onclick=image
       ?`openMP('${url}','${esc(f.name)}',${JSON.stringify(files.filter(x=>isImg(x.name)).map(x=>rawUrl(x.path)))},${files.filter(x=>isImg(x.name)).findIndex(x=>x.path===f.path)})`
@@ -1599,23 +1738,19 @@ function renderFG(){
         </div>
       </div>`;
     }else{
-      // FIX #5: grid card with visible filename and tap-to-show actions on mobile
       return `<div class="fgi ${isSel?'selected':''}" style="animation-delay:${i*.02}s" data-path="${f.path}">
         <div class="fgi-check ${isSel?'selected':''}" onclick="toggleFGItem('${f.path}',event)">✓</div>
-        ${isFav?`<div class="fav-star" style="color:#fbbf24;font-size:16px">★</div>`:''}
-        <div onclick="${onclick}" style="cursor:pointer">
-          ${thumb}
-        </div>
+        ${isFav?`<div class="fav-star" style="color:#fbbf24;font-size:16px;position:absolute;top:8px;right:8px;z-index:3;text-shadow:0 1px 3px rgba(0,0,0,.6)">★</div>`:''}
+        <div onclick="${onclick}" style="cursor:pointer;display:block">${thumb}</div>
         <div class="fgi-info">
-          <div class="fgi-name" style="font-size:12px;line-height:1.35;max-height:2.7em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal">${f.name}</div>
-          <div class="fgi-meta">${fmtSize(f.size)}</div>
+          <div class="fgi-name">${f.name}</div>
+          <div class="fgi-meta">${fmtSize(f.size)}${msgT?' · '+msgT:''}</div>
         </div>
-        <!-- FIX #5: action bar always visible on grid card -->
         <div class="fgi-card-acts">
-          <button onclick="toggleFav('${f.path}')" title="${isFav?'取消收藏':'收藏'}" style="color:${isFav?'#fbbf24':'var(--text3)'}">${isFav?'★':'☆'}</button>
-          <button onclick="moveFile('${f.path}','${esc(f.name)}')" title="移动">↗</button>
+          <button onclick="toggleFav('${f.path}')" style="color:${isFav?'#fbbf24':'var(--text3)'}" title="${isFav?'取消收藏':'收藏'}">${isFav?'★':'☆'}</button>
+          <button onclick="moveFile('${f.path}','${esc(f.name)}')" title="移动分类">↗</button>
           ${!image?`<button onclick="renameGH('${f.path}','${esc(f.name)}')" title="重命名">✎</button>`:''}
-          <button onclick="dlFile('${url}','${esc(f.name)}')" title="下载">↓</button>
+          <button onclick="dlFile('${url}','${esc(f.name)}')" title="下载" style="color:var(--accent2)">↓</button>
           <button onclick="delFile('${f.path}','${f.sha}')" title="删除" style="color:var(--red)">✕</button>
         </div>
       </div>`;
@@ -1799,16 +1934,29 @@ function toggleFGItem(path,e){
 }
 async function deleteSelectedFiles(){
   if(!S.fgSelected.size)return;
-  showConfirm('批量删除',`确认删除 ${S.fgSelected.size} 个文件？`,async()=>{
+  showConfirm('批量移至回收站',`将 ${S.fgSelected.size} 个文件移至回收站？`,async()=>{
     for(const path of S.fgSelected){
-      const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`);
-      if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`,{method:'DELETE',body:JSON.stringify({message:`Delete ${path.split('/').pop()} [GitDrive]`,sha:d.sha})});}
+      const name=path.split('/').pop();
+      const trashPath=`gitdrive-trash-files/${Date.now()}_${name}`;
+      try{
+        const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`);
+        if(r.ok){
+          const d=await r.json();
+          await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(trashPath).replace(/%2F/g,'/')}`,
+            {method:'PUT',body:JSON.stringify({message:`Trash ${name} [GitDrive]`,content:d.content.replace(/
+/g,'')})});
+          await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`,
+            {method:'DELETE',body:JSON.stringify({message:`Move to trash ${name} [GitDrive]`,sha:d.sha})});
+          S.trashItems.push({origPath:path,trashPath,name,deletedAt:new Date().toISOString(),size:d.size||0,category:path.split('/')[0]});
+        }
+      }catch(e){toast('删除失败: '+name,'err');}
       S.favorites.delete(path);S.archived.delete(path);
     }
+    await saveTrash();
     S.messages=S.messages.map(m=>{if(m.files)m.files=m.files.filter(f=>!S.fgSelected.has(f.path));return m;}).filter(m=>m.type==='text'||(m.files&&m.files.length));
     await Promise.all([saveMsgs(),saveMeta()]);
-    exitFGSelect();await loadRepoFiles();updateStats();renderMsgs();
-    toast('批量删除完成','ok');
+    exitFGSelect();await loadRepoFiles();updateStats();renderMsgs();updateTrashCount();
+    toast('已移至回收站','ok');
   });
 }
 /* FIX #6: Batch download selected files */
@@ -1829,18 +1977,20 @@ async function downloadSelectedFiles(){
 
 async function moveSelectedFiles(){
   if(!S.fgSelected.size)return;
-  const paths=[...S.fgSelected];window._moveCat=CATEGORIES[0].id;
+  window._batchPaths=[...S.fgSelected];  // FIX #9: store globally, avoid JSON inline
+  window._moveCat=CATEGORIES[0].id;
   const mc=document.getElementById('mc');
   mc.innerHTML=`<div class="m-ov"><div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-t">批量移动 ${paths.length} 个文件</div>
+    <div class="modal-t">批量移动 ${window._batchPaths.length} 个文件</div>
     <div class="cat-move-grid">${CATEGORIES.map(c=>`<div class="cat-move-item ${c.id===CATEGORIES[0].id?'selected':''}" onclick="pickMoveCat('${c.id}')" id="cmi-${c.id}"><span>${c.icon}</span>${c.label}</div>`).join('')}</div>
     <div class="modal-btns">
       <button class="btn-g" onclick="closeModal()">取消</button>
-      <button class="btn-a" onclick="doBatchMove(${JSON.stringify(paths)})">移动</button>
+      <button class="btn-a" onclick="doBatchMove()">移动 ${window._batchPaths.length} 个文件</button>
     </div>
   </div></div>`;
 }
-async function doBatchMove(paths){
+async function doBatchMove(){
+  const paths=window._batchPaths||[];
   const newCat=window._moveCat;closeModal();
   for(const oldPath of paths){
     const name=oldPath.split('/').pop();const newPath=`${newCat}/${name}`;
@@ -1884,15 +2034,109 @@ async function renameGH(path,oldName){
 }
 async function delFile(path,sha){
   closeCtx();
-  showConfirm('删除文件',`确认删除 ${path.split('/').pop()}？`,async()=>{
-    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`);
-    if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`,{method:'DELETE',body:JSON.stringify({message:`Delete ${path.split('/').pop()} [GitDrive]`,sha:d.sha})});}
+  const name=path.split('/').pop();
+  showConfirm('移至回收站',`将 ${name} 移至回收站？30天后自动清除。`,async()=>{
+    // FIX #6: move to trash folder instead of hard delete
+    const trashPath=`gitdrive-trash-files/${Date.now()}_${name}`;
+    try{
+      const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`);
+      if(r.ok){
+        const d=await r.json();
+        // Copy to trash folder
+        await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(trashPath).replace(/%2F/g,'/')}`,
+          {method:'PUT',body:JSON.stringify({message:`Trash ${name} [GitDrive]`,content:d.content.replace(/\n/g,'')})});
+        // Remove from original location
+        await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(path).replace(/%2F/g,'/')}`,
+          {method:'DELETE',body:JSON.stringify({message:`Move to trash ${name} [GitDrive]`,sha:d.sha})});
+        // Record in trash index
+        S.trashItems.push({origPath:path,trashPath,name,deletedAt:new Date().toISOString(),size:d.size||0,category:path.split('/')[0]});
+        await saveTrash();
+      }
+    }catch(e){toast('移至回收站失败: '+e.message,'err');return;}
     S.favorites.delete(path);S.archived.delete(path);
     S.messages=S.messages.map(m=>{if(m.files)m.files=m.files.filter(f=>f.path!==path);return m;}).filter(m=>m.type==='text'||(m.files&&m.files.length));
     await Promise.all([saveMsgs(),saveMeta()]);
     await loadRepoFiles();updateStats();renderMsgs();
-    toast('已删除','ok');
+    updateTrashCount();
+    toast('已移至回收站','ok');
   });
+}
+
+async function restoreFromTrash(idx){
+  const item=S.trashItems[idx];if(!item)return;
+  // Restore to original path; fall back to uncat/ if category folder missing
+  const cat=catMap[item.category]||CATEGORIES[0];
+  const destPath=`${cat.id}/${item.name}`;
+  try{
+    const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(item.trashPath).replace(/%2F/g,'/')}`);
+    if(!r.ok)throw new Error('回收站文件不存在');
+    const d=await r.json();
+    await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(destPath).replace(/%2F/g,'/')}`,
+      {method:'PUT',body:JSON.stringify({message:`Restore ${item.name} [GitDrive]`,content:d.content.replace(/\n/g,'')})});
+    await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(item.trashPath).replace(/%2F/g,'/')}`,
+      {method:'DELETE',body:JSON.stringify({message:`Remove trash ${item.name} [GitDrive]`,sha:d.sha})});
+    S.trashItems.splice(idx,1);
+    await saveTrash();
+    await loadRepoFiles();updateStats();renderTrash();
+    toast(`已恢复到 ${cat.label}`,'ok');
+  }catch(e){toast('恢复失败: '+e.message,'err');}
+}
+
+async function hardDeleteTrash(idx){
+  const item=S.trashItems[idx];if(!item)return;
+  showConfirm('永久删除',`永久删除 ${item.name}？此操作不可恢复。`,async()=>{
+    try{
+      const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(item.trashPath).replace(/%2F/g,'/')}`);
+      if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(item.trashPath).replace(/%2F/g,'/')}`,
+        {method:'DELETE',body:JSON.stringify({message:`Permanently delete ${item.name} [GitDrive]`,sha:d.sha})});}
+    }catch(e){}
+    S.trashItems.splice(idx,1);
+    await saveTrash();updateTrashCount();renderTrash();
+    toast('已永久删除');
+  });
+}
+
+async function emptyTrash(){
+  if(!S.trashItems.length){toast('回收站已经是空的');return;}
+  showConfirm('清空回收站',`永久删除回收站中全部 ${S.trashItems.length} 个文件？`,async()=>{
+    for(const item of S.trashItems){
+      try{
+        const r=await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(item.trashPath).replace(/%2F/g,'/')}`);
+        if(r.ok){const d=await r.json();await gh(`/repos/${S.user}/${S.repo}/contents/${encodeURIComponent(item.trashPath).replace(/%2F/g,'/')}`,
+          {method:'DELETE',body:JSON.stringify({message:`Empty trash [GitDrive]`,sha:d.sha})});}
+      }catch(e){}
+    }
+    S.trashItems=[];await saveTrash();updateTrashCount();renderTrash();
+    toast('回收站已清空','ok');
+  });
+}
+
+function renderTrash(){
+  const list=document.getElementById('trash-list');
+  if(!list)return;
+  if(!S.trashItems.length){
+    list.innerHTML=`<div class="empty-st"><div class="empty-ic">🗑</div><div class="empty-t">回收站是空的</div><div class="empty-s">删除的文件会保留在这里 30 天</div></div>`;
+    return;
+  }
+  const now=Date.now();
+  list.innerHTML=S.trashItems.map((item,i)=>{
+    const elapsed=now-new Date(item.deletedAt).getTime();
+    const remain=Math.ceil((30*24*3600*1000-elapsed)/(24*3600*1000));
+    const cat=catMap[item.category]||CATEGORIES[0];
+    const urgent=remain<=3?'color:var(--red)':remain<=7?'color:var(--orange)':'color:var(--text3)';
+    return `<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;animation:fadeUp .2s var(--ease)">
+      <div style="width:40px;height:40px;border-radius:10px;background:${cat.bg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${fileIcon(item.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">${cat.icon} ${cat.label} · ${fmtSize(item.size)}</div>
+        <div style="font-size:11px;margin-top:2px;${urgent}">⏱ 剩余 ${remain} 天</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+        <button onclick="restoreFromTrash(${i})" style="padding:6px 12px;background:var(--glow);border:1px solid var(--accent);border-radius:8px;color:var(--accent2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">↩ 恢复</button>
+        <button onclick="hardDeleteTrash(${i})" style="padding:6px 12px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:8px;color:var(--red);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✕ 永久删除</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ============================================================
@@ -2016,6 +2260,75 @@ function showInputModal(title,label,def,onSave){
 }
 async function _saveOk(){const v=document.getElementById('mi')?.value;closeModal();if(window._saveCb&&v!==undefined)await window._saveCb(v);}
 function closeModal(){document.getElementById('mc').innerHTML='';}
+
+/* ============================================================
+   STATS PANEL (#1,2,3)
+============================================================ */
+function renderStatsPanel(){
+  const panel=document.getElementById('stats-panel');
+  if(!panel)return;
+  const total=S.allFiles.reduce((a,f)=>a+(f.size||0),0);
+  const cnt=S.allFiles.length;
+
+  // By category
+  const byCat={};
+  CATEGORIES.forEach(c=>{byCat[c.id]={cnt:0,size:0,cat:c};});
+  S.allFiles.forEach(f=>{
+    const k=f.category||'other';
+    if(!byCat[k])byCat[k]={cnt:0,size:0,cat:catMap[k]||CATEGORIES[0]};
+    byCat[k].cnt++;byCat[k].size+=(f.size||0);
+  });
+
+  // By type
+  const byType={};
+  TYPE_GROUPS.slice(1).forEach(g=>{byType[g.id]={cnt:0,size:0,label:g.label};});
+  S.allFiles.forEach(f=>{
+    const e=ext(f.name);
+    for(const g of TYPE_GROUPS.slice(1)){
+      if(g.exts.includes(e)){
+        byType[g.id].cnt++;byType[g.id].size+=(f.size||0);break;
+      }
+    }
+  });
+
+  const pct=(s)=>total?Math.round(s/total*100):0;
+  const bar=(s,color)=>`<div style="height:6px;border-radius:3px;background:var(--bg4);margin-top:6px;overflow:hidden"><div style="height:100%;width:${pct(s)}%;background:${color};border-radius:3px;transition:width .4s var(--ease)"></div></div>`;
+
+  panel.innerHTML=`
+    <!-- Total -->
+    <div style="background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:18px;padding:20px 22px;color:#fff">
+      <div style="font-size:13px;opacity:.8;margin-bottom:4px">总存储占用</div>
+      <div style="font-size:32px;font-weight:800;letter-spacing:-.02em">${fmtSize(total)}</div>
+      <div style="font-size:13px;opacity:.75;margin-top:6px">${cnt} 个文件 · ${S.trashItems.length} 个在回收站</div>
+    </div>
+
+    <!-- By Category -->
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:16px 18px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">按分类</div>
+      ${Object.values(byCat).filter(x=>x.cnt>0).sort((a,b)=>b.size-a.size).map(x=>`
+        <div style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+            <span style="font-size:13px;font-weight:600">${x.cat.icon} ${x.cat.label}</span>
+            <span style="font-size:12px;color:var(--text2)">${x.cnt} 个 · ${fmtSize(x.size)}</span>
+          </div>
+          ${bar(x.size,x.cat.color)}
+        </div>`).join('')}
+    </div>
+
+    <!-- By Type -->
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:16px 18px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">按文件类型</div>
+      ${Object.entries(byType).filter(([,v])=>v.cnt>0).sort((a,b)=>b[1].size-a[1].size).map(([,v])=>`
+        <div style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:13px;font-weight:600">${v.label}</span>
+            <span style="font-size:12px;color:var(--text2)">${v.cnt} 个 · ${fmtSize(v.size)}</span>
+          </div>
+          ${bar(v.size,'var(--accent)')}
+        </div>`).join('')}
+    </div>
+  `;
+}
 
 /* ============================================================
    FIX #4: HELP / INTRO MODAL
