@@ -446,11 +446,25 @@ input,textarea{font-family:inherit}
 .fgi:hover .fgi-img-wrap img{transform:scale(1.05)}
 .fgi-icon-wrap{width:100%;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:36px}
 .fgi-ext{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg4);padding:2px 6px;border-radius:4px}
-.fgi-info{padding:9px 11px}
-.fgi-name{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fgi-info{padding:7px 10px 0}
+/* FIX #5: filename wraps to 2 lines, always visible */
+.fgi-name{font-size:12px;font-weight:700;line-height:1.35;max-height:2.7em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal}
 .fgi-meta{font-size:10.5px;color:var(--text2);margin-top:2px}
 .fgi-cat{display:inline-flex;align-items:center;gap:3px;font-size:10px;margin-top:5px;padding:2px 7px;border-radius:8px;font-weight:700}
 .fav-star{position:absolute;top:7px;right:7px;z-index:3;font-size:14px;line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+/* FIX #5: grid card action buttons row */
+.fgi-card-acts{
+  display:flex;align-items:center;justify-content:space-around;
+  padding:5px 4px 7px;border-top:1px solid var(--border);margin-top:6px;
+}
+.fgi-card-acts button{
+  background:none;border:none;color:var(--text2);
+  font-size:14px;font-weight:700;padding:4px 5px;border-radius:7px;
+  cursor:pointer;transition:background var(--dur),color var(--dur);
+  display:flex;align-items:center;justify-content:center;
+  min-width:28px;height:28px;
+}
+.fgi-card-acts button:hover{background:var(--bg3);color:var(--text)}
 
 /* FIX #8: list item — more space for filename, minimal actions on mobile */
 .fgi.list-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px}
@@ -684,6 +698,7 @@ input,textarea{font-family:inherit}
       <div class="select-bar" id="sel-bar">
         <span class="sel-count" id="sel-cnt">已选 0 条</span>
         <button class="sel-cancel" onclick="exitSelectMode()">取消</button>
+        <button class="btn-g" onclick="downloadSelectedMsgs()" style="font-size:12px;padding:6px 12px;color:var(--accent2)">↓ 下载</button>
         <button class="sel-del" onclick="deleteSelected()">删除所选</button>
       </div>
       <div id="msg-list">
@@ -743,6 +758,7 @@ input,textarea{font-family:inherit}
         <span class="sel-count" id="fg-sel-cnt">已选 0 个</span>
         <button class="sel-cancel" onclick="exitFGSelect()">取消</button>
         <button class="btn-g" onclick="moveSelectedFiles()" style="font-size:12px;padding:6px 12px">移动分类</button>
+        <button class="btn-g" onclick="downloadSelectedFiles()" style="font-size:12px;padding:6px 12px;color:var(--accent2)">↓ 下载</button>
         <button class="sel-del" onclick="deleteSelectedFiles()">删除</button>
       </div>
       <div id="fg"></div>
@@ -791,7 +807,7 @@ const S={
   selectMode:false,selectedMsgs:new Set(),
   fgSelectMode:false,fgSelected:new Set(),
   darkMode:true,
-  chatCleared:false,   // true = hide messages in chat view (files still in repo)
+  chatClearTime:null,  // ISO timestamp: messages BEFORE this time are hidden in chat view
   mpItems:[],mpIdx:0,       // media preview
   pendingFiles:[],           // FIX #11: multi-file pending
 };
@@ -884,8 +900,8 @@ async function launchApp(){
   document.getElementById('app').style.display='flex';
   document.getElementById('sb-repo').textContent=`${S.user}/${S.repo}`;
   document.getElementById('hd-title').textContent=S.repo;
-  // FIX #1: restore cleared state per repo
-  S.chatCleared=!!localStorage.getItem('gd-cleared-'+S.user+'/'+S.repo);
+  // FIX #1: restore clear timestamp per repo
+  S.chatClearTime=localStorage.getItem('gd-clearedAt-'+S.user+'/'+S.repo)||null;
   buildCatUI();
   await loadAll();
 }
@@ -1132,20 +1148,39 @@ function fileToB64(file,onProgress){
 function renderMsgs(){
   const el=document.getElementById('msg-list');
   const empt=document.getElementById('empty-chat');
-  /* FIX #1: if chat is cleared, show empty state with restore button */
-  if(S.chatCleared){
-    el.innerHTML='';
+  /* FIX #1,2,3: filter messages by clearTime — only hide OLD messages, new ones always show */
+  const visibleMsgs = S.chatClearTime
+    ? S.messages.filter(m=>m.timestamp>S.chatClearTime)
+    : S.messages;
+
+  if(!visibleMsgs.length){
     empt.style.display='flex';
-    empt.innerHTML=`<div class="empty-ic">🗂️</div>
-      <div class="empty-t">对话记录已清空</div>
-      <div class="empty-s">文件仍安全保存在仓库中，可前往"所有文件"查看</div>
-      <button onclick="restoreChat()" style="margin-top:16px;padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">恢复对话记录</button>`;
+    if(S.chatClearTime){
+      empt.innerHTML=`<div class="empty-ic">🗂️</div>
+        <div class="empty-t">历史记录已清空</div>
+        <div class="empty-s">新发送的内容会正常显示在这里<br>文件均已安全保存在仓库中</div>
+        <button onclick="restoreChat()" style="margin-top:16px;padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">恢复全部历史记录</button>`;
+    }else{
+      empt.innerHTML=`<div class="empty-ic">💬</div>
+        <div class="empty-t">开始使用 GitDrive</div>
+        <div class="empty-s">发送文字或上传文件，以聊天方式存入 GitHub 仓库</div>`;
+    }
     return;
   }
-  if(!S.messages.length){empt.style.display='flex';return;}
+  if(S.chatClearTime&&S.messages.length>visibleMsgs.length){
+    // There are hidden old messages — show a notice banner at top
+    el.innerHTML=`<div style="text-align:center;padding:10px 16px;margin-bottom:8px">
+      <span style="font-size:12px;color:var(--text3);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:6px 14px;display:inline-flex;align-items:center;gap:8px">
+        📂 历史记录已隐藏
+        <button onclick="restoreChat()" style="background:none;border:none;color:var(--accent2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:0">恢复</button>
+      </span>
+    </div>`;
+  }else{
+    el.innerHTML='';
+  }
   empt.style.display='none';
   const days={};
-  S.messages.forEach(m=>{
+  visibleMsgs.forEach(m=>{
     const d=new Date(m.timestamp).toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'});
     if(!days[d])days[d]=[];
     days[d].push(m);
@@ -1156,7 +1191,7 @@ function renderMsgs(){
     msgs.forEach(m=>{html+=renderMsg(m);});
   }
   html+=`<div id="empty-chat" style="display:none" class="empty-st"></div>`;
-  el.innerHTML=html;
+  el.innerHTML=(el.innerHTML||'')+html;
   if(S.selectMode){
     el.classList.add('select-mode');
     S.selectedMsgs.forEach(id=>{
@@ -1336,6 +1371,22 @@ function dlMsg(id){
     dlFile(URL.createObjectURL(blob),'msg-'+id+'.txt');
   }else if(m.files)m.files.forEach(f=>dlFile(rawUrl(f.path),f.name));
 }
+/* FIX #6: download all files from selected chat messages */
+function downloadSelectedMsgs(){
+  if(!S.selectedMsgs.size)return;
+  let count=0;
+  S.selectedMsgs.forEach(id=>{
+    const m=S.messages.find(x=>x.id===id);if(!m)return;
+    if(m.type==='text'){
+      const blob=new Blob([m.content],{type:'text/plain'});
+      setTimeout(()=>dlFile(URL.createObjectURL(blob),'msg-'+id+'.txt'),count*200);count++;
+    }else if(m.files){
+      m.files.forEach(f=>{setTimeout(()=>dlFile(rawUrl(f.path),f.name),count*200);count++;});
+    }
+  });
+  toast(`已触发 ${count} 个下载`,'ok');
+}
+
 function editTextMsg(id){
   const m=S.messages.find(x=>x.id===id);if(!m)return;
   showInputModal('编辑内容','内容',m.content,async val=>{
@@ -1413,21 +1464,23 @@ async function deleteSelected(){
 function clearChat(){
   showConfirm(
     '清空对话记录',
-    '对话记录将从视图中隐藏，但仓库中的文件不会被删除。\n你可以随时点击"恢复对话"重新显示。',
+    '之前的对话记录将从视图中隐藏，但仓库文件完全保留。\n之后新发送的内容照常显示。\n可随时点击"恢复"重新显示历史记录。',
     async()=>{
-      S.chatCleared=true;
-      // Save cleared state per repo so it persists
-      localStorage.setItem('gd-cleared-'+S.user+'/'+S.repo,'1');
+      // FIX #1,3: record the clear timestamp; only messages BEFORE this time are hidden
+      const now=new Date().toISOString();
+      S.chatClearTime=now;
+      localStorage.setItem('gd-clearedAt-'+S.user+'/'+S.repo, now);
       renderMsgs();
-      toast('对话记录已清空（文件安全保留在仓库中）','ok');
+      toast('已清空历史记录（新消息照常显示）','ok');
     }
   );
 }
 function restoreChat(){
-  S.chatCleared=false;
-  localStorage.removeItem('gd-cleared-'+S.user+'/'+S.repo);
+  // FIX #2: restore shows ALL messages including the previously hidden ones
+  S.chatClearTime=null;
+  localStorage.removeItem('gd-clearedAt-'+S.user+'/'+S.repo);
   renderMsgs();
-  toast('对话记录已恢复');
+  toast('已恢复全部对话记录');
 }
 
 /* ============================================================
@@ -1545,14 +1598,24 @@ function renderFG(){
         </div>
       </div>`;
     }else{
-      return `<div class="fgi ${isSel?'selected':''}" style="animation-delay:${i*.02}s" data-path="${f.path}" onclick="${onclick}">
+      // FIX #5: grid card with visible filename and tap-to-show actions on mobile
+      return `<div class="fgi ${isSel?'selected':''}" style="animation-delay:${i*.02}s" data-path="${f.path}">
         <div class="fgi-check ${isSel?'selected':''}" onclick="toggleFGItem('${f.path}',event)">✓</div>
         ${isFav?`<div class="fav-star" style="color:#fbbf24;font-size:16px">★</div>`:''}
-        ${thumb}
+        <div onclick="${onclick}" style="cursor:pointer">
+          ${thumb}
+        </div>
         <div class="fgi-info">
-          <div class="fgi-name">${f.name}</div>
-          <div class="fgi-meta">${fmtSize(f.size)}${msgT?' · '+msgT:''}</div>
-          <span class="fgi-cat" style="background:${cat.bg};color:${cat.color}">${cat.icon} ${cat.label}</span>
+          <div class="fgi-name" style="font-size:12px;line-height:1.35;max-height:2.7em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal">${f.name}</div>
+          <div class="fgi-meta">${fmtSize(f.size)}</div>
+        </div>
+        <!-- FIX #5: action bar always visible on grid card -->
+        <div class="fgi-card-acts">
+          <button onclick="toggleFav('${f.path}')" title="${isFav?'取消收藏':'收藏'}" style="color:${isFav?'#fbbf24':'var(--text3)'}">${isFav?'★':'☆'}</button>
+          <button onclick="moveFile('${f.path}','${esc(f.name)}')" title="移动">↗</button>
+          ${!image?`<button onclick="renameGH('${f.path}','${esc(f.name)}')" title="重命名">✎</button>`:''}
+          <button onclick="dlFile('${url}','${esc(f.name)}')" title="下载">↓</button>
+          <button onclick="delFile('${f.path}','${f.sha}')" title="删除" style="color:var(--red)">✕</button>
         </div>
       </div>`;
     }
@@ -1719,7 +1782,20 @@ async function doMoveFile(oldPath,name){
 ============================================================ */
 function toggleFGSelect(){S.fgSelectMode=!S.fgSelectMode;S.fgSelected.clear();document.getElementById('fg-sel-bar').style.display=S.fgSelectMode?'flex':'none';document.getElementById('sel-all-btn').textContent=S.fgSelectMode?'取消':'多选';document.getElementById('fg').classList.toggle('select-mode',S.fgSelectMode);renderFG();}
 function exitFGSelect(){S.fgSelectMode=false;S.fgSelected.clear();document.getElementById('fg-sel-bar').style.display='none';document.getElementById('sel-all-btn').textContent='多选';document.getElementById('fg').classList.remove('select-mode');renderFG();}
-function toggleFGItem(path,e){e.stopPropagation();if(!S.fgSelectMode)return;if(S.fgSelected.has(path))S.fgSelected.delete(path);else S.fgSelected.add(path);document.getElementById('fg-sel-cnt').textContent=`已选 ${S.fgSelected.size} 个`;renderFG();}
+function toggleFGItem(path,e){
+  e.stopPropagation();
+  if(!S.fgSelectMode)return;
+  if(S.fgSelected.has(path))S.fgSelected.delete(path);else S.fgSelected.add(path);
+  document.getElementById('fg-sel-cnt').textContent=`已选 ${S.fgSelected.size} 个`;
+  // FIX #4: only update the specific card, no full re-render
+  const card=document.querySelector(`#fg [data-path="${CSS.escape(path)}"]`);
+  if(card){
+    const isSel=S.fgSelected.has(path);
+    card.classList.toggle('selected',isSel);
+    const chk=card.querySelector('.fgi-check');
+    if(chk){chk.classList.toggle('selected',isSel);}
+  }
+}
 async function deleteSelectedFiles(){
   if(!S.fgSelected.size)return;
   showConfirm('批量删除',`确认删除 ${S.fgSelected.size} 个文件？`,async()=>{
@@ -1734,6 +1810,22 @@ async function deleteSelectedFiles(){
     toast('批量删除完成','ok');
   });
 }
+/* FIX #6: Batch download selected files */
+async function downloadSelectedFiles(){
+  if(!S.fgSelected.size)return;
+  const paths=[...S.fgSelected];
+  if(paths.length>10){toast('批量下载最多10个文件','warn');return;}
+  toast(`开始下载 ${paths.length} 个文件…`);
+  for(const path of paths){
+    const f=S.allFiles.find(x=>x.path===path);
+    if(!f)continue;
+    await new Promise(res=>{
+      setTimeout(()=>{dlFile(rawUrl(f.path),f.name);res();},200);
+    });
+  }
+  toast(`已触发 ${paths.length} 个文件的下载`,'ok');
+}
+
 async function moveSelectedFiles(){
   if(!S.fgSelected.size)return;
   const paths=[...S.fgSelected];window._moveCat=CATEGORIES[0].id;
