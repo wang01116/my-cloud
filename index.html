@@ -204,9 +204,10 @@ input,textarea{font-family:inherit}
   display:none;
   flex-direction:row;
   gap:2px;margin-top:4px;
-  background:var(--bg2);border:1px solid var(--border2);
+  /* FIX #2: more visible bg with stronger border in dark mode */
+  background:var(--bg2);border:1.5px solid var(--border3);
   border-radius:14px;padding:4px 5px;
-  box-shadow:var(--sh2);z-index:10;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:10;
 }
 .bw:hover .m-acts{display:flex}
 /* On touch, show via JS .act-open class */
@@ -215,15 +216,16 @@ input,textarea{font-family:inherit}
 /* FIX #2: each action = icon + Chinese label, vertical stack */
 .ma{
   display:flex;flex-direction:column;align-items:center;
-  gap:3px;padding:6px 9px;border:none;background:transparent;
-  color:var(--text2);border-radius:10px;
-  font-size:11px;font-weight:600;line-height:1.2;
+  gap:3px;padding:7px 11px;border:none;background:transparent;
+  color:var(--text);border-radius:10px;
+  font-size:11px;font-weight:700;line-height:1.2;
   transition:background var(--dur),color var(--dur);white-space:nowrap;
 }
-.ma:hover{background:var(--bg3);color:var(--text)}
-.ma .ma-icon{font-size:16px;line-height:1}
-.ma .ma-label{font-size:10px;color:inherit}
-.ma.danger{color:var(--red)}
+.ma:hover{background:var(--bg4)}
+/* FIX #2: icon is larger and brighter for dark mode visibility */
+.ma .ma-icon{font-size:18px;font-weight:900;line-height:1;color:var(--accent2)}
+.ma .ma-label{font-size:10px;color:var(--text2);margin-top:1px}
+.ma.danger .ma-icon{color:var(--red)}
 .ma.danger:hover{background:rgba(248,81,73,.12)}
 
 /* Selection checkbox */
@@ -652,8 +654,7 @@ input,textarea{font-family:inherit}
     <nav class="sb-nav">
       <button class="nav-it active" onclick="showScreen('chat')" id="n-chat"><span class="ni">💬</span>对话云盘</button>
       <button class="nav-it" onclick="showScreen('files')" id="n-files"><span class="ni">📁</span>所有文件<span class="nav-badge" id="files-cnt">0</span></button>
-      <button class="nav-it" onclick="showFilesFiltered('fav')" id="n-fav"><span class="ni">⭐</span>收藏<span class="nav-badge" id="fav-cnt"></span></button>
-      <button class="nav-it" onclick="showFilesFiltered('archive')" id="n-arc"><span class="ni">📦</span>归档</button>
+      <button class="nav-it" onclick="showFilesFiltered('fav')" id="n-fav"><span class="ni">★</span>收藏<span class="nav-badge" id="fav-cnt"></span></button>
     </nav>
     <div class="sb-sec">文件分类</div>
     <!-- ===== CATEGORIES NAV ===== -->
@@ -670,13 +671,15 @@ input,textarea{font-family:inherit}
     <div id="chat-screen">
       <div class="topbar">
         <button class="ib menu-btn" onclick="openSb()">☰</button>
+        <button class="ib" onclick="showHelp()" title="使用说明" style="font-size:14px;font-weight:700">?</button>
         <div class="topbar-info">
           <div class="topbar-title" id="hd-title">GitDrive</div>
           <div class="topbar-sub" id="hd-sub">连接中…</div>
         </div>
-        <button class="ib" onclick="openSearch()">🔍</button>
-        <button class="ib" onclick="toggleSelectMode()">☑️</button>
-        <button class="ib" onclick="refreshAll()">🔄</button>
+        <button class="ib" onclick="openSearch()" title="搜索 ⌘K">🔍</button>
+        <button class="ib" onclick="toggleSelectMode()" title="多选">☑️</button>
+        <button class="ib" onclick="clearChat()" title="清空对话视图">🗑</button>
+        <button class="ib" onclick="refreshAll()" title="刷新">🔄</button>
       </div>
       <div class="select-bar" id="sel-bar">
         <span class="sel-count" id="sel-cnt">已选 0 条</span>
@@ -783,27 +786,41 @@ const S={
   messages:[],msgSha:null,
   allFiles:[],
   favorites:new Set(),archived:new Set(),metaSha:null,
-  currentCat:'other',
+  currentCat:'uncat',
   filesCat:'all',filesType:'all',filesView:'grid',filesMode:'all',
   selectMode:false,selectedMsgs:new Set(),
   fgSelectMode:false,fgSelected:new Set(),
   darkMode:true,
+  chatCleared:false,   // true = hide messages in chat view (files still in repo)
   mpItems:[],mpIdx:0,       // media preview
   pendingFiles:[],           // FIX #11: multi-file pending
 };
 
 /* ============================================================
    ===== CATEGORIES — 修改此数组自定义分类 =====
+   ★ 第一项为默认选中分类（当前为"无分类"）
+   ★ 每项字段说明:
+       id:    GitHub 仓库中对应的文件夹名（仅限英文、数字、连字符）
+       label: 界面显示名称
+       icon:  分类图标（emoji）
+       color: 标签文字颜色
+       bg:    标签背景色
+   ★ 调整顺序即可改变显示顺序，删除/新增行即可增减分类
 ============================================================ */
 const CATEGORIES=[
+  /* 默认分类 — 新上传文件的默认落点 */
+  {id:'uncat',    label:'无分类', icon:'📂', color:'#9098aa',bg:'rgba(144,152,170,.18)'},
+  /* 学科/专业分类 */
   {id:'law',      label:'法学',   icon:'⚖️', color:'#4f8ef7',bg:'rgba(79,142,247,.15)'},
   {id:'envlaw',   label:'环境法', icon:'🌿', color:'#34d058',bg:'rgba(52,208,88,.15)'},
+  /* 生活/工作分类 */
   {id:'entertain',label:'娱乐',   icon:'🎬', color:'#fb923c',bg:'rgba(251,146,60,.15)'},
   {id:'work',     label:'办公',   icon:'💼', color:'#a78bfa',bg:'rgba(167,139,250,.15)'},
-  {id:'other',    label:'其他',   icon:'📦', color:'#9098aa',bg:'rgba(144,152,170,.15)'},
+  /* 通用分类 */
   {id:'text',     label:'文字',   icon:'📝', color:'#fbbf24',bg:'rgba(251,191,36,.15)'},
+  {id:'other',    label:'其他',   icon:'📦', color:'#9098aa',bg:'rgba(144,152,170,.15)'},
 ];
-/* ===== END CATEGORIES ===== */
+/* ===== END CATEGORIES — 以上为全部分类配置 ===== */
 const catMap=Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
 
 /* FIX #10: simplified type groups */
@@ -867,6 +884,8 @@ async function launchApp(){
   document.getElementById('app').style.display='flex';
   document.getElementById('sb-repo').textContent=`${S.user}/${S.repo}`;
   document.getElementById('hd-title').textContent=S.repo;
+  // FIX #1: restore cleared state per repo
+  S.chatCleared=!!localStorage.getItem('gd-cleared-'+S.user+'/'+S.repo);
   buildCatUI();
   await loadAll();
 }
@@ -883,11 +902,10 @@ function buildCatUI(){
     <button class="cat-chip ${S.currentCat===c.id?'active':''}" onclick="selCat('${c.id}')" id="cc-${c.id}">
       <span class="ci">${c.icon}</span>${c.label}
     </button>`).join('');
-  if(S.currentCat==='all')selCat('other');
+  if(S.currentCat==='all'||!catMap[S.currentCat])selCat(CATEGORIES[0].id);
   document.getElementById('fg-cat-row').innerHTML=
     `<button class="fr-chip active" onclick="setFCat('all')" id="fc-all">全部</button>
-     <button class="fr-chip" onclick="setFCat('fav')" id="fc-fav">⭐ 收藏</button>
-     <button class="fr-chip" onclick="setFCat('archive')" id="fc-archive">📦 归档</button>
+     <button class="fr-chip" onclick="setFCat('fav')" id="fc-fav">★ 收藏</button>
      <span class="fr-sep"></span>`+
     CATEGORIES.map(c=>`<button class="fr-chip" onclick="setFCat('${c.id}')" id="fc-${c.id}">${c.icon} ${c.label}</button>`).join('');
   document.getElementById('fg-type-row').innerHTML=
@@ -1114,6 +1132,16 @@ function fileToB64(file,onProgress){
 function renderMsgs(){
   const el=document.getElementById('msg-list');
   const empt=document.getElementById('empty-chat');
+  /* FIX #1: if chat is cleared, show empty state with restore button */
+  if(S.chatCleared){
+    el.innerHTML='';
+    empt.style.display='flex';
+    empt.innerHTML=`<div class="empty-ic">🗂️</div>
+      <div class="empty-t">对话记录已清空</div>
+      <div class="empty-s">文件仍安全保存在仓库中，可前往"所有文件"查看</div>
+      <button onclick="restoreChat()" style="margin-top:16px;padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">恢复对话记录</button>`;
+    return;
+  }
   if(!S.messages.length){empt.style.display='flex';return;}
   empt.style.display='none';
   const days={};
@@ -1136,15 +1164,65 @@ function renderMsgs(){
       if(cb)cb.classList.add('checked');
     });
   }
-  // Attach long-press for touch devices
+  // FIX #6: tap bubble on mobile to show actions + scroll into view
   el.querySelectorAll('.bw').forEach(bw=>{
-    let timer;
-    bw.addEventListener('touchstart',()=>{timer=setTimeout(()=>{bw.classList.add('act-open');},500);},{passive:true});
-    bw.addEventListener('touchend',()=>clearTimeout(timer),{passive:true});
+    let timer, startY=0;
+    bw.addEventListener('touchstart',e=>{
+      startY=e.touches[0].clientY;
+      timer=setTimeout(()=>{
+        // Long press: toggle actions
+        const wasOpen=bw.classList.contains('act-open');
+        el.querySelectorAll('.bw.act-open').forEach(b=>b.classList.remove('act-open'));
+        if(!wasOpen){
+          bw.classList.add('act-open');
+          // FIX #6: scroll bubble + actions fully into view
+          requestAnimationFrame(()=>{
+            const acts=bw.querySelector('.m-acts');
+            if(acts){
+              const rect=acts.getBoundingClientRect();
+              const inputH=document.querySelector('.input-wrap')?.offsetHeight||120;
+              const bottomLimit=window.innerHeight-inputH-8;
+              if(rect.bottom>bottomLimit){
+                const scrollBy=rect.bottom-bottomLimit+8;
+                el.scrollBy({top:scrollBy,behavior:'smooth'});
+              }
+            }
+          });
+        }
+      },400);
+    },{passive:true});
+    bw.addEventListener('touchend',e=>{
+      clearTimeout(timer);
+      // Short tap: if not dragging, also show actions + scroll
+      const dy=Math.abs(e.changedTouches[0].clientY-startY);
+      if(dy<6){
+        // Brief tap toggles act-open
+        const wasOpen=bw.classList.contains('act-open');
+        if(!wasOpen){
+          el.querySelectorAll('.bw.act-open').forEach(b=>b.classList.remove('act-open'));
+          bw.classList.add('act-open');
+          requestAnimationFrame(()=>{
+            const acts=bw.querySelector('.m-acts');
+            if(acts){
+              const rect=acts.getBoundingClientRect();
+              const inputH=document.querySelector('.input-wrap')?.offsetHeight||120;
+              const bottomLimit=window.innerHeight-inputH-8;
+              if(rect.bottom>bottomLimit){
+                el.scrollBy({top:rect.bottom-bottomLimit+8,behavior:'smooth'});
+              }
+            }
+          });
+        }
+      }
+    },{passive:true});
     bw.addEventListener('touchmove',()=>clearTimeout(timer),{passive:true});
-    // click elsewhere closes
     bw.addEventListener('mouseleave',()=>bw.classList.remove('act-open'));
   });
+  // Close all act-open when tapping outside
+  el.addEventListener('touchstart',e=>{
+    if(!e.target.closest('.bw'))
+      el.querySelectorAll('.bw.act-open').forEach(b=>b.classList.remove('act-open'));
+  },{passive:true});
 }
 
 function renderMsg(m){
@@ -1155,7 +1233,7 @@ function renderMsg(m){
   if(m.type==='text'){
     const md=marked.parse(m.content||'');
     inner=`<div class="bl out" data-id="${m.id}">${md}
-      <div class="mtime">${m.pinned?'<span class="mtime-pinned">📌</span>':''} ${time}</div>
+      <div class="mtime">${time}</div>
     </div>`;
   }else if(m.type==='file'){
     const files=m.files||[];
@@ -1209,30 +1287,26 @@ function renderMsg(m){
         ${imgHtml?`<div class="fstack">${imgHtml}</div>`:''}
         ${docHtml?`<div class="fstack">${docHtml}</div>`:''}
       </div>
-      <div class="mtime" style="padding:2px 6px 0">${m.pinned?'<span class="mtime-pinned">📌</span>':''} ${time}</div>
+      <div class="mtime" style="padding:2px 6px 0">${time}</div>
     </div>`;
   }
 
-  /* FIX #1,#2: actions as labelled vertical buttons BELOW bubble, not overlapping */
+  /* FIX #7: simplified actions — no pin/archive; keep download, rename/edit, delete */
   const isFile=m.type==='file';
   const actions=`<div class="m-acts">
-    <button class="ma" onclick="pinMsg('${m.id}')">
-      <span class="ma-icon">${m.pinned?'📌':'📍'}</span>
-      <span class="ma-label">${m.pinned?'取消置顶':'置顶'}</span>
-    </button>
     <button class="ma" onclick="dlMsg('${m.id}')">
-      <span class="ma-icon">⬇</span>
+      <span class="ma-icon">↓</span>
       <span class="ma-label">下载</span>
     </button>
     ${isFile?`<button class="ma" onclick="editFileMsg('${m.id}')">
-      <span class="ma-icon">✏️</span>
+      <span class="ma-icon">✎</span>
       <span class="ma-label">重命名</span>
     </button>`:`<button class="ma" onclick="editTextMsg('${m.id}')">
-      <span class="ma-icon">✏️</span>
+      <span class="ma-icon">✎</span>
       <span class="ma-label">编辑</span>
     </button>`}
     <button class="ma danger" onclick="delMsg('${m.id}')">
-      <span class="ma-icon">🗑</span>
+      <span class="ma-icon">✕</span>
       <span class="ma-label">删除</span>
     </button>
   </div>`;
@@ -1242,7 +1316,7 @@ function renderMsg(m){
       <div class="msg-check ${S.selectedMsgs.has(m.id)?'checked':''}" data-id="${m.id}" onclick="toggleMsgSelect('${m.id}')">✓</div>
       <div class="bw">
         ${inner}
-        ${m.pinned?`<div style="position:absolute;top:-3px;right:-3px;background:var(--yellow);color:#000;font-size:9px;font-weight:800;padding:2px 5px;border-radius:99px">📌</div>`:''}
+
         ${actions}
       </div>
     </div>
@@ -1254,11 +1328,7 @@ function scrollBot(){const el=document.getElementById('msg-list');el.scrollTop=e
 /* ============================================================
    MESSAGE ACTIONS
 ============================================================ */
-async function pinMsg(id){
-  const m=S.messages.find(x=>x.id===id);if(!m)return;
-  m.pinned=!m.pinned;renderMsgs();await saveMsgs();
-  toast(m.pinned?'已置顶':'已取消置顶');
-}
+
 function dlMsg(id){
   const m=S.messages.find(x=>x.id===id);if(!m)return;
   if(m.type==='text'){
@@ -1335,6 +1405,29 @@ async function deleteSelected(){
     exitSelectMode();await saveMsgs();await loadRepoFiles();updateStats();
     toast('批量删除完成','ok');
   });
+}
+
+/* ============================================================
+   FIX #1: CLEAR CHAT VIEW (hides messages in chat, does NOT delete files from repo)
+============================================================ */
+function clearChat(){
+  showConfirm(
+    '清空对话记录',
+    '对话记录将从视图中隐藏，但仓库中的文件不会被删除。\n你可以随时点击"恢复对话"重新显示。',
+    async()=>{
+      S.chatCleared=true;
+      // Save cleared state per repo so it persists
+      localStorage.setItem('gd-cleared-'+S.user+'/'+S.repo,'1');
+      renderMsgs();
+      toast('对话记录已清空（文件安全保留在仓库中）','ok');
+    }
+  );
+}
+function restoreChat(){
+  S.chatCleared=false;
+  localStorage.removeItem('gd-cleared-'+S.user+'/'+S.repo);
+  renderMsgs();
+  toast('对话记录已恢复');
 }
 
 /* ============================================================
@@ -1439,23 +1532,22 @@ function renderFG(){
         </div>
         <!-- Mobile: only fav + delete -->
         <div class="li-acts li-acts-mobile">
-          <button class="li-fav" onclick="toggleFav('${f.path}')" title="${isFav?'取消收藏':'收藏'}">${isFav?'⭐':'☆'}</button>
+          <button class="li-fav" onclick="toggleFav('${f.path}')" title="${isFav?'取消收藏':'收藏'}" style="color:${isFav?'#fbbf24':'var(--text3)'};font-size:18px">${isFav?'★':'☆'}</button>
           <button class="li-del" onclick="delFile('${f.path}','${f.sha}')" title="删除">✕</button>
         </div>
         <!-- Desktop: all actions -->
         <div class="li-acts li-acts-desktop" style="gap:4px">
-          <button class="ib" onclick="toggleFav('${f.path}')">${isFav?'⭐':'☆'}</button>
-          <button class="ib" onclick="toggleArc('${f.path}')">${isArc?'📦':'🗄'}</button>
-          <button class="ib" onclick="moveFile('${f.path}','${esc(f.name)}')">↗</button>
-          ${!image?`<button class="ib" onclick="renameGH('${f.path}','${esc(f.name)}')">✏️</button>`:''}
-          <button class="ib" onclick="dlFile('${url}','${esc(f.name)}')">⬇</button>
-          <button class="ib" onclick="delFile('${f.path}','${f.sha}')" style="color:var(--red)">✕</button>
+          <button class="ib" onclick="toggleFav('${f.path}')" style="color:${isFav?'#fbbf24':'var(--text2)'};font-size:16px" title="${isFav?'取消收藏':'收藏'}">${isFav?'★':'☆'}</button>
+          <button class="ib" onclick="moveFile('${f.path}','${esc(f.name)}')" title="移动分类" style="font-size:13px;color:var(--accent2)">移动</button>
+          ${!image?`<button class="ib" onclick="renameGH('${f.path}','${esc(f.name)}')" title="重命名" style="font-size:13px;color:var(--text)">改名</button>`:''}
+          <button class="ib" onclick="dlFile('${url}','${esc(f.name)}')" title="下载" style="color:var(--accent2)">↓</button>
+          <button class="ib" onclick="delFile('${f.path}','${f.sha}')" title="删除" style="color:var(--red);font-weight:800">✕</button>
         </div>
       </div>`;
     }else{
       return `<div class="fgi ${isSel?'selected':''}" style="animation-delay:${i*.02}s" data-path="${f.path}" onclick="${onclick}">
         <div class="fgi-check ${isSel?'selected':''}" onclick="toggleFGItem('${f.path}',event)">✓</div>
-        ${isFav?`<div class="fav-star">⭐</div>`:''}
+        ${isFav?`<div class="fav-star" style="color:#fbbf24;font-size:16px">★</div>`:''}
         ${thumb}
         <div class="fgi-info">
           <div class="fgi-name">${f.name}</div>
@@ -1507,7 +1599,7 @@ function showCtxMenu(x,y,f){
   menu.style.cssText=`top:${Math.min(y,window.innerHeight-320)}px;left:${Math.min(x,window.innerWidth-200)}px`;
   menu.innerHTML=`
     ${ctxRow(isFav?'⭐':'☆',isFav?'取消收藏':'收藏',()=>toggleFav(f.path))}
-    ${ctxRow(isArc?'📦':'🗄',isArc?'取消归档':'归档',()=>toggleArc(f.path))}
+
     ${ctxRow('↗','移动分类',()=>moveFile(f.path,f.name))}
     ${!image?ctxRow('✏️','重命名',()=>renameGH(f.path,f.name)):''}
     ${(media||image)?ctxRow('▶','预览',()=>openMP(url,f.name,[],0)):''}
@@ -1542,7 +1634,7 @@ function showMobileCtxMenu(f){
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
       ${mobileCtxBtn(isFav?'⭐':'☆',isFav?'取消收藏':'收藏',()=>toggleFav(f.path))}
-      ${mobileCtxBtn(isArc?'📦':'🗄',isArc?'取消归档':'归档',()=>toggleArc(f.path))}
+
       ${mobileCtxBtn('↗','移动分类',()=>moveFile(f.path,f.name))}
       ${!image?mobileCtxBtn('✏️','重命名',()=>renameGH(f.path,f.name)):''}
       ${(media||image)?mobileCtxBtn('▶','预览',()=>openMP(url,f.name,[],0)):''}
@@ -1833,6 +1925,48 @@ async function _saveOk(){const v=document.getElementById('mi')?.value;closeModal
 function closeModal(){document.getElementById('mc').innerHTML='';}
 
 /* ============================================================
+   FIX #4: HELP / INTRO MODAL
+============================================================ */
+function showHelp(){
+  const mc=document.getElementById('mc');
+  mc.innerHTML=`<div class="m-ov" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:480px;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div style="width:44px;height:44px;background:linear-gradient(135deg,#4f8ef7,#a78bfa);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">☁️</div>
+      <div>
+        <div class="modal-t" style="margin-bottom:2px">GitDrive 使用指南</div>
+        <div style="font-size:12px;color:var(--text2)">以对话方式使用 GitHub 仓库作为私人云盘</div>
+      </div>
+    </div>
+    ${helpSection('💬','对话云盘','主界面。发送文字或上传文件后，内容以聊天气泡形式呈现并实时存入 GitHub 仓库。')}
+    ${helpSection('📎','上传文件','点击输入框左侧的 📎 按钮，或直接将文件拖入页面。可同时选择多个文件，发送前会显示预览，点击 ➤ 一次性发送。')}
+    ${helpSection('🗂️','文件分类','发送前在底部选择分类标签，文件将存入 GitHub 仓库对应的文件夹中（如 law/、work/ 等）。')}
+    ${helpSection('📁','所有文件','查看仓库中所有已上传的文件，支持网格/列表切换、按类型筛选、搜索文件名。')}
+    ${helpSection('⭐','收藏','在文件卡片上点击星号即可收藏，收藏不改变文件位置，只是在"收藏"视图中快捷显示。')}
+    ${helpSection('✎','重命名','长按文件（移动端）或悬停后点击操作按钮可重命名非图片文件。注意：图片重命名后 URL 变化会导致对话中的缩略图失效，因此图片不支持重命名。')}
+    ${helpSection('🔍','搜索','点击顶栏 🔍 或按 ⌘K/Ctrl+K 打开全局搜索，可同时搜索文件名和消息内容。')}
+    ${helpSection('🗑','清空对话','顶栏 🗑 按钮可清空对话视图，仅隐藏显示而不删除仓库中的任何文件，点击"恢复对话记录"可重新显示。')}
+    ${helpSection('📱','移动端操作','点击文件气泡可展开操作栏（下载/重命名/删除）；长按文件列表项弹出底部菜单；拖拽文件到页面即可上传。')}
+    ${helpSection('🔑','Token 设置','使用 GitHub Fine-grained token，需在 GitHub 设置中开启目标仓库的 Contents 读写权限。凭据仅存储在本设备的浏览器中。')}
+    <div style="margin-top:20px;padding:12px 14px;background:var(--bg3);border-radius:12px;font-size:12px;color:var(--text2);line-height:1.7">
+      <strong style="color:var(--text)">作者 Wangcy</strong> · GitDrive v2.0 · 数据存储在你自己的 GitHub 仓库中，Anthropic 和本服务不接触你的任何文件
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-a" onclick="closeModal()">知道了</button>
+    </div>
+  </div></div>`;
+}
+function helpSection(icon,title,desc){
+  return `<div style="margin-bottom:14px;padding:12px 14px;background:var(--bg3);border-radius:12px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+      <span style="font-size:17px">${icon}</span>
+      <strong style="font-size:13px">${title}</strong>
+    </div>
+    <div style="font-size:12.5px;color:var(--text2);line-height:1.65">${desc}</div>
+  </div>`;
+}
+
+/* ============================================================
    SIDEBAR
 ============================================================ */
 function openSb(){document.getElementById('sidebar').classList.add('open');document.getElementById('sb-ov').classList.add('show');}
@@ -1861,9 +1995,13 @@ async function gh(path,opts={}){
 }
 
 function rawUrl(path){
-  /* FIX #3: encode Chinese filenames in URL */
+  /* FIX #8: encode Chinese filenames; avoid double-encoding if already encoded */
   const parts=path.split('/');
-  return `https://raw.githubusercontent.com/${S.user}/${S.repo}/main/${parts.map(p=>encodeURIComponent(p)).join('/')}`;
+  const encoded=parts.map(p=>{
+    try{ return encodeURIComponent(decodeURIComponent(p)); }
+    catch(e){ return encodeURIComponent(p); }
+  }).join('/');
+  return `https://raw.githubusercontent.com/${S.user}/${S.repo}/main/${encoded}`;
 }
 function dlFile(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';a.click();}
 function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';}
@@ -1872,20 +2010,42 @@ function isVideo(name){return /\.(mp4|mov|avi|mkv|webm|m4v)$/i.test(name);}
 function isAudio(name){return /\.(mp3|wav|flac|aac|ogg|m4a)$/i.test(name);}
 function ext(name){return(name.split('.').pop()||'').toLowerCase();}
 function esc(s){return(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+/* FIX #3: file icons with Microsoft-style brand colors */
+function fileIconColor(name){
+  const e=ext(name);
+  /* Images */
+  if(/^(jpg|jpeg|png|gif|webp|svg|avif|bmp|heic)$/.test(e))return {icon:'IMG',color:'#10b981',bg:'#d1fae5'};
+  /* Video */
+  if(/^(mp4|mov|avi|mkv|webm|m4v)$/.test(e))return {icon:'VID',color:'#ef4444',bg:'#fee2e2'};
+  /* Audio */
+  if(/^(mp3|wav|flac|aac|ogg|m4a)$/.test(e))return {icon:'AUD',color:'#8b5cf6',bg:'#ede9fe'};
+  /* PDF — red like Acrobat */
+  if(/^pdf$/.test(e))return {icon:'PDF',color:'#dc2626',bg:'#fee2e2'};
+  /* Word — Microsoft blue */
+  if(/^(doc|docx)$/.test(e))return {icon:'DOC',color:'#2563eb',bg:'#dbeafe'};
+  /* Excel — Microsoft green */
+  if(/^(xls|xlsx|csv|ods)$/.test(e))return {icon:'XLS',color:'#16a34a',bg:'#dcfce7'};
+  /* PowerPoint — Microsoft orange-red */
+  if(/^(ppt|pptx|key|odp)$/.test(e))return {icon:'PPT',color:'#ea580c',bg:'#ffedd5'};
+  /* Plain text / markdown */
+  if(/^(txt|md|log|rtf)$/.test(e))return {icon:'TXT',color:'#64748b',bg:'#f1f5f9'};
+  /* Code */
+  if(/^(js|ts|jsx|tsx|py|java|c|cpp|html|css|json|xml|yaml|go|rs|php|sh|rb)$/.test(e))return {icon:'</> ',color:'#0891b2',bg:'#cffafe'};
+  /* Archives */
+  if(/^(zip|rar|7z|tar|gz|bz2)$/.test(e))return {icon:'ZIP',color:'#92400e',bg:'#fef3c7'};
+  /* Apps */
+  if(/^(apk|exe|ipa|dmg|pkg|deb|rpm)$/.test(e))return {icon:'APP',color:'#6366f1',bg:'#e0e7ff'};
+  return {icon:'FILE',color:'#64748b',bg:'#f1f5f9'};
+}
 function fileIcon(name){
   const e=ext(name);
+  /* Keep emojis for image/video/audio in chat bubbles for visual richness */
   if(/^(jpg|jpeg|png|gif|webp|svg|avif|bmp|heic)$/.test(e))return '🖼️';
   if(/^(mp4|mov|avi|mkv|webm|m4v)$/.test(e))return '🎬';
   if(/^(mp3|wav|flac|aac|ogg|m4a)$/.test(e))return '🎵';
-  if(/^pdf$/.test(e))return '📄';
-  if(/^(doc|docx)$/.test(e))return '📝';
-  if(/^(xls|xlsx|csv|ods)$/.test(e))return '📊';
-  if(/^(ppt|pptx|key)$/.test(e))return '📑';
-  if(/^(zip|rar|7z|tar|gz|bz2)$/.test(e))return '🗜️';
-  if(/^(apk|exe|ipa|dmg|pkg|deb|rpm)$/.test(e))return '📱';
-  if(/^(js|ts|jsx|tsx|py|java|c|cpp|html|css|json|xml|yaml|go|rs|php|sh|rb)$/.test(e))return '💻';
-  if(/^(txt|md|log|rtf)$/.test(e))return '📃';
-  return '📎';
+  /* FIX #3: colored label badges for documents */
+  const fc=fileIconColor(name);
+  return `<span style="font-size:11px;font-weight:900;letter-spacing:-.02em;color:${fc.color};background:${fc.bg};padding:3px 5px;border-radius:5px;line-height:1;font-family:'JetBrains Mono',monospace">${fc.icon}</span>`;
 }
 function fmtSize(b){if(!b)return '';if(b<1024)return b+'B';if(b<1048576)return (b/1024).toFixed(1)+'KB';return (b/1048576).toFixed(1)+'MB';}
 function toast(msg,type=''){
