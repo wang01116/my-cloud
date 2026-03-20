@@ -111,9 +111,10 @@ button{cursor:pointer}
 .sb-sq input{background:none;border:none;outline:none;color:var(--t1);font-size:12.5px;flex:1;cursor:pointer}
 .sb-sq input::placeholder{color:var(--t3)}
 .sb-nav{padding:8px 8px 0;display:flex;flex-direction:column;gap:1px}
-.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:var(--t2);font-weight:500;font-size:13.5px;border:none;background:transparent;width:100%;text-align:left;transition:background var(--dur),color var(--dur)}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;color:var(--t2);font-weight:500;font-size:13.5px;border:none;background:transparent;width:100%;text-align:left;transition:background var(--dur),color var(--dur),transform var(--dur);cursor:pointer}
 .ni:hover{background:var(--bg3);color:var(--t1)}
-.ni.on{background:var(--gl);color:var(--ac2)}
+.ni:active{transform:scale(.98)}
+.ni.on{background:var(--gl);color:var(--ac2);font-weight:600}
 .ni .ico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .nb{margin-left:auto;background:var(--ac);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px}
 .sb-sec{padding:14px 18px 4px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
@@ -126,11 +127,12 @@ button{cursor:pointer}
 
 /* ── TOPBAR ── */
 .tb{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 16px;
+  display:flex;align-items:center;gap:6px;
+  padding:10px 14px;
   padding-top:calc(10px + var(--sat));
   background:var(--bg2);border-bottom:1px solid var(--b1);
-  flex-shrink:0;
+  flex-shrink:0;backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
 }
 .tb-info{flex:1;overflow:hidden}
 .tb-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -231,9 +233,9 @@ button{cursor:pointer}
 .inp-wrap{background:var(--bg2);border-top:1px solid var(--b1);padding:10px 12px;padding-bottom:max(10px,var(--sab));flex-shrink:0}
 .cat-row{display:flex;gap:5px;overflow-x:auto;padding-bottom:7px;scrollbar-width:none;margin-top:2px}
 .cat-row::-webkit-scrollbar{display:none}
-.cc{display:flex;align-items:center;gap:4px;padding:4px 11px;border-radius:20px;border:1.5px solid var(--b2);background:var(--bg3);white-space:nowrap;font-size:12px;font-weight:600;color:var(--t2);transition:all var(--dur);flex-shrink:0}
-.cc:hover{border-color:var(--ac2);color:var(--ac2)}
-.cc.on{border-color:var(--ac);background:var(--gl);color:var(--ac2)}
+.cc{display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--b2);background:var(--bg3);white-space:nowrap;font-size:12px;font-weight:600;color:var(--t2);transition:all var(--dur);flex-shrink:0;cursor:pointer}
+.cc:hover{border-color:var(--ac2);color:var(--ac2);background:var(--bg4)}
+.cc.on{border-color:var(--ac);background:var(--gl);color:var(--ac2);box-shadow:0 0 0 2px var(--gl)}
 .inp-row{display:flex;align-items:flex-end;gap:8px}
 .inp-box{flex:1;background:var(--bg3);border:1.5px solid var(--b2);border-radius:20px;display:flex;align-items:flex-end;padding:8px 12px;gap:8px;transition:border-color var(--dur),box-shadow var(--dur)}
 .inp-box:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px var(--gl)}
@@ -283,9 +285,9 @@ button{cursor:pointer}
 .fg-selbar.on{display:flex}
 
 /* Grid */
-#fg{flex:1;overflow-y:auto;padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(142px,44vw),1fr));gap:9px;align-content:start}
-#fg.lv{grid-template-columns:1fr;gap:4px}
-.gc{background:var(--bg2);border:1px solid var(--b1);border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;position:relative;transition:border-color var(--dur),box-shadow var(--dur),transform var(--dur);animation:fu .2s var(--ease) both}
+#fg{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(145px,45vw),1fr));gap:8px;align-content:start}
+#fg.lv{grid-template-columns:1fr;gap:5px}
+.gc{background:var(--bg2);border:1px solid var(--b1);border-radius:14px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;position:relative;transition:border-color var(--dur),box-shadow var(--dur),transform var(--dur);animation:fu .2s var(--ease) both;min-width:0}
 @keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .gc:hover{border-color:var(--ac);box-shadow:0 4px 20px var(--gl);transform:translateY(-1px)}
 .gc.sel{border-color:var(--ac);background:var(--gl2)}
@@ -299,32 +301,33 @@ button{cursor:pointer}
 .gc:hover .gc-thumb img{transform:scale(1.04)}
 .gc-icon{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:32px}
 .gc-ext{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);background:var(--bg4);padding:2px 6px;border-radius:4px}
-.gc-info{padding:8px 9px 4px}
-.gc-name{font-size:12px;font-weight:600;line-height:1.38;max-height:2.76em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
-.gc-meta{font-size:10.5px;color:var(--t2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-info{padding:7px 8px 3px;flex-shrink:0}
+.gc-name{font-size:11.5px;font-weight:600;line-height:1.38;max-height:2.76em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;white-space:normal}
+.gc-meta{font-size:10px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Card action bar */
-.gc-acts{display:flex;align-items:center;justify-content:space-around;padding:5px 3px 7px;border-top:1px solid var(--b1);margin-top:auto;gap:1px}
-.ga{background:none;border:none;color:var(--t2);font-size:14px;font-weight:700;padding:4px 5px;border-radius:7px;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;transition:background var(--dur),color var(--dur)}
+.gc-acts{display:flex;align-items:center;justify-content:space-around;padding:4px 2px 6px;border-top:1px solid var(--b1);margin-top:auto;gap:0;flex-shrink:0}
+.ga{background:none;border:none;color:var(--t2);font-size:13px;font-weight:700;padding:3px 4px;border-radius:6px;min-width:24px;height:26px;display:flex;align-items:center;justify-content:center;transition:background var(--dur),color var(--dur)}
 .ga:hover{background:var(--bg3);color:var(--t1)}
+.ga:active{background:var(--bg4)}
 .ga.del{color:var(--rd)}.ga.del:hover{background:rgba(248,81,73,.1)}
 .ga.fav-on{color:#fbbf24}
 
 /* List item */
-.li{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;min-height:64px;background:var(--bg2);border:1px solid var(--b1)}
+.li{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:11px;min-height:60px;background:var(--bg2);border:1px solid var(--b1);min-width:0;width:100%;overflow:hidden}
 .li:hover{border-color:var(--b2)}
 .li.sel{border-color:var(--ac);background:var(--gl2)}
 .li-ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--b2);background:var(--bg3);display:none;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0;transition:all var(--dur)}
 .sel-mode .li-ck{display:flex}
 .li-ck.on{background:var(--ac);border-color:var(--ac)}
-.li-thumb{width:46px;height:46px;border-radius:9px;overflow:hidden;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center}
-.li-thumb img{width:46px;height:46px;object-fit:cover}
+.li-thumb{width:42px;height:42px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center}
+.li-thumb img{width:42px;height:42px;object-fit:cover}
 .li-icon{font-size:22px;display:flex;flex-direction:column;align-items:center;gap:1px}
 .li-icon .gc-ext{font-size:8px;padding:1px 3px}
-.li-info{flex:1;overflow:hidden}
-.li-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.li-meta{font-size:11px;color:var(--t2);margin-top:2px}
+.li-info{flex:1;overflow:hidden;min-width:0}
+.li-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:100%}
+.li-meta{font-size:11px;color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-acts-d{display:flex;gap:4px;align-items:center;flex-shrink:0}
-.li-acts-m{display:flex;gap:3px;align-items:center;flex-shrink:0}
+.li-acts-m{display:flex;gap:2px;align-items:center;flex-shrink:0}
 .la{width:30px;height:30px;background:transparent;border:none;color:var(--t2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;transition:background var(--dur),color var(--dur)}
 .la:hover{background:var(--bg3);color:var(--t1)}
 .la.del{color:var(--rd)}.la.del:hover{background:rgba(248,81,73,.1)}
@@ -437,9 +440,20 @@ button{cursor:pointer}
   .menu-btn{display:flex !important}
   #sb-ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none}
   #sb-ov.on{display:block}
-  .bw{max-width:86%}
+  .bw{max-width:88%}
   .mp-arr{display:none}
   .li-acts-d{display:none}
+  /* FIX #1: mobile grid — 2 columns, cards fully visible */
+  #fg{grid-template-columns:repeat(2,1fr) !important;padding:8px;gap:7px}
+  .gc-name{font-size:11px}
+  .gc-meta{font-size:10px}
+  .ga{min-width:22px;height:24px;font-size:12px}
+  /* FIX #2: mobile list — no horizontal scroll */
+  #fg.lv{padding:8px}
+  .li{padding:9px 10px;gap:8px}
+  .li-info{min-width:0;overflow:hidden}
+  .li-name{max-width:100%}
+  .ma button{padding:5px 8px;font-size:11px}
 }
 @media(min-width:641px){
   .li-acts-m{display:none}
@@ -494,6 +508,7 @@ button{cursor:pointer}
       <button class="ni" onclick="showFav()" id="n-fav"><span class="ico">★</span>收藏<span class="nb" id="fav-cnt"></span></button>
       <button class="ni" onclick="showScr('trash')" id="n-trash"><span class="ico">🗑</span>回收站<span class="nb" id="trash-cnt"></span></button>
       <button class="ni" onclick="showScr('stats')" id="n-stats"><span class="ico">📊</span>统计</button>
+      <button class="ni" onclick="showScr('memo')" id="n-memo"><span class="ico">📓</span>备忘录</button>
     </nav>
     <!-- ===== CATEGORIES NAV — 修改 CATS 数组即可同步更新 ===== -->
     <div class="sb-sec">文件分类</div>
@@ -526,6 +541,13 @@ button{cursor:pointer}
         <button class="btn-g" onclick="exitSel()" style="font-size:12px;padding:5px 11px">取消</button>
         <button class="btn-d" onclick="delSelMsgs()" style="font-size:12px;padding:5px 11px">删除</button>
       </div>
+      <!-- FIX #3: Restore bar — always visible when chat is cleared -->
+      <div id="restore-bar" style="display:none;align-items:center;justify-content:center;gap:8px;padding:7px 14px;background:rgba(68,147,248,.1);border-bottom:1px solid rgba(68,147,248,.2);font-size:12px;font-weight:600;color:var(--ac2);flex-shrink:0">
+        <span>📂 历史记录已隐藏</span>
+        <button onclick="restoreChat()" style="background:var(--ac);color:#fff;border:none;border-radius:7px;padding:4px 12px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer">恢复显示</button>
+      </div>
+      <!-- FIX #4: Pinned items bar -->
+      <div id="pinned-bar" style="display:none;flex-direction:column;gap:1px;max-height:120px;overflow-y:auto;background:var(--bg2);border-bottom:1.5px solid rgba(68,147,248,.25);flex-shrink:0"></div>
       <div id="msg-list">
         <div class="emp" id="empty-chat">
           <div class="emp-ic">💬</div>
@@ -632,6 +654,31 @@ button{cursor:pointer}
   <button class="mp-arr" id="mp-nx" onclick="event.stopPropagation();mpNav(1)">›</button>
 </div>
 
+<!-- MEMO SCREEN -->
+<div id="memo-screen" style="display:none;flex-direction:column;height:100%">
+  <div class="ft">
+    <button class="ib menu-btn" onclick="openSb()">☰</button>
+    <div class="ft-title">📓 备忘录</div>
+    <div class="ft-row">
+      <button class="ftb" id="memo-todo-btn" onclick="setMemoFilter('all')" style="">全部</button>
+      <button class="ftb" onclick="setMemoFilter('todo')">☐ 待办</button>
+      <button class="ftb" onclick="setMemoFilter('note')">📝 笔记</button>
+    </div>
+  </div>
+  <!-- New memo input -->
+  <div id="memo-input-area" style="padding:10px 12px;background:var(--bg2);border-bottom:1px solid var(--b1);flex-shrink:0">
+    <div style="display:flex;gap:7px;margin-bottom:8px">
+      <button id="mbtn-todo" onclick="setMemoType('todo')" style="padding:5px 13px;border-radius:20px;border:1.5px solid var(--ac);background:var(--gl);color:var(--ac2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s">☐ 待办</button>
+      <button id="mbtn-note" onclick="setMemoType('note')" style="padding:5px 13px;border-radius:20px;border:1.5px solid var(--b2);background:var(--bg3);color:var(--t2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s">📝 笔记</button>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:8px">
+      <textarea id="memo-inp" placeholder="输入待办事项或笔记… 支持 Markdown" style="flex:1;background:var(--bg3);border:1.5px solid var(--b2);border-radius:12px;padding:9px 12px;color:var(--t1);font-family:inherit;font-size:14px;resize:none;min-height:44px;max-height:140px;outline:none;transition:border-color .16s,box-shadow .16s;line-height:1.5" oninput="ar(this)" onkeydown="memoKey(event)" onfocus="this.style.borderColor='var(--ac)';this.style.boxShadow='0 0 0 3px var(--gl)'" onblur="this.style.borderColor='var(--b2)';this.style.boxShadow=''"></textarea>
+      <button onclick="addMemo()" style="width:36px;height:36px;border-radius:50%;background:var(--ac);border:none;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .16s" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">➤</button>
+    </div>
+  </div>
+  <div class="screen-body" id="memo-list"></div>
+</div>
+
 <div id="mc"></div>
 <div id="toasts"></div>
 
@@ -650,7 +697,6 @@ const CATS = [
   {id:'work',      label:'办公',   icon:'💼', color:'#bc8cff', bg:'rgba(188,140,255,.15)'},
   {id:'text',      label:'文字',   icon:'📝', color:'#ffa657', bg:'rgba(255,166,87,.15)'},
   {id:'other',     label:'其他',   icon:'📦', color:'#8b949e', bg:'rgba(139,148,158,.15)'},
-  {id:'muse',      label:'艺术',   icon:'🎵', color:'#8b949e', bg:'rgba(139,148,158,.15)'},
 ];
 // ===== END CATEGORIES =====
 
@@ -680,6 +726,9 @@ const S = {
   mpItems:[], mpIdx:0,
   pend:[],              // pending files for upload
   clearTime:null,       // ISO time of last chat clear
+  pinned:[],            // array of msg ids that are pinned to top
+  memos:[],             // [{id,type:'todo'|'note',content,done?,createdAt,updatedAt}]
+  memoSha:null,
 };
 
 // ── INIT ──────────────────────────────────────────────────
@@ -732,6 +781,8 @@ async function launchApp() {
   document.getElementById('sb-repo').textContent=S.user+'/'+S.repo;
   document.getElementById('hd-t').textContent=S.repo;
   S.clearTime = localStorage.getItem('gd-ct-'+S.user+'/'+S.repo)||null;
+  // FIX #4: restore pinned items
+  try{ S.pinned=JSON.parse(localStorage.getItem('gd-pins-'+S.user+'/'+S.repo)||'[]'); }catch{S.pinned=[];}
   buildUI();
   await loadAll();
 }
@@ -803,7 +854,7 @@ function setFType(id) {
 async function loadAll() {
   document.getElementById('hd-s').textContent='加载中…';
   try {
-    await Promise.all([loadMsgs(), loadMeta(), loadFiles()]);
+    await Promise.all([loadMsgs(), loadMeta(), loadFiles(), loadMemos()]);
     updateStats();
   } catch(e) { document.getElementById('hd-s').textContent='加载失败'; toast('加载失败: '+e.message,'err'); }
 }
@@ -812,6 +863,7 @@ async function loadMsgs() {
   if (r.ok) { const d=await r.json(); S.msgs=JSON.parse(fromB64(d.content)); S.msgSha=d.sha; }
   else { S.msgs=[]; S.msgSha=null; }
   renderMsgs();
+  renderPinnedBar();
 }
 async function loadMeta() {
   const r = await ghGet('gitdrive-meta.json');
@@ -901,6 +953,24 @@ async function sendAll() {
   const txt=document.getElementById('ti').value.trim();
   const files=[...S.pend];
   if(!txt&&!files.length) return;
+  // FIX #5: Duplicate detection — check if any file already exists in repo
+  if(files.length){
+    const cat=catMap[S.cur]||CATS[0];
+    const dupes=files.filter(f=>{
+      // Check same filename in ANY category folder
+      return S.files.some(existing=>existing.name===f.name);
+    });
+    if(dupes.length>0){
+      const dupeInfo=dupes.map(f=>{
+        const existing=S.files.find(e=>e.name===f.name);
+        return f.name+' （已在 '+(catMap[existing.category]?.label||existing.category)+' 中）';
+      }).join('、');
+      const proceed=await new Promise(res=>{
+        showDupeModal(dupeInfo,cat.label,res);
+      });
+      if(!proceed) return;
+    }
+  }
   document.getElementById('ti').value=''; ar(document.getElementById('ti'));
   S.pend=[]; renderPend();
   if(files.length) await uploadFiles(files,txt);
@@ -957,11 +1027,17 @@ function renderMsgs() {
   // Filter by clearTime
   const vis = S.clearTime ? S.msgs.filter(m=>m.timestamp>S.clearTime) : S.msgs;
   const empty=document.getElementById('empty-chat');
+  // FIX #3: always update restore bar visibility
+  const restoreBar=document.getElementById('restore-bar');
+  if(restoreBar) restoreBar.style.display=(S.clearTime&&S.msgs.length>0)?'flex':'none';
+
   if(!vis.length){
     el.innerHTML='';
     empty.style.display='flex';
     if(S.clearTime&&S.msgs.length>0){
-      empty.innerHTML='<div class="emp-ic">🗂️</div><div class="emp-t">历史记录已清空</div><div class="emp-s">新发送的内容会显示在这里</div><button onclick="restoreChat()" style="margin-top:14px;padding:9px 22px;background:var(--ac);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">恢复历史记录</button>';
+      empty.innerHTML='<div class="emp-ic">🗂️</div><div class="emp-t">历史记录已清空</div><div class="emp-s">新发送的内容会正常显示在这里</div>';
+    } else {
+      empty.innerHTML='<div class="emp-ic">💬</div><div class="emp-t">开始使用 GitDrive</div><div class="emp-s">发送文字或上传文件，以聊天方式存入 GitHub 仓库</div>';
     }
     return;
   }
@@ -974,9 +1050,6 @@ function renderMsgs() {
     days[d].push(m);
   });
   let html = '';
-  if(S.clearTime&&S.msgs.length>vis.length){
-    html='<div style="text-align:center;padding:8px"><span style="font-size:12px;color:var(--t3);background:var(--bg3);border:1px solid var(--b2);border-radius:20px;padding:5px 13px;display:inline-flex;align-items:center;gap:7px">📂 历史记录已隐藏 <button onclick="restoreChat()" style="background:none;border:none;color:var(--ac2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:0">恢复</button></span></div>';
-  }
   for(const[date,ms] of Object.entries(days)){
     html+='<div class="ds">'+date+'</div>';
     ms.forEach(m=>{html+=renderMsg(m);});
@@ -1129,6 +1202,56 @@ async function delSelMsgs(){
   });
 }
 
+// ── PIN SYSTEM ────────────────────────────────────────────
+function togglePin(id){
+  const i=S.pinned.indexOf(id);
+  if(i>=0) S.pinned.splice(i,1);
+  else S.pinned.push(id);
+  renderMsgs();
+  renderPinnedBar();
+  // Persist pinned to localStorage
+  localStorage.setItem('gd-pins-'+S.user+'/'+S.repo,JSON.stringify(S.pinned));
+  toast(S.pinned.includes(id)?'已置顶':'已取消置顶');
+}
+function renderPinnedBar(){
+  const bar=document.getElementById('pinned-bar');
+  if(!bar) return;
+  if(!S.pinned.length){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const items=S.pinned.map(id=>{
+    const m=S.msgs.find(x=>x.id===id);
+    if(!m) return '';
+    let preview='';
+    if(m.type==='text') preview=(m.content||'').replace(/[#*`>]/g,'').slice(0,50).trim();
+    else if(m.files&&m.files.length) preview='📎 '+m.files.map(f=>f.name).join(', ').slice(0,40);
+    const t=new Date(m.timestamp).toLocaleDateString('zh-CN',{month:'short',day:'numeric'});
+    return '<div onclick="jumpToPin(''+id+'')" style="display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;border-bottom:1px solid var(--b1);transition:background var(--dur)" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">'
+      +'<span style="color:var(--ac2);font-size:13px;flex-shrink:0">📌</span>'
+      +'<span style="flex:1;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)">'+esc(preview)+'</span>'
+      +'<span style="font-size:10px;color:var(--t3);flex-shrink:0">'+t+'</span>'
+      +'<button onclick="event.stopPropagation();togglePin(''+id+'')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px;flex-shrink:0">✕</button>'
+      +'</div>';
+  }).join('');
+  bar.innerHTML=items||'';
+}
+function jumpToPin(id){
+  // If msg is hidden by clearTime, restore first
+  const m=S.msgs.find(x=>x.id===id);
+  if(!m) return;
+  if(S.clearTime&&m.timestamp<=S.clearTime){
+    S.clearTime=null;
+    localStorage.removeItem('gd-ct-'+S.user+'/'+S.repo);
+    renderMsgs();
+    setTimeout(()=>scrollToMsgById(id),300);
+  } else {
+    scrollToMsgById(id);
+  }
+}
+function scrollToMsgById(id){
+  const el=document.querySelector('.mr[data-id="'+id+'"]');
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--ac)';setTimeout(()=>el.style.outline='',2000);}
+}
+
 // ── CLEAR CHAT ────────────────────────────────────────────
 function clearChat(){
   showConfirm('清空历史视图','之前的消息将隐藏，新消息照常显示。文件仍保留在仓库中。',async()=>{
@@ -1145,7 +1268,7 @@ function restoreChat(){
 
 // ── FILES GRID ────────────────────────────────────────────
 function showScr(name){
-  ['chat','files','trash','stats'].forEach(n=>{
+  ['chat','files','trash','stats','memo'].forEach(n=>{
     const el=document.getElementById(n+'-screen');
     if(el) el.style.display='none';
     const ni=document.getElementById('n-'+n);
@@ -1157,6 +1280,7 @@ function showScr(name){
   if(ni) ni.classList.add('on');
   if(name==='trash') renderTrash();
   if(name==='stats') renderStats();
+  if(name==='memo'){renderMemos();setMemoFilter('all');}
   if(name==='files'){S.fCat='all';setFCat('all');renderFG();}
   closeSb();
 }
@@ -1539,21 +1663,121 @@ function showInput(title,label,def,onSave){
 }
 async function _svOk(){const v=document.getElementById('md-inp')?.value;closeMd();if(window._svCb&&v!==undefined)await window._svCb(v);}
 
+// FIX #5: Duplicate file warning modal
+function showDupeModal(dupeInfo,catName,resolve){
+  showMd('<div class="md-t" style="color:var(--or)">⚠️ 检测到同名文件</div>'
+    +'<div class="md-p">以下文件在仓库中已存在：<br><strong style="color:var(--t1)">'+esc(dupeInfo)+'</strong><br><br>继续上传将<strong>覆盖</strong>仓库中的同名文件，存入分类：<strong style="color:var(--ac2)">'+esc(catName)+'</strong></div>'
+    +'<div class="md-btns">'
+    +'<button class="btn-g" onclick="closeMd();window._dupeRes(false)">取消上传</button>'
+    +'<button class="btn-d" onclick="closeMd();window._dupeRes(true)">覆盖上传</button>'
+    +'</div>');
+  window._dupeRes=resolve;
+}
+
+// ── MEMO ──────────────────────────────────────────────────
+let _memoType='todo'; // current type for new memo
+let _memoFilter='all';
+function setMemoType(t){
+  _memoType=t;
+  document.getElementById('mbtn-todo').style.cssText='padding:5px 13px;border-radius:20px;border:1.5px solid '+(t==='todo'?'var(--ac)':'var(--b2)')+';background:'+(t==='todo'?'var(--gl)':'var(--bg3)')+';color:'+(t==='todo'?'var(--ac2)':'var(--t2)')+';font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s';
+  document.getElementById('mbtn-note').style.cssText='padding:5px 13px;border-radius:20px;border:1.5px solid '+(t==='note'?'var(--ac)':'var(--b2)')+';background:'+(t==='note'?'var(--gl)':'var(--bg3)')+';color:'+(t==='note'?'var(--ac2)':'var(--t2)')+';font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s';
+}
+function setMemoFilter(f){
+  _memoFilter=f;
+  document.querySelectorAll('#memo-screen .ft-row .ftb').forEach(b=>b.classList.remove('on'));
+  const map={'all':0,'todo':1,'note':2};
+  const btns=document.querySelectorAll('#memo-screen .ft-row .ftb');
+  if(btns[map[f]]) btns[map[f]].classList.add('on');
+  renderMemos();
+}
+function memoKey(e){if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();addMemo();}}
+async function addMemo(){
+  const inp=document.getElementById('memo-inp');
+  const txt=inp.value.trim();if(!txt)return;
+  const memo={id:Date.now().toString(),type:_memoType,content:txt,done:false,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  S.memos.unshift(memo);
+  inp.value='';ar(inp);
+  renderMemos();await saveMemos();
+}
+async function saveMemos(){
+  const body={message:'Update memos [GitDrive]',content:toB64(JSON.stringify(S.memos,null,2))};
+  if(S.memoSha) body.sha=S.memoSha;
+  const r=await ghPut('gitdrive-memos.json',body);
+  if(r.ok){const d=await r.json();S.memoSha=d.content.sha;}
+}
+async function loadMemos(){
+  const r=await ghGet('gitdrive-memos.json');
+  if(r.ok){const d=await r.json();S.memos=JSON.parse(fromB64(d.content));S.memoSha=d.sha;}
+  else{S.memos=[];S.memoSha=null;}
+}
+async function toggleMemoDone(id){
+  const m=S.memos.find(x=>x.id===id);if(!m)return;
+  m.done=!m.done;m.updatedAt=new Date().toISOString();
+  renderMemos();await saveMemos();
+}
+async function editMemo(id){
+  const m=S.memos.find(x=>x.id===id);if(!m)return;
+  showInput('编辑备忘','内容',m.content,async v=>{m.content=v;m.updatedAt=new Date().toISOString();renderMemos();await saveMemos();toast('已保存','ok');});
+}
+async function delMemo(id){
+  S.memos=S.memos.filter(x=>x.id!==id);
+  renderMemos();await saveMemos();toast('已删除');
+}
+function renderMemos(){
+  const el=document.getElementById('memo-list');if(!el)return;
+  let list=S.memos;
+  if(_memoFilter!=='all') list=list.filter(m=>m.type===_memoFilter);
+  if(!list.length){el.innerHTML='<div class="emp"><div class="emp-ic">📓</div><div class="emp-t">备忘录为空</div><div class="emp-s">用上方输入框添加待办事项或笔记</div></div>';return;}
+  el.innerHTML=list.map(m=>{
+    const t=new Date(m.createdAt).toLocaleDateString('zh-CN',{month:'short',day:'numeric'});
+    const content=m.type==='note'?marked.parse(m.content||''):'<span style="'+(m.done?'text-decoration:line-through;color:var(--t3)':'')+'">'+(m.content||'')+'</span>';
+    return '<div style="background:var(--bg2);border:1px solid var(--b'+(m.done?'1':'2')+');border-radius:13px;padding:13px 14px;transition:opacity .2s;'+(m.done?'opacity:.6':'')+'">'
+      +'<div style="display:flex;align-items:flex-start;gap:10px">'
+      +(m.type==='todo'?'<button onclick="toggleMemoDone(''+m.id+'')" style="flex-shrink:0;width:20px;height:20px;border-radius:5px;border:2px solid '+(m.done?'var(--gr)':'var(--b3)')+';background:'+(m.done?'var(--gr)':'transparent')+';color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:2px">'+(m.done?'✓':'')+'</button>':'<span style="flex-shrink:0;font-size:15px;margin-top:1px">📝</span>')
+      +'<div style="flex:1;min-width:0;font-size:13.5px;line-height:1.6">'+content+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--b1)">'
+      +'<span style="font-size:11px;color:var(--t3);flex:1">'+t+'</span>'
+      +'<button onclick="editMemo(''+m.id+'')" style="background:none;border:none;color:var(--t2);font-size:13px;cursor:pointer;padding:3px 7px;border-radius:6px;transition:background .14s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">✎ 编辑</button>'
+      +'<button onclick="delMemo(''+m.id+'')" style="background:none;border:none;color:var(--rd);font-size:13px;cursor:pointer;padding:3px 7px;border-radius:6px;transition:background .14s" onmouseover="this.style.background='rgba(248,81,73,.1)'" onmouseout="this.style.background=''">✕ 删除</button>'
+      +'</div></div>';
+  }).join('');
+}
+
 // ── HELP ──────────────────────────────────────────────────
 function showHelp(){
-  const h=(icon,t,d)=>'<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;padding:11px 13px;background:var(--bg3);border-radius:11px"><span style="font-size:18px;flex-shrink:0">'+icon+'</span><div><div style="font-size:13px;font-weight:700;margin-bottom:3px">'+t+'</div><div style="font-size:12px;color:var(--t2);line-height:1.65">'+d+'</div></div></div>';
-  showMd('<div class="md-t" style="font-size:18px">GitDrive 使用指南</div>'
-    +h('📎','上传文件','点击 📎 或拖放文件，支持同时选择多个文件，在预览区可删除，点击 ➤ 一次性发送。')
-    +h('🗂️','文件分类','发送前在底部选择分类，文件存入 GitHub 仓库对应文件夹。')
-    +h('📁','所有文件','查看、搜索、筛选、批量操作文件。网格右下角有操作按钮，移动端长按弹出菜单。')
-    +h('★','收藏','在文件卡片点击 ☆ 收藏，不改变文件位置，在收藏视图快速访问。')
-    +h('🗑','回收站','删除文件先进入回收站保留 30 天，可随时恢复。')
-    +h('📊','统计','查看总占用空间、按分类/类型细分统计。')
-    +h('🔍','搜索','⌘K 打开全局搜索，可同时搜索文件名和消息内容。')
-    +h('🗑','清空历史视图','顶栏 🗑 按钮只隐藏对话视图中的历史记录，不删除任何文件。')
-    +h('🔑','Token','推荐 Fine-grained token，开启目标仓库 Contents 读写权限。')
-    +'<div style="margin-top:16px;padding:11px 13px;background:var(--bg3);border-radius:11px;font-size:12px;color:var(--t2)">作者 <strong style="color:var(--t1)">Wangcy</strong> · 数据存储在你的 GitHub 仓库中</div>'
-    +'<div class="md-btns" style="margin-top:14px"><button class="btn-a" onclick="closeMd()">知道了</button></div>');
+  // ── HELP ITEMS — 在此修改帮助页面内容 ──────────────────
+  // 格式: [图标, 标题, 描述]
+  const HELP_ITEMS = [
+    ['💬','对话云盘','主界面。发送文字消息或上传文件，内容以气泡形式存入 GitHub 仓库。支持 Markdown 格式。'],
+    ['📎','上传文件','点击 📎 或拖放文件，可同时选择多个文件预览后一键发送。发送前选择分类标签决定存储文件夹。'],
+    ['📁','所有文件','查看仓库所有文件，支持网格/列表切换、按类型/分类筛选、搜索文件名。每个文件卡片有操作按钮。'],
+    ['★','收藏','点击文件卡片的 ☆ 按钮收藏，不移动文件，在左侧"收藏"视图快速访问。'],
+    ['📌','置顶消息','在消息操作菜单点击"置顶"，消息会固定在对话框顶部横幅，点击可跳转到该消息。'],
+    ['📓','备忘录','专属文字记录空间，支持待办清单（带勾选框）和 Markdown 笔记，数据存入仓库。'],
+    ['🗑','回收站','删除的文件进入回收站保留 30 天，可恢复到原位置或永久删除。'],
+    ['📊','统计','查看总存储空间、按分类和文件类型的占用分布。'],
+    ['🔍','全局搜索','按 ⌘K / Ctrl+K 打开，可同时搜索文件名和消息内容，点击结果直接跳转。'],
+    ['🗑','清空历史视图','对话框顶栏 🗑 按钮只隐藏历史消息视图，不删除任何文件。随时点击"恢复显示"还原。'],
+    ['🔑','GitHub Token','推荐使用 Fine-grained token：GitHub → Settings → Developer settings → Fine-grained tokens，开启目标仓库 Contents 读写权限。'],
+  ];
+  // ── END HELP ITEMS ──────────────────────────────────────
+
+  const items=HELP_ITEMS.map(([icon,title,desc])=>'<div style="display:flex;align-items:flex-start;gap:11px;margin-bottom:12px;padding:12px 14px;background:var(--bg3);border-radius:12px;transition:background var(--dur)" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg3)'">'
+    +'<span style="font-size:20px;flex-shrink:0;margin-top:1px">'+icon+'</span>'
+    +'<div><div style="font-size:13px;font-weight:700;margin-bottom:3px">'+title+'</div>'
+    +'<div style="font-size:12px;color:var(--t2);line-height:1.68">'+desc+'</div></div></div>').join('');
+
+  showMd(
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">'
+    +'<div style="width:44px;height:44px;background:linear-gradient(135deg,#4493f8,#bc8cff);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">☁️</div>'
+    +'<div><div class="md-t" style="margin-bottom:2px">GitDrive 使用指南</div>'
+    +'<div style="font-size:12px;color:var(--t2)">以对话方式使用 GitHub 仓库作为私人云盘</div></div></div>'
+    +items
+    +'<div style="margin-top:12px;padding:11px 14px;background:var(--bg3);border-radius:11px;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:8px">'
+    +'<span style="font-size:16px">👤</span><span>作者 <strong style="color:var(--t1)">Wangcy</strong> · 数据存储在你自己的 GitHub 仓库中，本工具不接触任何文件内容</span></div>'
+    +'<div class="md-btns" style="margin-top:14px"><button class="btn-a" onclick="closeMd()">知道了</button></div>'
+  );
 }
 
 // ── SIDEBAR ───────────────────────────────────────────────
