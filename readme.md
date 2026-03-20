@@ -5,10 +5,10 @@
 
 ## 📖 目录
 [✨ 特性](https://github.com/wang01116/my-cloud/tree/main#-%E7%89%B9%E6%80%A7)<br>
-[🛠️ 快速开始](https://github.com/wang01116/my-cloud/edit/main/readme.md#%EF%B8%8F-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)<br>
-[📁 分类文件夹说明](https://github.com/wang01116/my-cloud/edit/main/readme.md#-%E5%88%86%E7%B1%BB%E6%96%87%E4%BB%B6%E5%A4%B9%E8%AF%B4%E6%98%8E)<br>
-[🛡️ 安全性](https://github.com/wang01116/my-cloud/edit/main/readme.md#%EF%B8%8F-%E5%AE%89%E5%85%A8%E6%80%A7)<br>
-[✅功能清单](https://github.com/wang01116/my-cloud/edit/main/readme.md#%E5%8A%9F%E8%83%BD%E6%B8%85%E5%8D%95)
+[🛠️ 快速开始](https://github.com/wang01116/my-cloud/tree/main#%EF%B8%8F-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)<br>
+[📁 分类文件夹说明](https://github.com/wang01116/my-cloud/tree/main#-%E5%88%86%E7%B1%BB%E6%96%87%E4%BB%B6%E5%A4%B9%E8%AF%B4%E6%98%8E)<br>
+[🛡️ 安全性](https://github.com/wang01116/my-cloud/tree/main#%EF%B8%8F-%E5%AE%89%E5%85%A8%E6%80%A7)<br>
+[✅功能清单](https://github.com/wang01116/my-cloud/tree/main#%E5%8A%9F%E8%83%BD%E6%B8%85%E5%8D%95)
 
 ## ✨ 特性
 
