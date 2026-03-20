@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GitCloud IM | MD3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        md3: {
+                            primary: '#005AC1',
+                            onPrimary: '#FFFFFF',
+                            primaryContainer: '#D8E2FF',
+                            onPrimaryContainer: '#001A41',
+                            surface: '#FDFBFF',
+                            onSurface: '#1B1B1F',
+                            surfaceVariant: '#E1E2EC',
+                            onSurfaceVariant: '#44474F',
+                            outline: '#74777F'
+                        }
+                    },
+                    borderRadius: { '3xl': '24px', '4xl': '32px' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Roboto', 'Google Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .md-card { transition: all 0.2s cubic-bezier(0, 0, 0.2, 1); }
+        .md-card:active { transform: scale(0.98); }
+        .chat-area { height: calc(100vh - 180px); }
+    </style>
+</head>
+<body class="bg-md3-surface dark:bg-[#111318] text-md3-onSurface dark:text-[#E2E2E6] overflow-hidden">
+
+    <header class="h-16 flex items-center justify-between px-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-md3-primaryContainer text-md3-onPrimaryContainer rounded-full flex items-center justify-center font-bold text-lg">G</div>
+            <h1 class="text-xl font-medium tracking-tight">GitCloud IM</h1>
+        </div>
+        <button onclick="toggleConfig()" class="p-2 hover:bg-md3-surfaceVariant dark:hover:bg-slate-800 rounded-full transition-colors">
+            <span class="text-2xl">⚙️</span>
+        </button>
+    </header>
+
+    <main class="max-w-screen-md mx-auto relative px-4">
+        <section id="view-chat" class="chat-area overflow-y-auto space-y-4 py-4 hide-scroll">
+            <div class="flex justify-center"><span class="text-[10px] bg-md3-surfaceVariant px-3 py-1 rounded-full opacity-60">今天</span></div>
+            </section>
+
+        <section id="view-files" class="hidden chat-area flex flex-col overflow-hidden">
+            <div class="flex flex-col gap-3 mb-4 overflow-x-auto hide-scroll py-2">
+                <div class="flex gap-2" id="filter-folder">
+                    <button onclick="setFolderFilter('all')" class="chip-active px-4 py-1.5 rounded-xl text-sm border border-md3-outline font-medium whitespace-nowrap bg-md3-primaryContainer text-md3-onPrimaryContainer">全部</button>
+                </div>
+                <div class="flex gap-2" id="filter-type">
+                    <button onclick="setTypeFilter('all')" class="px-4 py-1.5 rounded-xl text-sm border border-md3-outline font-medium whitespace-nowrap bg-white dark:bg-slate-900">所有格式</button>
+                    <button onclick="setTypeFilter('docs')" class="px-4 py-1.5 rounded-xl text-sm border border-md3-outline font-medium whitespace-nowrap bg-white dark:bg-slate-900">文档</button>
+                    <button onclick="setTypeFilter('images')" class="px-4 py-1.5 rounded-xl text-sm border border-md3-outline font-medium whitespace-nowrap bg-white dark:bg-slate-900">图片</button>
+                </div>
+            </div>
+            <div id="file-grid" class="flex-1 overflow-y-auto space-y-3 pb-20 hide-scroll"></div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#F2F3F9] dark:bg-[#1E1F25] flex items-center justify-around px-8 z-50 rounded-t-3xl border-t border-gray-200 dark:border-slate-800">
+        <button onclick="switchTab('chat')" class="flex flex-col items-center gap-1 group">
+            <div id="nav-chat-bg" class="px-5 py-1 rounded-full bg-md3-primaryContainer text-md3-onPrimaryContainer transition-all">💬</div>
+            <span class="text-xs font-medium">对话</span>
+        </button>
+        <button onclick="switchTab('files')" class="flex flex-col items-center gap-1 group">
+            <div id="nav-files-bg" class="px-5 py-1 rounded-full transition-all">📁</div>
+            <span class="text-xs font-medium">资料库</span>
+        </button>
+    </nav>
+
+    <div id="input-container" class="fixed bottom-24 left-4 right-4 max-w-screen-md mx-auto">
+        <div class="bg-[#EEF0FA] dark:bg-[#2A2B2F] rounded-3xl p-2 shadow-sm border border-transparent focus-within:border-md3-primary transition-all">
+            <div class="flex items-center gap-2 px-2">
+                <select id="target-folder" class="bg-transparent text-[11px] font-bold text-md3-primary outline-none cursor-pointer"></select>
+                <textarea id="text-input" rows="1" placeholder="发送笔记..." class="flex-1 bg-transparent border-none outline-none text-sm p-2 resize-none max-h-32 hide-scroll"></textarea>
+                <button onclick="document.getElementById('f-input').click()" class="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full">📎</button>
+                <button id="send-btn" class="bg-md3-primary text-white p-2 rounded-2xl w-10 h-10 flex items-center justify-center shadow-lg active:scale-95 transition">➔</button>
+            </div>
+            <input type="file" id="f-input" class="hidden">
+        </div>
+    </div>
+
+    <div id="cfg-modal" class="hidden fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-md3-surface dark:bg-[#1C1B1F] w-full max-w-sm rounded-[28px] p-6 shadow-2xl">
+            <h2 class="text-2xl mb-6">设置仓库</h2>
+            <div class="space-y-4">
+                <input id="cfg-user" type="text" placeholder="GitHub 用户名" class="w-full p-4 bg-md3-surfaceVariant dark:bg-[#44474F] rounded-xl outline-none border-b-2 border-md3-primary">
+                <input id="cfg-repo" type="text" placeholder="仓库名称" class="w-full p-4 bg-md3-surfaceVariant dark:bg-[#44474F] rounded-xl outline-none border-b-2 border-md3-primary">
+                <input id="cfg-token" type="password" placeholder="GitHub Access Token" class="w-full p-4 bg-md3-surfaceVariant dark:bg-[#44474F] rounded-xl outline-none border-b-2 border-md3-primary">
+                <div class="flex justify-end gap-4 mt-6">
+                    <button onclick="toggleConfig()" class="text-md3-primary font-bold px-4 py-2">取消</button>
+                    <button onclick="saveConfig()" class="bg-md3-primary text-white px-6 py-2 rounded-full font-bold shadow-md">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 配置与 V4.0 一致，文件夹按要求修改
+        const CONFIG_FOLDERS = {
+            'notes': { label: '文字', emoji: '📝' },
+            'env_law': { label: '环境法', emoji: '🌿' },
+            'law': { label: '法学', emoji: '⚖️' },
+            'office': { label: '办公', emoji: '💼' },
+            'fun': { label: '娱乐', emoji: '🎮' },
+            'others': { label: '其他', emoji: '📁' },
+            'inbox': { label: '临时', emoji: '📥' }
+        };
+
+        let state = { user: '', repo: '', token: '', files: [], fFilter: 'all', tFilter: 'all' };
+
+        window.onload = () => {
+            loadConfig();
+            renderUI();
+            if(state.token) syncHistory();
+        };
+
+        function renderUI() {
+            const select = document.getElementById('target-folder');
+            const fBar = document.getElementById('filter-folder');
+            Object.keys(CONFIG_FOLDERS).forEach(key => {
+                const item = CONFIG_FOLDERS[key];
+                select.innerHTML += `<option value="${key}">${item.emoji}</option>`;
+                fBar.innerHTML += `<button onclick="setFolderFilter('${key}')" class="f-chip px-4 py-1.5 rounded-xl text-sm border border-md3-outline font-medium whitespace-nowrap bg-white dark:bg-slate-900">${item.emoji} ${item.label}</button>`;
+            });
+        }
+
+        function switchTab(t) {
+            document.getElementById('view-chat').classList.toggle('hidden', t !== 'chat');
+            document.getElementById('view-files').classList.toggle('hidden', t !== 'files');
+            document.getElementById('input-container').classList.toggle('hidden', t !== 'chat');
+            
+            // MD3 导航高亮逻辑
+            const chatBg = document.getElementById('nav-chat-bg');
+            const filesBg = document.getElementById('nav-files-bg');
+            chatBg.className = t === 'chat' ? 'px-5 py-1 rounded-full bg-md3-primaryContainer text-md3-onPrimaryContainer' : 'px-5 py-1 rounded-full';
+            filesBg.className = t === 'files' ? 'px-5 py-1 rounded-full bg-md3-primaryContainer text-md3-onPrimaryContainer' : 'px-5 py-1 rounded-full';
+            
+            if(t === 'files') loadFileList();
+        }
+
+        // 复用之前的高级 GitHub API 逻辑（此处省略重复代码，逻辑与 V4 一致，增加 MD3 卡片样式）
+        // ... (handleSend, syncHistory, loadFileList, deleteFile 等逻辑与上个版本完全相同)
+        
+        // 渲染文件列表 - MD3 卡片风格
+        function renderFiles() {
+            const grid = document.getElementById('file-grid');
+            grid.innerHTML = '';
+            const filtered = state.files.filter(f => {
+                const ext = f.name.split('.').pop().toLowerCase();
+                const folderMatch = state.fFilter === 'all' || f.folder === state.fFilter;
+                let typeMatch = true;
+                if(state.tFilter === 'docs') typeMatch = ['pdf','docx','txt','md'].includes(ext);
+                if(state.tFilter === 'images') typeMatch = ['jpg','png','webp'].includes(ext);
+                return folderMatch && typeMatch;
+            }).reverse();
+
+            filtered.forEach(f => {
+                const parts = f.name.split('-');
+                const cleanName = parts.slice(2).join('-') || f.name;
+                const div = document.createElement('div');
+                div.className = "md-card bg-[#F7F9FF] dark:bg-[#232429] p-4 rounded-3xl flex items-center justify-between border border-gray-100 dark:border-slate-800 shadow-sm";
+                div.innerHTML = `
+                    <div class="flex items-center gap-4 truncate">
+                        <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center text-2xl shadow-inner">${CONFIG_FOLDERS[f.folder]?.emoji || '📄'}</div>
+                        <div class="truncate">
+                            <h3 class="text-sm font-medium truncate">${cleanName}</h3>
+                            <p class="text-[10px] opacity-60 uppercase">${f.folder} • ${(f.size/1024).toFixed(1)}KB</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="${f.download_url}" target="_blank" class="p-2 bg-md3-primaryContainer text-md3-onPrimaryContainer rounded-full text-xs">⬇️</a>
+                        <button onclick="deleteFile('${f.path}','${f.sha}')" class="p-2 bg-red-50 text-red-600 rounded-full text-xs">🗑️</button>
+                    </div>`;
+                grid.appendChild(div);
+            });
+        }
+
+        // --- 同步 V4 核心逻辑 ---
+        async function handleSend() {
+            const text = document.getElementById('text-input').value.trim();
+            const fileInput = document.getElementById('f-input');
+            const folder = document.getElementById('target-folder').value;
+            if(!text && !fileInput.files[0]) return;
+            const targetFile = fileInput.files[0] || new File([new Blob([text])], `msg-${Date.now()}.md`);
+            const isNote = !fileInput.files[0];
+            appendBubble(isNote ? text : targetFile.name, 'me', !isNote, targetFile.name);
+            document.getElementById('text-input').value = '';
+            const reader = new FileReader();
+            reader.readAsDataURL(targetFile);
+            reader.onload = async () => {
+                const base64 = reader.result.split(',')[1];
+                const fileName = `${folder}-${Date.now()}-${targetFile.name}`;
+                try {
+                    const res = await fetch(`https://api.github.com/repos/${state.user}/${state.repo}/contents/${folder}/${fileName}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Cloud upload`, content: base64 })
+                    });
+                    if(res.ok) fileInput.value = '';
+                } catch(e) {}
+            };
+        }
+
+        function appendBubble(content, type = 'me', isFile = false, fileName = '') {
+            const container = document.getElementById('view-chat');
+            const div = document.createElement('div');
+            div.className = `flex ${type === 'me' ? 'justify-end' : 'justify-start'} mb-3`;
+            const bg = type === 'me' ? 'bg-md3-primaryContainer text-md3-onPrimaryContainer rounded-[20px] rounded-br-sm' : 'bg-md3-surfaceVariant text-md3-onSurfaceVariant rounded-[20px] rounded-bl-sm';
+            div.innerHTML = `<div class="${bg} px-4 py-3 max-w-[85%] text-sm shadow-sm">${isFile ? '📎 ' + fileName : content}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function syncHistory() {
+            const container = document.getElementById('view-chat');
+            for(const folder of Object.keys(CONFIG_FOLDERS)) {
+                try {
+                    const res = await fetch(`https://api.github.com/repos/${state.user}/${state.repo}/contents/${folder}`, {
+                        headers: { 'Authorization': `token ${state.token}` }
+                    });
+                    if(res.ok) {
+                        const data = await res.json();
+                        data.slice(-1).forEach(f => appendBubble(f.name, 'system', true, f.name.split('-').slice(2).join('-')));
+                    }
+                } catch(e){}
+            }
+        }
+
+        async function loadFileList() {
+            let all = [];
+            for(const folder of Object.keys(CONFIG_FOLDERS)) {
+                const res = await fetch(`https://api.github.com/repos/${state.user}/${state.repo}/contents/${folder}`, {
+                    headers: { 'Authorization': `token ${state.token}` }
+                });
+                if(res.ok) {
+                    const data = await res.json();
+                    all = all.concat(data.map(i => ({...i, folder})));
+                }
+            }
+            state.files = all;
+            renderFiles();
+        }
+
+        function setFolderFilter(f) {
+            state.fFilter = f;
+            renderFiles();
+        }
+
+        function setTypeFilter(t) {
+            state.tFilter = t;
+            renderFiles();
+        }
+
+        function saveConfig() {
+            state.user = document.getElementById('cfg-user').value;
+            state.repo = document.getElementById('cfg-repo').value;
+            state.token = document.getElementById('cfg-token').value;
+            localStorage.setItem('gh_v5_cfg', JSON.stringify(state));
+            toggleConfig();
+            location.reload();
+        }
+
+        function loadConfig() {
+            const cfg = localStorage.getItem('gh_v5_cfg');
+            if(cfg) {
+                const p = JSON.parse(cfg);
+                state = {...state, ...p};
+                document.getElementById('cfg-user').value = state.user || '';
+                document.getElementById('cfg-repo').value = state.repo || '';
+                document.getElementById('cfg-token').value = state.token || '';
+            }
+        }
+
+        async function deleteFile(path, sha) {
+            if(!confirm("确认删除？")) return;
+            await fetch(`https://api.github.com/repos/${state.user}/${state.repo}/contents/${path}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: "Delete", sha: sha })
+            });
+            loadFileList();
+        }
+
+        function toggleConfig() { document.getElementById('cfg-modal').classList.toggle('hidden'); }
+        document.getElementById('send-btn').onclick = handleSend;
+    </script>
+</body>
+</html>
