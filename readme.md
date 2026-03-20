@@ -4,7 +4,7 @@
 一个极简、开源的跨平台 Web 应用。它利用 GitHub 仓库作为后端存储，通过聊天对话的形式，让你能够随时随地记录想法、上传资料，并实现全自动的云端分类与检索。
 
 ## 📖 目录
-[✨ 特性](https://github.com/wang01116/my-cloud/edit/main/readme.md#-%E7%89%B9%E6%80%A7)<br>
+[✨ 特性](https://github.com/wang01116/my-cloud/tree/main#-%E7%89%B9%E6%80%A7)<br>
 [🛠️ 快速开始](https://github.com/wang01116/my-cloud/edit/main/readme.md#%EF%B8%8F-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)<br>
 [📁 分类文件夹说明](https://github.com/wang01116/my-cloud/edit/main/readme.md#-%E5%88%86%E7%B1%BB%E6%96%87%E4%BB%B6%E5%A4%B9%E8%AF%B4%E6%98%8E)<br>
 [🛡️ 安全性](https://github.com/wang01116/my-cloud/edit/main/readme.md#%EF%B8%8F-%E5%AE%89%E5%85%A8%E6%80%A7)<br>
