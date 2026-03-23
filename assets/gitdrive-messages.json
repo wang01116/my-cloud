@@ -22,30 +22,5 @@
     "caption": "",
     "category": "other",
     "timestamp": "2026-03-19T12:45:47.591Z"
-  },
-  {
-    "id": "1773931326047",
-    "type": "file",
-    "files": [
-      {
-        "name": "IMG_6449.jpeg",
-        "path": "muse/IMG_6449.jpeg",
-        "size": 10960343,
-        "mime": "image/jpeg",
-        "sha": "f7a3c911965f4b3130543e29a2f314147827a6b8",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/muse/IMG_6449.jpeg"
-      },
-      {
-        "name": "IMG_6448.jpeg",
-        "path": "muse/IMG_6448.jpeg",
-        "size": 10628545,
-        "mime": "image/jpeg",
-        "sha": "53c949e9d0f0974be4e51ecf56de807af8635f83",
-        "downloadUrl": "https://raw.githubusercontent.com/wang01116/my-cloud/main/muse/IMG_6448.jpeg"
-      }
-    ],
-    "caption": "",
-    "category": "muse",
-    "timestamp": "2026-03-19T14:42:06.047Z"
   }
 ]
