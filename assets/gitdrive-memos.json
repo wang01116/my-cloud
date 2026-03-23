@@ -1,5 +1,14 @@
 [
   {
+    "id": "1774246822456",
+    "type": "note",
+    "content": "- 环境法学入门笔记",
+    "done": false,
+    "createdAt": "2026-03-23T06:20:22.456Z",
+    "updatedAt": "2026-03-23T06:20:22.456Z",
+    "attachments": []
+  },
+  {
     "id": "1774246756271",
     "type": "todo",
     "content": "v0.8",
