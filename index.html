@@ -704,47 +704,47 @@ button{cursor:pointer;border:none;background:none}
      ============================================================ -->
 
 <!-- 1. 用户配置（唯一需要修改的文件）-->
-<script src="config.js"></script>
+<script src="./config.js"></script>
 
 <!-- 2. 底层工具（GitHub API / Base64 / 文件类型判断 / 格式化）-->
-<script src="assets/function/core-utils.js"></script>
+<script src="./assets/function/core-utils.js"></script>
 
 <!-- 3. 全局状态对象 S -->
-<script src="assets/function/app-state.js"></script>
+<script src="./assets/function/app-state.js"></script>
 
 <!-- 4. 数据加载 / 保存（读写 GitHub 仓库中的 JSON 文件）-->
-<script src="assets/function/data-sync.js"></script>
+<script src="./assets/function/data-sync.js"></script>
 
 <!-- 5. 通用 UI 组件（Toast / Modal / Sidebar / 主题 / 媒体预览）-->
-<script src="assets/function/ui-components.js"></script>
+<script src="./assets/function/ui-components.js"></script>
 
 <!-- 6. 回收站渲染 & 统计（被 file-ops 依赖，须在其之前）-->
-<script src="assets/function/trash-stats.js"></script>
+<script src="./assets/function/trash-stats.js"></script>
 
 <!-- 7. 文件操作：收藏 / 移动 / 重命名 / 删除 / 回收站 -->
-<script src="assets/function/file-ops.js"></script>
+<script src="./assets/function/file-ops.js"></script>
 
 <!-- 8. 文件网格：渲染 / 筛选 / 批量操作 / 右键菜单 -->
-<script src="assets/function/file-grid.js"></script>
+<script src="./assets/function/file-grid.js"></script>
 
 <!-- 9. 对话消息：渲染 / 发送 / 上传 / 置顶 / 多选 -->
-<script src="assets/function/chat-messages.js"></script>
+<script src="./assets/function/chat-messages.js"></script>
 
 <!-- 10. 备忘录（待办 + 笔记）-->
-<script src="assets/function/memo.js"></script>
+<script src="./assets/function/memo.js"></script>
 
 <!-- 11. 全局搜索（文件名 + 消息内容）-->
-<script src="assets/function/search.js"></script>
+<script src="./assets/function/search.js"></script>
 
 <!-- ── 新增功能模块在此处插入 ───────────────────────────────────
      例：<script src="assets/function/my-feature.js"></script>
      ─────────────────────────────────────────────────────────── -->
 
 <!-- 12. UI 初始化构建（侧边栏 / chips / 筛选栏，由 CATS 驱动）-->
-<script src="assets/function/app-ui-builder.js"></script>
+<script src="./assets/function/app-ui-builder.js"></script>
 
 <!-- 13. 初始化入口（登录 / launchApp / 全部事件绑定，最后加载）-->
-<script src="assets/function/app-init.js"></script>
+<script src="./assets/function/app-init.js"></script>
 
 </body>
 </html>
