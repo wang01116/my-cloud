@@ -3,21 +3,18 @@
  * ============================================================
  * 【唯一需要修改的文件】
  *
- * 所有个性化配置都在这里：分类、数据路径、功能参数、帮助说明。
- * 功能性 JS（assets/function/*.js）基本不需要改动。
- *
  * 修改指引：
  *  - 新增/删除分类      → 编辑 CATS 数组
- *  - 调整数据文件路径   → 编辑 PATHS 对象（同时需移动仓库里的文件）
+ *  - 调整数据文件路径   → 编辑 PATHS 对象
  *  - 修改文件类型分组   → 编辑 TYPE_GROUPS 数组
  *  - 调整功能参数       → 编辑 APP_CONFIG 对象
  *  - 修改帮助说明       → 编辑 HELP_ITEMS 数组
  *
  * 新增功能模块（未来扩展）：
- *  1. 在 assets/function/ 中添加新 .js 文件
- *  2. 在 index.html 的脚本加载区域（文件末尾注释处）按顺序引入
+ *  1. 在 assets/function/ 中新建 .js 文件
+ *  2. 在 index.html 末尾注释区域按顺序引入 <script src>
  *  3. 在 assets/function/app-init.js 中绑定新功能的 DOM 事件
- *  4. 如需新配置项，在本文件 APP_CONFIG 中添加即可
+ *  4. 如需新配置，在本文件 APP_CONFIG 中添加即可
  * ============================================================
  */
 
@@ -32,17 +29,17 @@ var CATS = [
   {id:'work',      label:'办公',   icon:'\u{1F4BC}',   color:'#bc8cff', bg:'rgba(188,140,255,.15)'},
   {id:'text',      label:'文字',   icon:'\u{1F4DD}',   color:'#ffa657', bg:'rgba(255,166,87,.15)'},
   {id:'other',     label:'其他',   icon:'\u{1F4E6}',   color:'#8b949e', bg:'rgba(139,148,158,.15)'},
-  {id:'muse',      label:'艺术',   icon:'🎵', color:'#f66d9b', bg:'rgba(246,109,155,.15)'},
 ];
 
 // ── 数据文件路径 ──────────────────────────────────────────────
-// 所有 JSON 数据文件存于仓库 assets/ 目录
-// 修改路径后需在仓库中手动迁移对应文件
+// 默认保持与原版相同（根目录），无需移动已有数据文件
+// 如需迁移到 assets/ 子目录，改为 'assets/gitdrive-*.json'
+// 并同时将仓库中对应文件移动到 assets/ 文件夹
 var PATHS = {
-  messages: 'assets/gitdrive-messages.json',
-  meta:     'assets/gitdrive-meta.json',
-  memos:    'assets/gitdrive-memos.json',
-  trash:    'assets/gitdrive-trash.json',
+  messages: 'gitdrive-messages.json',
+  meta:     'gitdrive-meta.json',
+  memos:    'gitdrive-memos.json',
+  trash:    'gitdrive-trash.json',
 };
 
 // ── 文件类型分组（所有文件页筛选用）────────────────────────────
@@ -63,15 +60,14 @@ var APP_CONFIG = {
   version:         '2.1.0',
   trashDays:       30,           // 回收站文件保留天数
   batchDlMax:      10,           // 批量下载单次上限
-  // localStorage 键名（多项目部署时修改前缀以隔离数据）
+  // localStorage 键名（与原版保持一致，不会丢失已保存的登录状态）
   credKey:         'gd-creds',
   themeKey:        'gd-theme',
-  pinnedPrefix:    'gd-pins-',   // + user/repo
-  clearTimePrefix: 'gd-ct-',    // + user/repo
+  pinnedPrefix:    'gd-pins-',
+  clearTimePrefix: 'gd-ct-',
 };
 
 // ── 帮助说明 ──────────────────────────────────────────────────
-// [icon, 标题, 说明]  可自由增删改
 var HELP_ITEMS = [
   ['\u{1F4AC}', '对话云盘',   '主界面。发送文字或上传文件，以气泡形式记录，内容实时存入 GitHub 仓库。支持 Markdown。'],
   ['\u{1F4CE}', '上传文件',   '点击 📎 或拖放文件，可多选。发送后存入所选分类文件夹。'],
