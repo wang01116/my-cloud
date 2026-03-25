@@ -29,6 +29,7 @@ var CATS = [
   {id:'work',      label:'办公',   icon:'\u{1F4BC}',   color:'#bc8cff', bg:'rgba(188,140,255,.15)'},
   {id:'text',      label:'文字',   icon:'\u{1F4DD}',   color:'#ffa657', bg:'rgba(255,166,87,.15)'},
   {id:'other',     label:'其他',   icon:'\u{1F4E6}',   color:'#8b949e', bg:'rgba(139,148,158,.15)'},
+  {id:'muse',      label:'艺术',   icon:'🧩',   color:'#8b949e', bg:'rgba(139,148,158,.15)'},
 ];
 
 // ── 数据文件路径 ──────────────────────────────────────────────
