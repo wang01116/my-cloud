@@ -1,5 +1,5 @@
 const CACHE = 'gitdrive-v2';
-const STATIC = ['./index.html', './assets/manifest.json', './icon.svg'];
+const STATIC = ['./index.html', './assets/manifest.json', './assets/icon.svg'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
